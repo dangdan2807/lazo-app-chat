@@ -6,6 +6,7 @@ const userValidate = require('../validate/userValidate');
 
 const NotFoundError = require('../exception/NotFoundError');
 const MyError = require('../exception/MyError');
+const AuthenError = require('../exception/AuthenError');
 
 const tokenUtils = require('../../utils/tokenUtils');
 const commonUtils = require('../../utils/commonUtils');
@@ -46,6 +47,28 @@ class AuthService {
         };
     };
 
+    refreshToken = async (refreshToken, reqSource) => {
+        // check token
+        const { _id } = await tokenUtils.verifyToken(refreshToken);
+
+        const user = await User.findOne({
+            _id,
+            isActived: true,
+            refreshTokens: {
+                $elemMatch: { token: refreshToken, source: reqSource },
+            },
+        });
+
+        if (!user) {
+            throw new AuthenError();
+        }
+
+        return await tokenUtils.generateToken(
+            { _id, source: reqSource },
+            process.env.JWT_LIFE_ACCESS_TOKEN,
+        );
+    };
+
     registry = async (userInfo) => {
         const registryInfo = await userValidate.checkRegistryInfo(userInfo);
 
@@ -77,6 +100,25 @@ class AuthService {
         this.checkOTP(otpPhone, otp, otpTime);
 
         await User.updateOne({ username }, { isActived: true });
+    };
+
+    resetOTP = async (username) => {
+        if (!userValidate.validateUsername(username)) {
+            throw new MyError('Username invalid');
+        }
+
+        const user = await User.findOne({ username });
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+
+        const { _id } = user;
+
+        await this.sendOTP(_id, username);
+
+        return {
+            status: user.isActived,
+        };
     };
 
     sendOTP = async (_id, username) => {

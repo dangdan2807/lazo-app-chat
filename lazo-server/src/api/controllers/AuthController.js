@@ -8,7 +8,21 @@ class AuthController {
 
         try {
             const { token, refreshToken } = await authService.login(username, password, source);
-            res.json({ token, refreshToken });
+            res.status(201).json({ token, refreshToken });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [POST] /auth/refresh-token
+    refreshToken = async (req, res, next) => {
+        const { refreshToken } = req.body;
+        const source = req.headers['user-agent'];
+
+        try {
+            const token = await authService.refreshToken(refreshToken, source);
+
+            res.status(200).json({ token });
         } catch (err) {
             next(err);
         }
@@ -21,15 +35,15 @@ class AuthController {
 
             res.status(201).json({
                 success: true,
-                message: 'Đăng ký tài khoản thành công'
+                message: 'Registry successfully',
             });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /auth/confirm-account
-    async confirmAccount(req, res, next) {
+    confirmAccount = async (req, res, next) => {
         const { username, otp } = req.body;
 
         try {
@@ -37,8 +51,20 @@ class AuthController {
 
             res.status(200).json({
                 success: true,
-                message: 'Xác nhận tài khoản thành công'
+                message: 'Confirm account successfully',
             });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [POST] /auth/reset-otp
+    resetOTP = async (req, res, next) => {
+        const { username } = req.body;
+        try {
+            const status = await authService.resetOTP(username);
+
+            res.status(201).json(status);
         } catch (err) {
             next(err);
         }
