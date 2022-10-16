@@ -4,8 +4,6 @@ const userValidate = require('../validate/userValidate');
 
 const tokenUtils = require('../../utils/tokenUtils');
 
-const User = require('../models/User');
-
 class AuthService {
     login = async (username, password, source) => {
         userValidate.validateLogin(username, password);
