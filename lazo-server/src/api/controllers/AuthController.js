@@ -1,4 +1,5 @@
 const authService = require('../services/AuthService');
+const userService = require('../services/UserService');
 
 class AuthController {
     // [POST] /auth/login
@@ -81,6 +82,19 @@ class AuthController {
                 success: true,
                 message: 'Reset password successfully',
             });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [GET]  /auth/users/:username
+    getUserInfo = async (req, res, next) => {
+        const { username } = req.params;
+
+        try {
+            const user = await userService.getUserSummaryInfo(username);
+
+            return res.status(200).json(user);
         } catch (err) {
             next(err);
         }
