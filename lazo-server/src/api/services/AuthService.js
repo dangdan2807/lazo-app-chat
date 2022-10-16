@@ -4,6 +4,9 @@ const classifyService = require('../services/ClassifyService');
 
 const userValidate = require('../validate/userValidate');
 
+const NotFoundError = require('../exception/NotFoundError');
+const MyError = require('../exception/MyError');
+
 const tokenUtils = require('../../utils/tokenUtils');
 const commonUtils = require('../../utils/commonUtils');
 const mailer = require('../../utils/mailer');
@@ -12,7 +15,6 @@ const templateHtml = require('../../utils/templateHtml');
 const axios = require('axios');
 
 const OTP_EXPIRE_MINUTE = parseInt(process.env.OTP_EXPIRE_MINUTE);
-
 
 class AuthService {
     login = async (username, password, source) => {
@@ -59,6 +61,24 @@ class AuthService {
         this.sendOTP(_id, username);
     };
 
+    confirmAccount = async (username, otpPhone) => {
+        await userValidate.validateConfirmAccount(username, otpPhone);
+
+        // tìm tài khoản chưa kích hoạt
+        const user = await User.findOne({
+            username,
+            isActived: false,
+        });
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+
+        const { otp, otpTime } = user;
+        this.checkOTP(otpPhone, otp, otpTime);
+
+        await User.updateOne({ username }, { isActived: true });
+    };
+
     sendOTP = async (_id, username) => {
         // email: true
         let type = true;
@@ -96,6 +116,22 @@ class AuthService {
             } else throw new MyError('Insufficient money ');
         }
     };
+
+    checkOTP(sendOTP, dbOTP, otpTime) {
+        if (!dbOTP) {
+            throw new MyError('OTP không hợp lệ');
+        }
+
+        // check hết hạn otp
+        if (new Date() > otpTime) {
+            throw new MyError('OTP đã hết hạn');
+        }
+
+        // nếu otp sai
+        if (sendOTP !== dbOTP) {
+            throw new MyError('OTP không hợp lệ');
+        }
+    }
 }
 
 module.exports = new AuthService();

@@ -19,7 +19,26 @@ class AuthController {
         try {
             await authService.registry(req.body);
 
-            res.status(201).json();
+            res.status(201).json({
+                success: true,
+                message: 'Đăng ký tài khoản thành công'
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [POST] /auth/confirm-account
+    async confirmAccount(req, res, next) {
+        const { username, otp } = req.body;
+
+        try {
+            await authService.confirmAccount(username, otp + '');
+
+            res.status(200).json({
+                success: true,
+                message: 'Xác nhận tài khoản thành công'
+            });
         } catch (err) {
             next(err);
         }

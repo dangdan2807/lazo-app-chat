@@ -10,18 +10,6 @@ const USERNAME_EXISTS_INVALID = 'Tài khoản đã tồn tại';
 const PASSWORD_INVALID = 'Mật khẩu không hợp lệ, từ 8 đến 50 kí tự';
 
 class userValidate {
-    validateLogin = (username, password) => {
-        if (!this.validateUsername(username) || !this.validatePassword(password)) {
-            throw new MyError('Info login invalid');
-        }
-    };
-    validateUsername = (username) => {
-        if (!username || (!this.validateEmail(username) && !this.validatePhone(username))) {
-            return false;
-        }
-
-        return true;
-    };
     validateEmail = (email) => {
         if (!email) return false;
 
@@ -35,6 +23,26 @@ class userValidate {
 
         return regex.test(phone);
     };
+    validateUsername = (username) => {
+        if (!username || (!this.validateEmail(username) && !this.validatePhone(username))) {
+            return false;
+        }
+
+        return true;
+    };
+    validateOTP = (otp) => {
+        if (!otp) return false;
+        const regex = /^[0-9]{6}$/g;
+
+        return regex.test(otp);
+    }
+
+    validateLogin = (username, password) => {
+        if (!this.validateUsername(username) || !this.validatePassword(password)) {
+            throw new MyError('Info login invalid');
+        }
+    };
+    
     validatePassword = (password) => {
         if (!password) {
             return false;
@@ -45,6 +53,12 @@ class userValidate {
 
         return true;
     };
+    validateConfirmAccount = (username, otpPhone) => {
+        if (!this.validateUsername(username) || !this.validateOTP(otpPhone)) {
+            throw new MyError('Info confirm account invalid');
+        }
+    };
+
     checkRegistryInfo = async (userInfo) => {
         const { name, username, password } = userInfo;
         const error = {};
