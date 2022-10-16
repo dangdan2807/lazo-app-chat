@@ -1,4 +1,13 @@
+const commonUtils = require('../../utils/commonUtils');
+
 const MyError = require('../exception/MyError');
+
+const User = require('../models/User');
+
+const NAME_INVALID = 'Tên không hợp lệ';
+const USERNAME_INVALID = 'Tài khoản không hợp lệ';
+const USERNAME_EXISTS_INVALID = 'Tài khoản đã tồn tại';
+const PASSWORD_INVALID = 'Mật khẩu không hợp lệ, từ 8 đến 50 kí tự';
 
 class userValidate {
     validateLogin = (username, password) => {
@@ -35,6 +44,31 @@ class userValidate {
         }
 
         return true;
+    };
+    checkRegistryInfo = async (userInfo) => {
+        const { name, username, password } = userInfo;
+        const error = {};
+
+        if (!name || !NAME_REGEX.test(name)) {
+            error.name = NAME_INVALID;
+        }
+
+        if (!this.validateUsername(username)) {
+            error.username = USERNAME_INVALID;
+        } else if (await User.findOne({ username })) {
+            error.username = USERNAME_EXISTS_INVALID;
+        }
+
+        if (!this.validatePassword(password)) {
+            error.password = PASSWORD_INVALID;
+        }
+
+        // nếu như có lỗi
+        if (!commonUtils.isEmpty(error)) {
+            throw new MyError(error);
+        }
+
+        return { name, username, password };
     };
 }
 
