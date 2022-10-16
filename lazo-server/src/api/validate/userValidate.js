@@ -35,14 +35,14 @@ class userValidate {
         const regex = /^[0-9]{6}$/g;
 
         return regex.test(otp);
-    }
+    };
 
     validateLogin = (username, password) => {
         if (!this.validateUsername(username) || !this.validatePassword(password)) {
             throw new MyError('Info login invalid');
         }
     };
-    
+
     validatePassword = (password) => {
         if (!password) {
             return false;
@@ -56,6 +56,16 @@ class userValidate {
     validateConfirmAccount = (username, otpPhone) => {
         if (!this.validateUsername(username) || !this.validateOTP(otpPhone)) {
             throw new MyError('Info confirm account invalid');
+        }
+    };
+
+    validateResetPassword = (username, otpPhone, password) => {
+        if (
+            !this.validateUsername(username) ||
+            !this.validateOTP(otpPhone) ||
+            !this.validatePassword(password)
+        ) {
+            throw new MyError('Info reset password invalid');
         }
     };
 

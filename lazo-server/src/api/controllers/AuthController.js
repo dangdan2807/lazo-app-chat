@@ -69,6 +69,22 @@ class AuthController {
             next(err);
         }
     }
+
+    // [POST] /auth/confirm-password
+    confirmPassword = async (req, res, next) => {
+        const { username, otp, password } = req.body;
+
+        try {
+            await authService.resetPassword(username, otp + '', password);
+
+            res.status(201).json({
+                success: true,
+                message: 'Reset password successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new AuthController();

@@ -121,6 +121,27 @@ class AuthService {
         };
     };
 
+    resetPassword = async (username, otpPhone, password) => {
+        userValidate.validateResetPassword(username, otpPhone, password);
+
+        const user = await User.findOne({
+            username,
+            isActived: true,
+        });
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+
+        const { otp, otpTime } = user;
+
+        this.checkOTP(otpPhone, otp, otpTime);
+
+        // cập nhật lại password
+        const hashPassword = await commonUtils.hashPassword(password);
+
+        await User.updateOne({ username }, { password: hashPassword, otp: null, otpTime: null });
+    };
+
     sendOTP = async (_id, username) => {
         // email: true
         let type = true;
