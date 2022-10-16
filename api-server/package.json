@@ -1,0 +1,47 @@
+{
+    "name": "api-server",
+    "version": "1.0.0",
+    "description": "api server for website chat",
+    "main": "src/server.js",
+    "scripts": {
+        "beautiful": "lint-staged",
+        "watch": "node-sass --watch src/resource/scss/ --output src/public/css/",
+        "start": "nodemon src/server.js",
+        "demo1": "nodemon src/config/demo1.js"
+    },
+    "keywords": [
+        "chat",
+        "api",
+        "rest api"
+    ],
+    "author": "",
+    "license": "ISC",
+    "lint-staged": {
+        "src/**/*.{js,json,scss}": "prettier --single-quote --tab-width 4 --trailing-comma all --write"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "body-parser": "^1.20.0",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.2",
+        "ejs": "^3.1.8",
+        "express": "^4.18.1",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^6.6.5",
+        "mongoose-sequence": "^5.3.1",
+        "shortid": "^2.2.16",
+        "socket.io": "^4.5.3"
+    },
+    "devDependencies": {
+        "husky": "^8.0.1",
+        "lint-staged": "^13.0.3",
+        "nodemon": "^2.0.19",
+        "prettier": "^2.7.1"
+    }
+}
