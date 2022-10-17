@@ -1,6 +1,8 @@
 const Classify = require('../models/Classify');
 const Color = require('../models/Color');
 
+const NotFoundError = require('../exception/NotFoundError');
+
 const commonUtils = require('../../utils/commonUtils');
 
 class ClassifyService {
@@ -75,6 +77,19 @@ class ClassifyService {
 
         if (existsName) {
             throw new MyError('Name exists');
+        }
+    };
+
+    update = async (userId, classify) => {
+        await this.validate(userId, classify);
+        const { _id, name, colorId } = classify;
+
+        const queryResult = await Classify.updateOne({ _id, userId }, { name, colorId });
+
+        const { nModified } = queryResult;
+
+        if (nModified === 0) {
+            throw new NotFoundError('Classify');
         }
     };
 }

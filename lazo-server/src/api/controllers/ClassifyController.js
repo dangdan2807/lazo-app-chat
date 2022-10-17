@@ -35,6 +35,26 @@ class ClassifyController {
             next(err);
         }
     };
+
+    // [PUT] /classifies/:id
+    update = async (req, res, next) => {
+        const { _id } = req;
+
+        const { id } = req.params;
+        const classify = req.body;
+        classify._id = id;
+
+        try {
+            await classifyService.update(_id, classify);
+
+            res.status(200).json({
+                success: true,
+                message: 'Classify updated successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new ClassifyController();
