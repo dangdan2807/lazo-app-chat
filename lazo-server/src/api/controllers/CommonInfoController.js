@@ -2,6 +2,7 @@ const WebInfo = require('../models/WebInfo');
 const redisDb = require('../../helpers/redis');
 
 class CommonInfoController {
+    // [Get] /common/web-info
     getWebInfo = async (req, res, next) => {
         try {
             const isExistsCached = await redisDb.exists('web-info');
@@ -16,6 +17,14 @@ class CommonInfoController {
         } catch (err) {
             next(err);
         }
+    }
+
+    // [GET] /common/google-captcha
+    async getGoogleCaptcha(req, res, next) {
+        res.status(200).json({
+            ENABLE_GOOGLE_CAPTCHA: new Boolean(process.env.ENABLE_GOOGLE_CAPTCHA),
+            KEY_GOOGLE_CAPTCHA: process.env.KEY_GOOGLE_CAPTCHA,
+        });
     }
 }
 
