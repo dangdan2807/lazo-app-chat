@@ -31,6 +31,23 @@ class UserService {
         return searchUserResult;
     };
 
+    getStatusFriendOfUserById = async (_id, searchUserId) => {
+        await User.checkById(_id);
+        const searchUserResult = await User.getById(searchUserId);
+
+        searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
+        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
+            _id,
+            searchUserId
+        );
+        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
+            _id,
+            searchUserId
+        );
+
+        return searchUserResult;
+    }
+
     getNumberCommonGroup = async (myId, searchUserId) => {
         return await Conversation.countDocuments({
             type: true,

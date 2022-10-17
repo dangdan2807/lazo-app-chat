@@ -96,6 +96,37 @@ userSchema.statics.findByCredentials = async (username, password) => {
     return user;
 };
 
+userSchema.statics.getById = async (_id, message = 'User') => {
+    const user = await User.findOne({ _id, isActived: true });
+    if (!user) {
+        throw new NotFoundError(message);
+    }
+
+    const {
+        name,
+        username,
+        dateOfBirth,
+        gender,
+        avatar,
+        avatarColor,
+        coverImage,
+        isAdmin,
+        phoneBooks,
+    } = user;
+    return {
+        _id,
+        name,
+        username,
+        dateOfBirth: dateUtils.toObject(dateOfBirth),
+        gender,
+        avatar,
+        avatarColor,
+        coverImage,
+        isAdmin,
+        phoneBooks,
+    };
+};
+
 userSchema.statics.findByUsername = async (username, message = 'User') => {
     const user = await User.findOne({
         username,
