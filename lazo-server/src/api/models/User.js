@@ -70,7 +70,7 @@ const userSchema = new Schema(
             default: new Date(),
         },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 userSchema.pre('save', async function (next) {
@@ -92,6 +92,39 @@ userSchema.statics.findByCredentials = async (username, password) => {
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) throw new MyError('Password invalid');
+
+    return user;
+};
+
+userSchema.statics.findByUsername = async (username, message = 'User') => {
+    const user = await User.findOne({
+        username,
+        isActived: true,
+    });
+
+    if (!user) {
+        throw new NotFoundError(message);
+    }
+
+    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } = user;
+    return {
+        _id,
+        name,
+        username,
+        dateOfBirth: dateUtils.toObject(dateOfBirth),
+        gender,
+        avatar,
+        avatarColor,
+        coverImage,
+    };
+};
+
+userSchema.statics.checkById = async (_id, message = 'User') => {
+    const user = await User.findOne({ _id, isActived: true });
+
+    if (!user) {
+        throw new NotFoundError(message);
+    }
 
     return user;
 };
