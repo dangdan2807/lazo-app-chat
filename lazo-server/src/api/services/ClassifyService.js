@@ -92,6 +92,18 @@ class ClassifyService {
             throw new NotFoundError('Classify');
         }
     };
+
+    delete = async (userId, classifyId) => {
+        const queryResult = await Classify.deleteOne({
+            _id: classifyId,
+            userId,
+        });
+        const { deletedCount } = queryResult;
+
+        if (deletedCount === 0) {
+            throw new NotFoundError('Classify');
+        }
+    };
 }
 
 module.exports = new ClassifyService();

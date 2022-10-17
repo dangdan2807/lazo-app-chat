@@ -55,6 +55,23 @@ class ClassifyController {
             next(err);
         }
     }
+
+    // [PUT] /classifies/:id
+    delete = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            await classifyService.delete(_id, id);
+
+            res.status(204).json({
+                success: true,
+                message: 'Classify deleted successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new ClassifyController();
