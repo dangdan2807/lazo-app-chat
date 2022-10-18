@@ -6,6 +6,8 @@ class FriendController {
     constructor(io) {
         this.io = io;
         this.acceptFriend = this.acceptFriend.bind(this);
+        this.deleteFriend = this.deleteFriend.bind(this);
+
     }
 
     // [GET] /friends?name
@@ -64,6 +66,24 @@ class FriendController {
             next(err);
         }
     };
+    
+    // [DELETE] /friends/:userId
+    deleteFriend = async (req, res, next) => {
+        const { _id } = req;
+        const { userId } = req.params;
+        try {
+            await friendService.deleteFriend(_id, userId);
+
+            this.io.to(userId + '').emit('deleted-friend', _id);
+
+            res.status(204).json({
+                success: true,
+                message: 'Delete friend successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = FriendController;

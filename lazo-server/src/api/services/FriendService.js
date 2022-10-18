@@ -69,6 +69,11 @@ class FriendService {
 
         return await conversationService.createIndividualConversationWhenWasFriend(_id, senderId);
     };
+
+    deleteFriend = async (_id, userId) => {
+        // xóa bạn bè
+        await Friend.deleteByIds(_id, userId);
+    }
 }
 
 module.exports = new FriendService();

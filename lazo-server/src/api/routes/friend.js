@@ -6,6 +6,7 @@ const friendRouter = (io) => {
 
     router.get('', friendController.getListFriends);
     router.post('/:userId', friendController.acceptFriend);
+    router.delete('/:userId', friendController.deleteFriend);
     
     return router;
 };
