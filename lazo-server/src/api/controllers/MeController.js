@@ -38,6 +38,22 @@ class MeController {
             next(err);
         }
     }
+
+    // [PATCH] /avatar
+    changeAvatar = async (req, res, next) => {
+        const { _id, file } = req;
+
+        try {
+            const avatar = await meService.changeAvatar(_id, file);
+
+            const cachedUser = await redisDb.get(_id);
+            await redisDb.set(_id, { ...cachedUser, avatar });
+
+            return res.json({ avatar });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = MeController;
