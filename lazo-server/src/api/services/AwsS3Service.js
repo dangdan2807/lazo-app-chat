@@ -43,6 +43,41 @@ class AwsS3Service {
         }
     };
 
+    uploadWithBase64 = async (fileBase64, fileName, fileExtension) => {
+        const fileBuffer = Buffer.from(fileBase64, 'base64');
+
+        if (fileBuffer.length > FILE_SIZE) {
+            throw new MyError('Size file < 20 MB');
+        }
+
+        const uploadParams = {
+            Bucket: BucketName,
+            Body: fileBuffer,
+            Key: `lazo-${Date.now()}-${fileName}${fileExtension}`,
+        };
+
+        if (fileExtension === '.png') {
+            uploadParams.ContentType = 'image/png';
+        }
+        if (fileExtension === '.jpg' || fileExtension === '.jpeg') {
+            uploadParams.ContentType = 'image/jpeg';
+        }
+        if (fileExtension === '.mp3') {
+            uploadParams.ContentType = 'video/mp3';
+        }
+        if (fileExtension === '.mp4') {
+            uploadParams.ContentType = 'video/mp4';
+        }
+
+        try {
+            const { Location } = await s3.upload(uploadParams).promise();
+
+            return Location;
+        } catch {
+            throw new MyError('Upload file Aws S3 failed');
+        }
+    };
+
     deleteFile = async (url, bucketName = BucketName) => {
         const urlSplit = url.split('/');
         const key = urlSplit[urlSplit.length - 1];

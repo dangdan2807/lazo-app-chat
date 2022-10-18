@@ -72,7 +72,7 @@ class MeController {
     }
 
     // [PATCH] /me/avatar/base64
-    async changeAvatarWithBase64(req, res, next) {
+    changeAvatarWithBase64 = async (req, res, next) => {
         const { _id } = req;
 
         try {
@@ -85,6 +85,25 @@ class MeController {
             await redisDb.set(_id, { ...cachedUser, avatar });
 
             return res.status(201).json({ avatar });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [PATCH] /me/cover-image/base64
+    changeCoverImageWithBase64 = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            const coverImage = await meService.changeCoverImageWithBase64(
+                _id,
+                req.body
+            );
+
+            const cachedUser = await redisDb.get(_id);
+            await redisDb.set(_id, { ...cachedUser, coverImage });
+
+            return res.status(201).json({ coverImage });
         } catch (err) {
             next(err);
         }

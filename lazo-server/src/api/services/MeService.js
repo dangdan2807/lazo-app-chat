@@ -55,7 +55,7 @@ class MeService {
         return coverImageUrl;
     }
 
-    async changeAvatarWithBase64(_id, fileInfo) {
+    changeAvatarWithBase64 = async (_id, fileInfo) => {
         messageValidate.validateImageWithBase64(fileInfo);
 
         const user = await User.getById(_id);
@@ -71,6 +71,24 @@ class MeService {
         await User.updateOne({ _id }, { avatar: avatarUrl });
 
         return avatarUrl;
+    }
+
+    changeCoverImageWithBase64 = async (_id, fileInfo) => {
+        messageValidate.validateImageWithBase64(fileInfo);
+
+        const user = await User.getById(_id);
+        const { coverImage } = user;
+        if (coverImage) await awsS3Service.deleteFile(coverImage);
+
+        const { fileName, fileExtension, fileBase64 } = fileInfo;
+        const coverImageUrl = await awsS3Service.uploadWithBase64(
+            fileBase64,
+            fileName,
+            fileExtension
+        );
+        await User.updateOne({ _id }, { coverImage: coverImageUrl });
+
+        return coverImageUrl;
     }
     
     checkImage = (file) => {
