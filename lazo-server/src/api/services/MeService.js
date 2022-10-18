@@ -40,6 +40,19 @@ class MeService {
         return avatarUrl;
     };
 
+    changeCoverImage = async (_id, file) => {
+        this.checkImage(file);
+
+        const user = await User.getById(_id);
+        const { coverImage } = user;
+        if (coverImage) await awsS3Service.deleteFile(coverImage);
+
+        const coverImageUrl = await awsS3Service.uploadFile(file);
+        await User.updateOne({ _id }, { coverImage: coverImageUrl });
+
+        return coverImageUrl;
+    }
+    
     checkImage = (file) => {
         const { mimetype } = file;
 

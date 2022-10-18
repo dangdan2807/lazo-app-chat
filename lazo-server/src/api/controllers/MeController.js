@@ -6,7 +6,7 @@ class MeController {
         this.io = io;
     }
 
-    // [GET] /profile
+    // [GET] /me/profile
     profile = async (req, res, next) => {
         const { _id } = req;
 
@@ -23,7 +23,7 @@ class MeController {
     };
 
 
-    // [PUT] /profile
+    // [PUT] /me/profile
     updateProfile = async (req, res, next) => {
         const { _id } = req;
 
@@ -39,7 +39,7 @@ class MeController {
         }
     }
 
-    // [PATCH] /avatar
+    // [PATCH] /me/avatar
     changeAvatar = async (req, res, next) => {
         const { _id, file } = req;
 
@@ -49,7 +49,23 @@ class MeController {
             const cachedUser = await redisDb.get(_id);
             await redisDb.set(_id, { ...cachedUser, avatar });
 
-            return res.json({ avatar });
+            return res.status(201).json({ avatar });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [PATCH] /me/cover-image
+    changeCoverImage = async (req, res, next) => {
+        const { _id, file } = req;
+
+        try {
+            const coverImage = await meService.changeCoverImage(_id, file);
+
+            const cachedUser = await redisDb.get(_id);
+            await redisDb.set(_id, { ...cachedUser, coverImage });
+
+            return res.status(201).json({ coverImage });
         } catch (err) {
             next(err);
         }

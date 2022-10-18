@@ -12,6 +12,11 @@ const meRouter = (io) => {
         uploadFile.singleUploadMiddleware,
         meController.changeAvatar
     );
+    router.patch(
+        '/cover-image',
+        uploadFile.singleUploadMiddleware,
+        meController.changeCoverImage
+    );
 
     return router;
 };
