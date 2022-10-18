@@ -1,7 +1,6 @@
 const commonUtils = require('../../utils/commonUtils');
 const dateUtils = require('../../utils/dateUtils');
 
-
 const MyError = require('../exception/MyError');
 
 const User = require('../models/User');
@@ -12,7 +11,6 @@ const USERNAME_EXISTS_INVALID = 'Tài khoản đã tồn tại';
 const PASSWORD_INVALID = 'Mật khẩu không hợp lệ, từ 8 đến 50 kí tự';
 const DATE_INVALID = 'Ngày sinh không hợp lệ';
 const GENDER_INVALID = 'Giới tính không hợp lệ';
-
 
 class userValidate {
     validateEmail = (email) => {
@@ -72,6 +70,19 @@ class userValidate {
         ) {
             throw new MyError('Info reset password invalid');
         }
+    };
+
+    validatePhonesList = (phones) => {
+        if (!phones || !Array.isArray(phones)) {
+            throw new MyError('Phones invalid');
+        }
+
+        phones.forEach((phoneEle) => {
+            const { phone, name } = phoneEle;
+            if (!name || !phone || !this.validatePhone(phone)) {
+                throw new MyError('Phones invalid');
+            }
+        });
     };
 
     checkRegistryInfo = async (userInfo) => {

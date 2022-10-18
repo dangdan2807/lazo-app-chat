@@ -12,6 +12,7 @@ const meRouter = (io) => {
     router.patch('/avatar/base64', meController.changeAvatarWithBase64);
     router.patch('/cover-image/base64', meController.changeCoverImageWithBase64);
     router.get('/phone-books', meController.getPhoneBooks);
+    router.post('/phone-books', meController.syncPhoneBooks);
 
     return router;
 };

@@ -54,7 +54,7 @@ class MeService {
         await User.updateOne({ _id }, { coverImage: coverImageUrl });
 
         return coverImageUrl;
-    }
+    };
 
     changeAvatarWithBase64 = async (_id, fileInfo) => {
         messageValidate.validateImageWithBase64(fileInfo);
@@ -64,15 +64,11 @@ class MeService {
         if (avatar) await awsS3Service.deleteFile(avatar);
 
         const { fileName, fileExtension, fileBase64 } = fileInfo;
-        const avatarUrl = await awsS3Service.uploadWithBase64(
-            fileBase64,
-            fileName,
-            fileExtension
-        );
+        const avatarUrl = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
         await User.updateOne({ _id }, { avatar: avatarUrl });
 
         return avatarUrl;
-    }
+    };
 
     changeCoverImageWithBase64 = async (_id, fileInfo) => {
         messageValidate.validateImageWithBase64(fileInfo);
@@ -85,13 +81,13 @@ class MeService {
         const coverImageUrl = await awsS3Service.uploadWithBase64(
             fileBase64,
             fileName,
-            fileExtension
+            fileExtension,
         );
         await User.updateOne({ _id }, { coverImage: coverImageUrl });
 
         return coverImageUrl;
-    }
-    
+    };
+
     checkImage = (file) => {
         const { mimetype } = file;
 
@@ -109,10 +105,7 @@ class MeService {
             const { name, phone } = userPhoneBookEle;
 
             try {
-                const searchUser = await userService.getStatusFriendOfUser(
-                    _id,
-                    phone
-                );
+                const searchUser = await userService.getStatusFriendOfUser(_id, phone);
 
                 result.push({ ...searchUser, isExists: true });
             } catch (err) {
@@ -121,7 +114,13 @@ class MeService {
         }
 
         return result;
-    }
+    };
+
+    syncPhoneBooks = async (_id, phones) => {
+        userValidate.validatePhonesList(phones);
+        await User.getById(_id);
+        await User.updateOne({ _id }, { $set: { phoneBooks: phones } });
+    };
 }
 
 module.exports = new MeService();

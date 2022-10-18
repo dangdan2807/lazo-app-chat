@@ -22,7 +22,6 @@ class MeController {
         }
     };
 
-
     // [PUT] /me/profile
     updateProfile = async (req, res, next) => {
         const { _id } = req;
@@ -32,12 +31,12 @@ class MeController {
             await redisDb.set(_id, await meService.getProfile(_id));
             res.status(201).json({
                 success: true,
-                message: 'Profile updated successfully'
+                message: 'Profile updated successfully',
             });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [PATCH] /me/avatar
     changeAvatar = async (req, res, next) => {
@@ -53,7 +52,7 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [PATCH] /me/cover-image
     changeCoverImage = async (req, res, next) => {
@@ -69,17 +68,14 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [PATCH] /me/avatar/base64
     changeAvatarWithBase64 = async (req, res, next) => {
         const { _id } = req;
 
         try {
-            const avatar = await meService.changeAvatarWithBase64(
-                _id,
-                req.body
-            );
+            const avatar = await meService.changeAvatarWithBase64(_id, req.body);
 
             const cachedUser = await redisDb.get(_id);
             await redisDb.set(_id, { ...cachedUser, avatar });
@@ -88,17 +84,14 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [PATCH] /me/cover-image/base64
     changeCoverImageWithBase64 = async (req, res, next) => {
         const { _id } = req;
 
         try {
-            const coverImage = await meService.changeCoverImageWithBase64(
-                _id,
-                req.body
-            );
+            const coverImage = await meService.changeCoverImageWithBase64(_id, req.body);
 
             const cachedUser = await redisDb.get(_id);
             await redisDb.set(_id, { ...cachedUser, coverImage });
@@ -107,9 +100,9 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
-    // [GET] /phone-books
+    // [GET] /me/phone-books
     getPhoneBooks = async (req, res, next) => {
         const { _id } = req;
 
@@ -120,7 +113,21 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
+
+    // [POST] /me/phone-books
+    syncPhoneBooks = async (req, res, next) => {
+        const { _id } = req;
+        const { phones } = req.body;
+
+        try {
+            await meService.syncPhoneBooks(_id, phones);
+
+            res.status(201).json();
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = MeController;
