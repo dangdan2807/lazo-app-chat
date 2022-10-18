@@ -5,6 +5,8 @@ const User = require('../models/User');
 const userValidate = require('../validate/userValidate');
 const awsS3Service = require('./AwsS3Service');
 
+const messageValidate = require('../validate/messageValidate');
+
 class MeService {
     getProfile = async (_id) => {
         const user = await User.getById(_id);
@@ -51,6 +53,24 @@ class MeService {
         await User.updateOne({ _id }, { coverImage: coverImageUrl });
 
         return coverImageUrl;
+    }
+
+    async changeAvatarWithBase64(_id, fileInfo) {
+        messageValidate.validateImageWithBase64(fileInfo);
+
+        const user = await User.getById(_id);
+        const { avatar } = user;
+        if (avatar) await awsS3Service.deleteFile(avatar);
+
+        const { fileName, fileExtension, fileBase64 } = fileInfo;
+        const avatarUrl = await awsS3Service.uploadWithBase64(
+            fileBase64,
+            fileName,
+            fileExtension
+        );
+        await User.updateOne({ _id }, { avatar: avatarUrl });
+
+        return avatarUrl;
     }
     
     checkImage = (file) => {

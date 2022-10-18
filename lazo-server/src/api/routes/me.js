@@ -17,6 +17,8 @@ const meRouter = (io) => {
         uploadFile.singleUploadMiddleware,
         meController.changeCoverImage
     );
+    router.patch('/avatar/base64', meController.changeAvatarWithBase64);
+
 
     return router;
 };

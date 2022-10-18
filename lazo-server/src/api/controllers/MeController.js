@@ -70,6 +70,25 @@ class MeController {
             next(err);
         }
     }
+
+    // [PATCH] /me/avatar/base64
+    async changeAvatarWithBase64(req, res, next) {
+        const { _id } = req;
+
+        try {
+            const avatar = await meService.changeAvatarWithBase64(
+                _id,
+                req.body
+            );
+
+            const cachedUser = await redisDb.get(_id);
+            await redisDb.set(_id, { ...cachedUser, avatar });
+
+            return res.status(201).json({ avatar });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = MeController;
