@@ -7,8 +7,11 @@ const commonInfoRouter = require('./commonInfo');
 const auth = require('../middleware/auth');
 
 const route = (app, io) => {
+    const meRouter = require('./me')(io);
+    
     app.use('/auth', authRouter);
     app.use('/users', auth, userRouter);
+    app.use('/me', auth, meRouter);
 
     app.use('/classifies', auth, classifyRouter);
     app.use('/common', commonInfoRouter);
