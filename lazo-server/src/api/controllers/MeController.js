@@ -108,6 +108,19 @@ class MeController {
             next(err);
         }
     }
+
+    // [GET] /phone-books
+    getPhoneBooks = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            const phoneBooks = await meService.getPhoneBooks(_id);
+
+            res.status(201).json(phoneBooks);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = MeController;

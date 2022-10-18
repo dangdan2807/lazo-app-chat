@@ -2,9 +2,10 @@ const MyError = require('../exception/MyError');
 
 const User = require('../models/User');
 
-const userValidate = require('../validate/userValidate');
+const userService = require('./UserService');
 const awsS3Service = require('./AwsS3Service');
 
+const userValidate = require('../validate/userValidate');
 const messageValidate = require('../validate/messageValidate');
 
 class MeService {
@@ -98,6 +99,29 @@ class MeService {
             throw new MyError('Image invalid');
         }
     };
+
+    getPhoneBooks = async (_id) => {
+        const user = await User.getById(_id);
+        const { phoneBooks } = user;
+
+        const result = [];
+        for (const userPhoneBookEle of phoneBooks) {
+            const { name, phone } = userPhoneBookEle;
+
+            try {
+                const searchUser = await userService.getStatusFriendOfUser(
+                    _id,
+                    phone
+                );
+
+                result.push({ ...searchUser, isExists: true });
+            } catch (err) {
+                result.push({ name, username: phone, isExists: false });
+            }
+        }
+
+        return result;
+    }
 }
 
 module.exports = new MeService();
