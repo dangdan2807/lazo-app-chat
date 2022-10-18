@@ -1,4 +1,6 @@
 const commonUtils = require('../../utils/commonUtils');
+const dateUtils = require('../../utils/dateUtils');
+
 
 const MyError = require('../exception/MyError');
 
@@ -8,6 +10,9 @@ const NAME_INVALID = 'Tên không hợp lệ';
 const USERNAME_INVALID = 'Tài khoản không hợp lệ';
 const USERNAME_EXISTS_INVALID = 'Tài khoản đã tồn tại';
 const PASSWORD_INVALID = 'Mật khẩu không hợp lệ, từ 8 đến 50 kí tự';
+const DATE_INVALID = 'Ngày sinh không hợp lệ';
+const GENDER_INVALID = 'Giới tính không hợp lệ';
+
 
 class userValidate {
     validateEmail = (email) => {
@@ -93,6 +98,34 @@ class userValidate {
         }
 
         return { name, username, password };
+    };
+
+    checkProfile = (profile) => {
+        const { name, dateOfBirth, gender } = profile;
+
+        const error = {};
+
+        if (!name || !NAME_REGEX.test(name)) {
+            error.name = NAME_INVALID;
+        }
+
+        if (!this.validateDateOfBirth(dateOfBirth)) {
+            error.dateOfBirth = DATE_INVALID;
+        }
+
+        if (gender !== 0 && gender !== 1) {
+            error.gender = GENDER_INVALID;
+        }
+
+        if (!commonUtils.isEmpty(error)) {
+            throw new MyError(error);
+        }
+
+        return {
+            name,
+            dateOfBirth: dateUtils.toDateFromObject(dateOfBirth),
+            gender: new Boolean(gender),
+        };
     };
 }
 

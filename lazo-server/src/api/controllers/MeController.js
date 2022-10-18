@@ -21,6 +21,23 @@ class MeController {
             next(err);
         }
     };
+
+
+    // [PUT] /profile
+    updateProfile = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            await meService.updateProfile(_id, req.body);
+            await redisDb.set(_id, await meService.getProfile(_id));
+            res.status(201).json({
+                success: true,
+                message: 'Profile updated successfully'
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = MeController;

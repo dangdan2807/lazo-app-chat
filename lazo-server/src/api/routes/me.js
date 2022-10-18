@@ -5,6 +5,7 @@ const meRouter = (io) => {
     const meController = new MeController(io);
 
     router.get('/profile', meController.profile);
+    router.put('/profile', meController.updateProfile);
 
     return router;
 };
