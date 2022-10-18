@@ -1,4 +1,5 @@
 const Classify = require('../models/Classify');
+const Member = require('../models/Member');
 const Color = require('../models/Color');
 
 const NotFoundError = require('../exception/NotFoundError');
@@ -103,6 +104,42 @@ class ClassifyService {
         if (deletedCount === 0) {
             throw new NotFoundError('Classify');
         }
+    };
+
+    addConversation = async (userId, classifyId, conversationId) => {
+        await Member.getByConversationIdAndUserId(conversationId, userId);
+
+        if (
+            await Classify.findOne({
+                _id: classifyId,
+                conversationIds: { $in: [conversationId] },
+            })
+        ) {
+            throw new MyError('Conversation exists');
+        }
+
+        const queryResult = await Classify.updateOne(
+            { _id: classifyId, userId },
+            {
+                $push: {
+                    conversationIds: conversationId,
+                },
+            },
+        );
+
+        const { nModified } = queryResult;
+
+        if (nModified === 0) {
+            throw new NotFoundError('Add Conversation Fail');
+        }
+
+        await Classify.updateMany(
+            {
+                _id: { $ne: classifyId },
+                conversationIds: { $in: [conversationId] },
+            },
+            { $pull: { conversationIds: conversationId } },
+        );
     };
 }
 

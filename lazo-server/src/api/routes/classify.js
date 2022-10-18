@@ -6,5 +6,9 @@ router.get('', classifyController.getList);
 router.post('', classifyController.add);
 router.put('/:id', classifyController.update);
 router.delete('/:id', classifyController.delete);
+router.post(
+    '/:id/conversations/:conversationId',
+    classifyController.addConversation
+);
 
 module.exports = router;

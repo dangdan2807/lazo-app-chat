@@ -72,6 +72,23 @@ class ClassifyController {
             next(err);
         }
     }
+
+    // [POST] /classifies/:id/conversations/:conversationId
+    async addConversation(req, res, next) {
+        const { _id } = req;
+        const { id, conversationId } = req.params;
+
+        try {
+            await classifyService.addConversation(_id, id, conversationId);
+
+            res.status(201).json({
+                success: true,
+                message: 'Conversation added successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new ClassifyController();
