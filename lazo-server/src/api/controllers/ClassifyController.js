@@ -89,6 +89,23 @@ class ClassifyController {
             next(err);
         }
     }
+
+    // [DELETE] /classifies/:id/conversations/:id
+    async deleteConversation(req, res, next) {
+        const { _id } = req;
+        const { id, conversationId } = req.params;
+
+        try {
+            await classifyService.deleteConversation(_id, id, conversationId);
+
+            res.status(204).json({
+                success: true,
+                message: 'Conversation deleted successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new ClassifyController();

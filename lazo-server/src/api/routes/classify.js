@@ -10,5 +10,9 @@ router.post(
     '/:id/conversations/:conversationId',
     classifyController.addConversation
 );
+router.delete(
+    '/:id/conversations/:conversationId',
+    classifyController.deleteConversation
+);
 
 module.exports = router;

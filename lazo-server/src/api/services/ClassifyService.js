@@ -141,6 +141,24 @@ class ClassifyService {
             { $pull: { conversationIds: conversationId } },
         );
     };
+
+    deleteConversation = async (userId, classifyId, conversationId) => {
+        await Member.getByConversationIdAndUserId(conversationId, userId);
+        const queryResult = await Classify.updateOne(
+            { _id: classifyId, userId },
+            {
+                $pull: {
+                    conversationIds: conversationId,
+                },
+            },
+        );
+
+        const { nModified } = queryResult;
+
+        if (nModified === 0) {
+            throw new NotFoundError('Delete Conversation Fail');
+        }
+    };
 }
 
 module.exports = new ClassifyService();
