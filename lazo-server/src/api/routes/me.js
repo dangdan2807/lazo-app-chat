@@ -13,6 +13,7 @@ const meRouter = (io) => {
     router.patch('/cover-image/base64', meController.changeCoverImageWithBase64);
     router.get('/phone-books', meController.getPhoneBooks);
     router.post('/phone-books', meController.syncPhoneBooks);
+    router.patch('/password', meController.changePassword);
 
     return router;
 };

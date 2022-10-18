@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 const commonUtils = require('../../utils/commonUtils');
 const dateUtils = require('../../utils/dateUtils');
 
@@ -137,6 +139,24 @@ class userValidate {
             dateOfBirth: dateUtils.toDateFromObject(dateOfBirth),
             gender: new Boolean(gender),
         };
+    };
+
+    validateEnterPassword = async (_id, enterPassword) => {
+        const { password } = await User.checkById(_id);
+        const isPasswordMatch = await bcrypt.compare(enterPassword, password);
+        if (!isPasswordMatch) {
+            throw new MyError('Password wrong');
+        }
+    };
+
+    validateChangePassword = (oldPassword, newPassword) => {
+        if (
+            !this.validatePassword(oldPassword) ||
+            !this.validatePassword(newPassword) ||
+            oldPassword == newPassword
+        ) {
+            throw new MyError('Body change password invalid');
+        }
     };
 }
 

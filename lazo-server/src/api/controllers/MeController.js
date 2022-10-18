@@ -123,11 +123,31 @@ class MeController {
         try {
             await meService.syncPhoneBooks(_id, phones);
 
-            res.status(201).json();
+            res.status(201).json({
+                success: true,
+                message: 'Phone books synced successfully',
+            });
         } catch (err) {
             next(err);
         }
     };
+
+    // [PATCH] /me/password
+    changePassword = async (req, res, next) => {
+        const { _id } = req;
+        const { oldPassword, newPassword } = req.body;
+
+        try {
+            await meService.changePassword(_id, oldPassword, newPassword);
+
+            res.status(200).json({
+                success: true,
+                message: 'Password changed successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = MeController;

@@ -8,6 +8,8 @@ const awsS3Service = require('./AwsS3Service');
 const userValidate = require('../validate/userValidate');
 const messageValidate = require('../validate/messageValidate');
 
+const commonUtils = require('../../utils/commonUtils');
+
 class MeService {
     getProfile = async (_id) => {
         const user = await User.getById(_id);
@@ -120,6 +122,14 @@ class MeService {
         userValidate.validatePhonesList(phones);
         await User.getById(_id);
         await User.updateOne({ _id }, { $set: { phoneBooks: phones } });
+    };
+
+    changePassword = async (_id, oldPassword, newPassword) => {
+        userValidate.validateChangePassword(oldPassword, newPassword);
+        await userValidate.validateEnterPassword(_id, oldPassword);
+
+        const hashPassword = await commonUtils.hashPassword(newPassword);
+        await User.updateOne({ _id }, { $set: { password: hashPassword } });
     };
 }
 
