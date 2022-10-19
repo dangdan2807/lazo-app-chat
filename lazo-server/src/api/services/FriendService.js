@@ -1,7 +1,10 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const User = require('../models/User');
 const Friend = require('../models/Friend');
 const FriendRequest = require('../models/FriendRequest');
 
+const userService = require('./UserService');
 const conversationService = require('./ConversationService');
 
 class FriendService {
@@ -73,6 +76,52 @@ class FriendService {
     deleteFriend = async (_id, userId) => {
         // xóa bạn bè
         await Friend.deleteByIds(_id, userId);
+    }
+
+    getListInvites = async (_id) => {
+        const users = await FriendRequest.aggregate([
+            { $match: { receiverId: ObjectId(_id) } },
+            { $project: { _id: 0, senderId: 1 } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'senderId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            { $replaceWith: '$user' },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    username: 1,
+                    avatar: 1,
+                    avatarColor: 1,
+                },
+            },
+        ]);
+
+        const usersResult = [];
+
+        for (const userEle of users) {
+            const userTempt = {
+                ...userEle,
+                numberCommonGroup: await userService.getNumberCommonGroup(
+                    _id,
+                    userEle._id
+                ),
+                numberCommonFriend: await userService.getNumberCommonFriend(
+                    _id,
+                    userEle._id
+                ),
+            };
+
+            usersResult.push(userTempt);
+        }
+
+        return usersResult;
     }
 }
 
