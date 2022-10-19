@@ -5,6 +5,7 @@ const friendRouter = (io) => {
     const friendController = new FriendController(io);
 
     router.get('', friendController.getListFriends);
+    router.post('/:userId', friendController.acceptFriend);
     
     return router;
 };
