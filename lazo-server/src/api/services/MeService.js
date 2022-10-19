@@ -4,6 +4,7 @@ const User = require('../models/User');
 
 const userService = require('./UserService');
 const awsS3Service = require('./AwsS3Service');
+const authService = require('./AuthService');
 
 const userValidate = require('../validate/userValidate');
 const messageValidate = require('../validate/messageValidate');
@@ -131,6 +132,20 @@ class MeService {
         const hashPassword = await commonUtils.hashPassword(newPassword);
         await User.updateOne({ _id }, { $set: { password: hashPassword } });
     };
+
+    revokeToken = async (_id, password, source) => {
+        await userValidate.validateEnterPassword(_id, password);
+
+        await User.updateOne(
+            { _id },
+            { $set: { timeRevokeToken: new Date(), refreshTokens: [] } }
+        );
+
+        return await authService.generateAndUpdateAccessTokenAndRefreshToken(
+            _id,
+            source
+        );
+    }
 }
 
 module.exports = new MeService();
