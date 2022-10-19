@@ -114,6 +114,20 @@ class FriendController {
             next(err);
         }
     }
+
+    // [GET] /friends/invites/me
+    getListFriendInvitesWasSend = async (req, res, next) => {
+        const { _id } = req;
+        try {
+            const friendInvites = await friendService.getListInvitesWasSend(
+                _id
+            );
+
+            res.json(friendInvites);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = FriendController;

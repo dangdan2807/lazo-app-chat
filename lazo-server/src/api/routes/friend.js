@@ -9,6 +9,7 @@ const friendRouter = (io) => {
     router.delete('/:userId', friendController.deleteFriend);
     router.get('/invites', friendController.getListFriendInvites);
     router.delete('/invites/:userId', friendController.deleteFriendInvite);
+    router.get('/invites/me', friendController.getListFriendInvitesWasSend);
     
     return router;
 };

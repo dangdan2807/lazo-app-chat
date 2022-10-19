@@ -129,6 +129,55 @@ class FriendService {
     deleteFriendInvite = async (_id, senderId) => {
         await FriendRequest.deleteByIds(senderId, _id);
     }
+
+    getListInvitesWasSend = async (_id) => {
+        // check tồn tại
+        await User.checkById(_id);
+
+        const users = await FriendRequest.aggregate([
+            { $match: { senderId: ObjectId(_id) } },
+            { $project: { _id: 0, receiverId: 1 } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'receiverId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            { $replaceWith: '$user' },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    username: 1,
+                    avatar: 1,
+                    avatarColor: 1,
+                },
+            },
+        ]);
+
+        const usersResult = [];
+
+        for (const userEle of users) {
+            const userTempt = {
+                ...userEle,
+                numberCommonGroup: await userService.getNumberCommonGroup(
+                    _id,
+                    userEle._id
+                ),
+                numberCommonFriend: await userService.getNumberCommonFriend(
+                    _id,
+                    userEle._id
+                ),
+            };
+
+            usersResult.push(userTempt);
+        }
+
+        return usersResult;
+    }
 }
 
 module.exports = new FriendService();
