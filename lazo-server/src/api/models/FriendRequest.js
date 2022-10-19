@@ -35,6 +35,15 @@ friendRequestSchema.statics.checkByIds = async (senderId, receiverId, message = 
     }
 };
 
+friendRequestSchema.statics.deleteByIds = async (senderId, receiverId, message = 'Invite') => {
+    const queryResult = await FriendRequest.deleteOne({ senderId, receiverId });
+
+    const { deletedCount } = queryResult;
+    if (deletedCount === 0) {
+        throw new NotFoundError(message);
+    }
+};
+
 const FriendRequest = mongoose.model('friendRequest', friendRequestSchema);
 
 module.exports = FriendRequest;

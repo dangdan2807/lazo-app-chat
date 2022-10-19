@@ -96,6 +96,24 @@ class FriendController {
             next(err);
         }
     }
+
+    //[DELETE] /friends/invites/:userId
+    deleteFriendInvite = async (req, res, next) => {
+        const { _id } = req;
+        const { userId } = req.params;
+
+        try {
+            await friendService.deleteFriendInvite(_id, userId);
+            this.io.to(userId + '').emit('deleted-friend-invite', _id);
+
+            res.status(204).json({
+                success: true,
+                message: 'Delete friend invite successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = FriendController;

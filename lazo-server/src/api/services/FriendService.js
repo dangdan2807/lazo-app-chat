@@ -7,6 +7,8 @@ const FriendRequest = require('../models/FriendRequest');
 const userService = require('./UserService');
 const conversationService = require('./ConversationService');
 
+const MyError = require('../exception/MyError');
+
 class FriendService {
     getList = async (name, _id) => {
         await User.getById(_id);
@@ -122,6 +124,10 @@ class FriendService {
         }
 
         return usersResult;
+    }
+
+    deleteFriendInvite = async (_id, senderId) => {
+        await FriendRequest.deleteByIds(senderId, _id);
     }
 }
 

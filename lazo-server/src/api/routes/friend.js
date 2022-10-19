@@ -8,6 +8,7 @@ const friendRouter = (io) => {
     router.post('/:userId', friendController.acceptFriend);
     router.delete('/:userId', friendController.deleteFriend);
     router.get('/invites', friendController.getListFriendInvites);
+    router.delete('/invites/:userId', friendController.deleteFriendInvite);
     
     return router;
 };
