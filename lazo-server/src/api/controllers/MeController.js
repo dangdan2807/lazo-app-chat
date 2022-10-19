@@ -4,6 +4,7 @@ const redisDb = require('../../helpers/redis');
 class MeController {
     constructor(io) {
         this.io = io;
+        this.revokeToken = this.revokeToken.bind(this);
     }
 
     // [GET] /me/profile
@@ -147,7 +148,24 @@ class MeController {
         } catch (err) {
             next(err);
         }
-    }
+    };
+
+    // [DELETE] /me/revoke-token
+    revokeToken = async (req, res, next) => {
+        const { _id } = req;
+        const { password, key } = req.body;
+        const source = req.headers['user-agent'];
+
+        try {
+            const tokenAndRefreshToken = await meService.revokeToken(_id, password, source);
+
+            this.io.to(_id + '').emit('revoke-token', { key });
+
+            res.status(200).json(tokenAndRefreshToken);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = MeController;
