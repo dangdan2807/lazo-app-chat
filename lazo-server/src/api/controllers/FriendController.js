@@ -6,7 +6,10 @@ class FriendController {
     constructor(io) {
         this.io = io;
         this.acceptFriend = this.acceptFriend.bind(this);
+        this.sendFriendInvite = this.sendFriendInvite.bind(this);
         this.deleteFriend = this.deleteFriend.bind(this);
+        this.deleteFriendInvite = this.deleteFriendInvite.bind(this);
+        this.deleteInviteWasSend = this.deleteInviteWasSend.bind(this);
 
     }
 
