@@ -3,6 +3,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/User');
 const Friend = require('../models/Friend');
 const FriendRequest = require('../models/FriendRequest');
+const Conversation = require('../models/Conversation');
 
 const userService = require('./UserService');
 const conversationService = require('./ConversationService');
@@ -194,6 +195,63 @@ class FriendService {
 
     deleteInviteWasSend = async (_id, userId) => {
         await FriendRequest.deleteByIds(_id, userId);
+    };
+
+    getSuggestFriends = async (_id, page, size) => {
+        if (!size || page < 0 || size <= 0) {
+            throw new MyError('Params suggest friend invalid');
+        }
+
+        let friendIds = await Friend.aggregate([
+            { $match: { userIds: { $in: [ObjectId(_id)] } } },
+            { $unwind: '$userIds' },
+            { $match: { userIds: { $ne: ObjectId(_id) } } },
+        ]);
+        friendIds = friendIds.map((ele) => ele.userIds);
+
+        const friendObjectIds = friendIds.map((ele) => ObjectId(ele));
+        const conversations = await Conversation.aggregate([
+            { $match: { type: true, members: { $in: [ObjectId(_id)] } } },
+            {
+                $project: {
+                    _id: 0,
+                    members: 1,
+                },
+            },
+            { $unwind: '$members' },
+            {
+                $match: {
+                    members: { $ne: ObjectId(_id), $nin: friendObjectIds },
+                },
+            },
+            {
+                $group: { _id: '$members' },
+            },
+        ]);
+
+        const result = [];
+
+        for (const converEle of conversations) {
+            try {
+                const userTempt = await userService.getStatusFriendOfUserById(_id, converEle._id);
+
+                result.push({
+                    ...userTempt,
+                    total: userTempt.numberCommonGroup + userTempt.numberCommonFriend,
+                });
+            } catch (err) {}
+        }
+
+        const sortResult = result.sort((first, next) => {
+            if (first.total >= next.total) {
+                return -1;
+            }
+            return 1;
+        });
+
+        const start = page * size;
+        const end = start + size;
+        return sortResult.slice(start, end);
     };
 }
 

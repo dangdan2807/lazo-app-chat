@@ -158,11 +158,29 @@ class FriendController {
         try {
             await friendService.deleteInviteWasSend(_id, userId);
             this.io.to(userId + '').emit('deleted-invite-was-send', _id);
-            
+
             res.status(204).json({
                 success: true,
                 message: 'Delete invite was send successfully',
             });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [GET] /friends/suggest
+    getSuggestFriends = async (req, res, next) => {
+        const { _id } = req;
+        const { page = 0, size = 12 } = req.query;
+
+        try {
+            const suggestFriends = await friendService.getSuggestFriends(
+                _id,
+                parseInt(page),
+                parseInt(size)
+            );
+
+            res.status(200).json(suggestFriends);
         } catch (err) {
             next(err);
         }
