@@ -128,6 +128,27 @@ class FriendController {
             next(err);
         }
     }
+
+    // [POST] /friends/invites/me/:userId
+    sendFriendInvite = async (req, res, next) => {
+        const { _id } = req;
+        const { userId } = req.params;
+        try {
+            await friendService.sendFriendInvite(_id, userId);
+
+            const { name, avatar } = await redisDb.get(_id);
+            this.io
+                .to(userId + '')
+                .emit('send-friend-invite', { _id, name, avatar });
+
+            res.status(201).json({
+                success: true,
+                message: 'Send friend invite successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = FriendController;

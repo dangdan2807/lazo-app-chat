@@ -78,7 +78,7 @@ class FriendService {
     deleteFriend = async (_id, userId) => {
         // xóa bạn bè
         await Friend.deleteByIds(_id, userId);
-    }
+    };
 
     getListInvites = async (_id) => {
         const users = await FriendRequest.aggregate([
@@ -110,25 +110,19 @@ class FriendService {
         for (const userEle of users) {
             const userTempt = {
                 ...userEle,
-                numberCommonGroup: await userService.getNumberCommonGroup(
-                    _id,
-                    userEle._id
-                ),
-                numberCommonFriend: await userService.getNumberCommonFriend(
-                    _id,
-                    userEle._id
-                ),
+                numberCommonGroup: await userService.getNumberCommonGroup(_id, userEle._id),
+                numberCommonFriend: await userService.getNumberCommonFriend(_id, userEle._id),
             };
 
             usersResult.push(userTempt);
         }
 
         return usersResult;
-    }
+    };
 
     deleteFriendInvite = async (_id, senderId) => {
         await FriendRequest.deleteByIds(senderId, _id);
-    }
+    };
 
     getListInvitesWasSend = async (_id) => {
         // check tồn tại
@@ -163,21 +157,40 @@ class FriendService {
         for (const userEle of users) {
             const userTempt = {
                 ...userEle,
-                numberCommonGroup: await userService.getNumberCommonGroup(
-                    _id,
-                    userEle._id
-                ),
-                numberCommonFriend: await userService.getNumberCommonFriend(
-                    _id,
-                    userEle._id
-                ),
+                numberCommonGroup: await userService.getNumberCommonGroup(_id, userEle._id),
+                numberCommonFriend: await userService.getNumberCommonFriend(_id, userEle._id),
             };
 
             usersResult.push(userTempt);
         }
 
         return usersResult;
-    }
+    };
+
+    sendFriendInvite = async (_id, userId) => {
+        await User.checkById(_id);
+        await User.checkById(userId);
+
+        // check có bạn bè hay chưa
+        if (await Friend.existsByIds(_id, userId)) {
+            throw new MyError('Friend exists');
+        }
+
+        // check không có lời mời nào
+        if (
+            (await FriendRequest.existsByIds(_id, userId)) ||
+            (await FriendRequest.existsByIds(userId, _id))
+        ) {
+            throw new MyError('Invite exists');
+        }
+
+        const friendRequest = new FriendRequest({
+            senderId: _id,
+            receiverId: userId,
+        });
+
+        await friendRequest.save();
+    };
 }
 
 module.exports = new FriendService();
