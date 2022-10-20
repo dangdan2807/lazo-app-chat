@@ -41,6 +41,19 @@ conversationSchema.statics.existsIndividualConversation = async (userId1, userId
     return null;
 };
 
+conversationSchema.statics.getByIdAndUserId = async (_id, userId, message = 'Conversation') => {
+    const conversation = await Conversation.findOne({
+        _id,
+        members: { $in: [userId] },
+    });
+
+    if (!conversation) {
+        throw new NotFoundError(message);
+    }
+
+    return conversation;
+};
+
 conversationSchema.statics.existsByUserIds = async (_id, userIds, message = 'Conversation') => {
     const conversation = await Conversation.findOne({
         _id,

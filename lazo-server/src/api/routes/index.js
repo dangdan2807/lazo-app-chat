@@ -9,12 +9,14 @@ const auth = require('../middleware/auth');
 const route = (app, io) => {
     const meRouter = require('./me')(io);
     const friendRouter = require('./friend')(io);
+    const messageRouter = require('./message')(io);
     
     app.use('/auth', authRouter);
     app.use('/users', auth, userRouter);
     app.use('/me', auth, meRouter);
     app.use('/friends', auth, friendRouter);
     app.use('/classifies', auth, classifyRouter);
+    app.use('/messages', auth, messageRouter);
     app.use('/common', commonInfoRouter);
 
 };
