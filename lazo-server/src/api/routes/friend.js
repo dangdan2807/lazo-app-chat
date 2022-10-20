@@ -11,6 +11,7 @@ const friendRouter = (io) => {
     router.delete('/invites/:userId', friendController.deleteFriendInvite);
     router.get('/invites/me', friendController.getListFriendInvitesWasSend);
     router.post('/invites/me/:userId', friendController.sendFriendInvite);
+    router.delete('/invites/me/:userId', friendController.deleteInviteWasSend);
     
     return router;
 };

@@ -191,6 +191,10 @@ class FriendService {
 
         await friendRequest.save();
     };
+
+    deleteInviteWasSend = async (_id, userId) => {
+        await FriendRequest.deleteByIds(_id, userId);
+    };
 }
 
 module.exports = new FriendService();
