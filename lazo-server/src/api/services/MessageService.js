@@ -1,5 +1,6 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
+const Channel = require('../models/Channel');
 
 const lastViewService = require('../services/LastViewService');
 
@@ -57,6 +58,44 @@ class MessageService {
             page,
             size,
             totalPages,
+        };
+    };
+
+    async getListByChannelId(channelId, userId, page, size) {
+        if (!channelId || !userId || !size || page < 0 || size <= 0) {
+            throw new ArgumentError();
+        }
+
+        const channel = await Channel.getById(channelId);
+        const { conversationId } = channel;
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        const totalMessages = await Message.countDocuments({
+            channelId,
+            deletedUserIds: {
+                $nin: [userId],
+            },
+        });
+        const { skip, limit, totalPages } = commonUtils.getPagination(page, size, totalMessages);
+
+        const messagesTempt = await Message.getListByChannelIdAndUserId(
+            channelId,
+            userId,
+            skip,
+            limit,
+        );
+        const messages = messagesTempt.map((messageEle) =>
+            messageUtils.convertMessageOfGroup(messageEle),
+        );
+
+        await lastViewService.updateLastViewOfChannel(conversationId, channelId, userId);
+
+        return {
+            data: messages,
+            page,
+            size,
+            totalPages,
+            conversationId,
         };
     }
 

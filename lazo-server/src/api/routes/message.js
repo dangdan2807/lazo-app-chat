@@ -5,6 +5,7 @@ const messageRouter = (io) => {
     const messageController = new MessageController(io);
 
     router.get('/:conversationId', messageController.getList);
+    router.get('/channel/:channelId', messageController.getListByChannelId);
     
     return router;
 };
