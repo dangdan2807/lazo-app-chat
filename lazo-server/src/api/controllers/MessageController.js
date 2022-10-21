@@ -1,4 +1,5 @@
 const messageService = require('../services/MessageService');
+const MyError = require('../exception/MyError');
 
 class MessageController {
     constructor(io) {
@@ -6,6 +7,7 @@ class MessageController {
         this.getList = this.getList.bind(this);
         this.getListByChannelId = this.getListByChannelId.bind(this);
         this.addText = this.addText.bind(this);
+        this.addFile = this.addFile.bind(this);
     }
 
     // [GET] /messages/:conversationId
@@ -89,7 +91,38 @@ class MessageController {
         }
     };
 
-    // [GET] /:conversationId/files
+    //[POST] /channel/files  tin nhắn dạng file
+    addFile = async (req, res, next) => {
+        const { _id, file } = req;
+        const { type, conversationId, channelId } = req.query;
+
+        try {
+            if (!conversationId || !type) {
+                throw new MyError('Params type or conversationId not exists');
+            }
+
+            const message = await messageService.addFile(
+                file,
+                type,
+                conversationId,
+                channelId,
+                _id,
+            );
+
+            if (channelId) {
+                this.io
+                    .to(conversationId + '')
+                    .emit('new-message-of-channel', conversationId, channelId, message);
+            } else {
+                this.io.to(conversationId + '').emit('new-message', conversationId, message);
+            }
+            res.status(201).json(message);
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [GET] /channel/:conversationId/files
     getListFiles = async (req, res, next) => {
         const { _id } = req;
         const { conversationId } = req.params;

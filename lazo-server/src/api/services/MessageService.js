@@ -3,6 +3,7 @@ const Conversation = require('../models/Conversation');
 const Channel = require('../models/Channel');
 
 const lastViewService = require('../services/LastViewService');
+const awsS3Service = require('../services/AwsS3Service');
 
 const messageValidate = require('../validate/messageValidate');
 
@@ -133,6 +134,35 @@ class MessageService {
         return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
     };
 
+    // send file
+    addFile = async (file, type, conversationId, channelId, userId) => {
+        await messageValidate.validateFileMessage(file, type, conversationId, channelId, userId);
+
+        // upload ảnh
+        const content = await awsS3Service.uploadFile(file);
+
+        const newMessageTempt = {
+            userId,
+            content,
+            type,
+        };
+
+        if (channelId) {
+            newMessageTempt.channelId = channelId;
+        } else {
+            newMessageTempt.conversationId = conversationId;
+        }
+
+        const newMessage = new Message({
+            ...newMessageTempt,
+        });
+
+        // lưu xuống
+        const saveMessage = await newMessage.save();
+
+        return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+    }
+
     updateWhenHasNewMessage = async (saveMessage, conversationId, userId) => {
         const { _id, channelId } = saveMessage;
 
@@ -182,7 +212,7 @@ class MessageService {
         });
 
         return files;
-    }
+    };
 
     getAllFiles = async (conversationId, userId) => {
         await Conversation.getByIdAndUserId(conversationId, userId);

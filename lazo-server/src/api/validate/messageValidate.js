@@ -45,6 +45,50 @@ const messageValidate = {
             await Channel.getByIdAndConversationId(channelId, conversationId);
         }
     },
+
+    validateFileMessage: async (file, type, conversationId, channelId, userId) => {
+        if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
+            throw new MyError('Type only IMAGE, VIDEO, FILE');
+        }
+
+        const { mimetype } = file;
+
+        if (type === 'IMAGE') {
+            if (mimetype !== 'image/png' && mimetype !== 'image/jpeg' && mimetype !== 'image/gif') {
+                throw new MyError('Image mimetype invalid');
+            }
+        }
+
+        if (type === 'VIDEO') {
+            if (mimetype !== 'video/mp3' && mimetype !== 'video/mp4') {
+                throw new MyError('Video mimetype invalid');
+            }
+        }
+
+        if (type === 'FILE') {
+            if (
+                mimetype !== 'application/pdf' &&
+                mimetype !== 'application/msword' &&
+                mimetype !==
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+                mimetype !== 'application/vnd.ms-powerpoint' &&
+                mimetype !==
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
+                mimetype !== 'application/vnd.rar' &&
+                mimetype !== 'application/zip'
+            ) {
+                throw new MyError('File mimetype invalid');
+            }
+        }
+
+        // check có conversation
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        if (channelId) {
+            await Channel.getByIdAndConversationId(channelId, conversationId);
+        }
+    },
+
     validateImageWithBase64(fileInfo) {
         const { fileName, fileExtension, fileBase64 } = fileInfo;
 
