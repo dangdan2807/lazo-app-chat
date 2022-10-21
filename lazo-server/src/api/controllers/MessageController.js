@@ -186,6 +186,29 @@ class MessageController {
         }
     }
 
+    // [POST] /:id/reacts/:type
+    addReaction = async (req, res, next) => {
+        const { _id } = req;
+        const { id, type } = req.params;
+
+        try {
+            const { user, conversationId, channelId } =
+                await messageService.addReaction(id, type, _id);
+
+            this.io.to(conversationId + '').emit('add-reaction', {
+                conversationId,
+                channelId,
+                messageId: id,
+                user,
+                type,
+            });
+
+            res.status(201).json();
+        } catch (err) {
+            next(err);
+        }
+    }
+
     // [GET] /channel/:conversationId/files
     getListFiles = async (req, res, next) => {
         const { _id } = req;

@@ -1,6 +1,7 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const Channel = require('../models/Channel');
+const User = require('../models/User');
 
 const lastViewService = require('../services/LastViewService');
 const awsS3Service = require('../services/AwsS3Service');
@@ -253,7 +254,59 @@ class MessageService {
         }
 
         await Message.updateOne({ _id }, { $push: { deletedUserIds: userId } });
-    }
+    };
+
+    // thả reaction
+    // check xem userId có trong group chứa tin nhắn này không
+    addReaction = async (_id, type, userId) => {
+        const numberType = parseInt(type);
+        if (numberType < 1 || numberType > 6) {
+            throw new MyError('Reaction type invalid');
+        }
+
+        const message = await Message.getById(_id);
+        const { isDeleted, deletedUserIds, reacts, conversationId, channelId } = message;
+
+        // nếu tin nhắn đã xóa
+        if (isDeleted || deletedUserIds.includes(userId)) {
+            throw new MyError('Message was deleted');
+        }
+
+        // tìm react thả bởi user
+        const reactIndex = reacts.findIndex((reactEle) => reactEle.userId == userId);
+
+        const reactTempt = [...reacts];
+        // không tìm thấy
+        if (reactIndex === -1) {
+            reactTempt.push({ userId, type });
+        } else {
+            reactTempt[reactIndex] = { userId, type };
+        }
+
+        await Message.updateOne(
+            { _id },
+            {
+                $set: {
+                    reacts: reactTempt,
+                },
+            },
+        );
+        const user = await User.getSummaryById(userId);
+
+        let conversationTempt = conversationId;
+        if (channelId) {
+            const channel = await Channel.getById(channelId);
+            conversationTempt = channel.conversationId;
+        }
+
+        return {
+            _id,
+            conversationId: conversationTempt,
+            channelId,
+            user,
+            type,
+        };
+    };
 
     getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
         if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {

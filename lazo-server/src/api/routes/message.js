@@ -17,6 +17,7 @@ const messageRouter = (io) => {
     router.post('/files/base64', messageController.addFileWithBase64);
     router.delete('/:id', messageController.deleteById);
     router.delete('/:id/only', messageController.deleteOnlyMeById);
+    router.post('/:id/reacts/:type', messageController.addReaction);
 
     return router;
 };
