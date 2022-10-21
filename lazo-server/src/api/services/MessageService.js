@@ -61,7 +61,7 @@ class MessageService {
         };
     };
 
-    async getListByChannelId(channelId, userId, page, size) {
+    getListByChannelId = async (channelId, userId, page, size) => {
         if (!channelId || !userId || !size || page < 0 || size <= 0) {
             throw new ArgumentError();
         }

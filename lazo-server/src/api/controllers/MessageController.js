@@ -4,6 +4,8 @@ class MessageController {
     constructor(io) {
         this.io = io;
         this.getList = this.getList.bind(this);
+        this.getListByChannelId = this.getListByChannelId.bind(this);
+        this.addText = this.addText.bind(this);
     }
 
     // [GET] /messages/:conversationId
@@ -17,7 +19,7 @@ class MessageController {
                 conversationId,
                 _id,
                 parseInt(page),
-                parseInt(size)
+                parseInt(size),
             );
 
             this.io.to(conversationId + '').emit('user-last-view', {
@@ -30,7 +32,7 @@ class MessageController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     // [GET] /channel/:channelId
     getListByChannelId = async (req, res, next) => {
@@ -43,7 +45,7 @@ class MessageController {
                 channelId,
                 _id,
                 parseInt(page),
-                parseInt(size)
+                parseInt(size),
             );
 
             this.io.to(result.conversationId + '').emit('user-last-view', {
@@ -62,7 +64,30 @@ class MessageController {
         } catch (error) {
             next(error);
         }
-    }
+    };
+
+    //[POST] /channel/text  tin nhắn dạng text
+    addText = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            const { conversationId } = req.body;
+            const message = await messageService.addText(req.body, _id);
+            const { channelId } = message;
+
+            if (channelId) {
+                this.io
+                    .to(conversationId + '')
+                    .emit('new-message-of-channel', conversationId, channelId, message);
+            } else {
+                this.io.to(conversationId + '').emit('new-message', conversationId, message);
+            }
+
+            res.status(201).json(message);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = MessageController;
