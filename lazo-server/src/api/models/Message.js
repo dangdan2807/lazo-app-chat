@@ -266,6 +266,16 @@ messageSchema.statics.getByIdOfIndividual = async (_id) => {
     throw new NotFoundError('Message');
 };
 
+messageSchema.statics.getById = async (_id, message = 'Message') => {
+    const messageResult = await Message.findById(_id);
+
+    if (!messageResult) {
+        throw new NotFoundError(message);
+    }
+
+    return messageResult;
+};
+
 messageSchema.statics.getByIdAndConversationId = async (
     _id,
     conversationId,

@@ -14,6 +14,8 @@ const messageRouter = (io) => {
         uploadFile.singleUploadMiddleware,
         messageController.addFile
     );
+    router.post('/files/base64', messageController.addFileWithBase64);
+    router.delete('/:id', messageController.deleteById);
 
     return router;
 };

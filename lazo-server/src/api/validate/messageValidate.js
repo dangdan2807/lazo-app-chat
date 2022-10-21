@@ -89,6 +89,50 @@ const messageValidate = {
         }
     },
 
+    validateFileMessageWithBase64: async (fileInfo, type, conversationId, channelId, userId) => {
+        if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
+            throw new MyError('Type only IMAGE, VIDEO, FILE');
+        }
+
+        const { fileExtension } = fileInfo;
+
+        if (type === 'IMAGE') {
+            if (
+                fileExtension !== '.png' &&
+                fileExtension !== '.jpg' &&
+                fileExtension !== '.jpeg' &&
+                fileExtension !== '.gif'
+            ) {
+                throw new MyError('Image extension invalid');
+            }
+        }
+
+        if (type === 'VIDEO') {
+            if (fileExtension !== '.mp3' && fileExtension !== '.mp4') {
+                throw new MyError('Video extension invalid');
+            }
+        }
+
+        if (type === 'FILE') {
+            if (
+                fileExtension !== '.pdf' &&
+                fileExtension !== '.doc' &&
+                fileExtension !== '.docx' &&
+                fileExtension !== '.ppt' &&
+                fileExtension !== '.pptx' &&
+                fileExtension !== '.rar' &&
+                fileExtension !== '.zip'
+            ) {
+                throw new MyError('File extension invalid');
+            }
+        }
+
+        // check có conversation
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        if (channelId) await Channel.getByIdAndConversationId(channelId, conversationId);
+    },
+
     validateImageWithBase64(fileInfo) {
         const { fileName, fileExtension, fileBase64 } = fileInfo;
 

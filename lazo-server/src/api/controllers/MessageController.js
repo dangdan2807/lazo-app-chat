@@ -8,6 +8,7 @@ class MessageController {
         this.getListByChannelId = this.getListByChannelId.bind(this);
         this.addText = this.addText.bind(this);
         this.addFile = this.addFile.bind(this);
+        this.addFileWithBase64 = this.addFileWithBase64.bind(this);
     }
 
     // [GET] /messages/:conversationId
@@ -121,6 +122,53 @@ class MessageController {
             next(err);
         }
     };
+
+    // [POST] /channel/files/base64
+    addFileWithBase64 = async (req, res, next) => {
+        const { _id } = req;
+        const { type, conversationId, channelId } = req.query;
+        try {
+            if (!conversationId || !type) {
+                throw new MyError('Params type or conversationId not exists');
+            }
+            const message = await messageService.addFileWithBase64(
+                req.body,
+                type,
+                conversationId,
+                channelId,
+                _id,
+            );
+
+            if (channelId) {
+                this.io
+                    .to(conversationId + '')
+                    .emit('new-message-of-channel', conversationId, channelId, message);
+            } else {
+                this.io.to(conversationId + '').emit('new-message', conversationId, message);
+            }
+            res.status(201).json(message);
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [DELETE] /channel/:id thu hồi tin nhắn
+    async deleteById(req, res, next) {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            const { conversationId, channelId } =
+                await messageService.deleteById(id, _id);
+
+            this.io
+                .to(conversationId + '')
+                .emit('delete-message', { conversationId, channelId, id });
+            res.status(204).json();
+        } catch (err) {
+            next(err);
+        }
+    }
 
     // [GET] /channel/:conversationId/files
     getListFiles = async (req, res, next) => {

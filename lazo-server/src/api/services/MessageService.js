@@ -161,7 +161,41 @@ class MessageService {
         const saveMessage = await newMessage.save();
 
         return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
-    }
+    };
+
+    // send file base64
+    addFileWithBase64 = async (fileInfo, type, conversationId, channelId, userId) => {
+        await messageValidate.validateFileMessageWithBase64(
+            fileInfo,
+            type,
+            conversationId,
+            channelId,
+            userId,
+        );
+        const { fileBase64, fileName, fileExtension } = fileInfo;
+
+        // upload ảnh
+        const content = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
+
+        const newMessageTempt = {
+            userId,
+            content,
+            type,
+        };
+
+        if (channelId) {
+            newMessageTempt.channelId = channelId;
+        } else {
+            newMessageTempt.conversationId = conversationId;
+        }
+
+        const newMessage = new Message({
+            ...newMessageTempt,
+        });
+        const saveMessage = await newMessage.save();
+
+        return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+    };
 
     updateWhenHasNewMessage = async (saveMessage, conversationId, userId) => {
         const { _id, channelId } = saveMessage;
@@ -177,6 +211,30 @@ class MessageService {
         const { type } = await Conversation.findById(conversationId);
 
         return await this.getById(_id, type);
+    };
+
+    // thu hồi tin nhắn
+    deleteById = async (_id, user) => {
+        const message = await Message.getById(_id);
+        const { userId, conversationId, channelId } = message;
+
+        if (userId != user) {
+            throw new MyError('Not permission delete message');
+        }
+
+        await Message.updateOne({ _id }, { isDeleted: true });
+
+        let conversationTempt = conversationId;
+        if (channelId) {
+            const channel = await Channel.getById(channelId);
+            conversationTempt = channel.conversationId;
+        }
+
+        return {
+            _id,
+            conversationId: conversationTempt,
+            channelId,
+        };
     };
 
     getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
