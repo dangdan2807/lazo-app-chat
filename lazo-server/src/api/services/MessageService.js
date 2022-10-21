@@ -237,6 +237,24 @@ class MessageService {
         };
     };
 
+    // xoá ở phía tôi
+    deleteOnlyMeById = async (_id, userId) => {
+        const message = await Message.getById(_id);
+        const { deletedUserIds, isDeleted } = message;
+
+        // tin nhắn đã thu hồi
+        if (isDeleted) {
+            return;
+        }
+        const index = deletedUserIds.findIndex((userIdEle) => userIdEle == userId);
+        // tìm thấy, thì không thêm vô nữa
+        if (index !== -1) {
+            return;
+        }
+
+        await Message.updateOne({ _id }, { $push: { deletedUserIds: userId } });
+    }
+
     getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
         if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
             throw new MyError('Message type invalid, only image, video, file');

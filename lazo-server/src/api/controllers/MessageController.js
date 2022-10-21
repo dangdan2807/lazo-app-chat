@@ -153,7 +153,7 @@ class MessageController {
     };
 
     // [DELETE] /channel/:id thu hồi tin nhắn
-    async deleteById(req, res, next) {
+    deleteById = async (req, res, next) => {
         const { _id } = req;
         const { id } = req.params;
 
@@ -165,6 +165,22 @@ class MessageController {
                 .to(conversationId + '')
                 .emit('delete-message', { conversationId, channelId, id });
             res.status(204).json();
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [DELETE] /channel/:id/only xóa ở phía tôi
+    deleteOnlyMeById = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            await messageService.deleteOnlyMeById(id, _id);
+
+            res.status(204).json({
+                success: true,
+            });
         } catch (err) {
             next(err);
         }
