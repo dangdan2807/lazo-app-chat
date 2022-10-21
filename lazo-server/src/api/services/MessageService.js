@@ -2,6 +2,7 @@ const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const Channel = require('../models/Channel');
 const User = require('../models/User');
+const Member = require('../models/Member');
 
 const lastViewService = require('../services/LastViewService');
 const awsS3Service = require('../services/AwsS3Service');
@@ -374,6 +375,35 @@ class MessageService {
             videos,
             files,
         };
+    };
+
+    shareMessage = async (messageId, conversationId, userId) => {
+        const message = await Message.getById(messageId);
+        const { content, type } = message;
+        await Conversation.getByIdAndUserId(message.conversationId, userId);
+        const conversationShare = await Conversation.getByIdAndUserId(conversationId, userId);
+
+        if (type === 'NOTIFY' || type === 'VOTE') {
+            throw new MyError('Not share message type is NOTIFY or Vote');
+        }
+
+        const newMessage = new Message({
+            userId,
+            content,
+            type,
+            conversationId,
+        });
+
+        // lưu xuống
+        const saveMessage = await newMessage.save();
+
+        const { _id, createdAt } = saveMessage;
+        // update lại message mới nhất
+        await Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id });
+
+        await Member.updateOne({ conversationId, userId }, { $set: { lastView: createdAt } });
+
+        return await this.getById(_id, conversationShare.type);
     };
 }
 

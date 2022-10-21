@@ -18,6 +18,7 @@ const messageRouter = (io) => {
     router.delete('/:id', messageController.deleteById);
     router.delete('/:id/only', messageController.deleteOnlyMeById);
     router.post('/:id/reacts/:type', messageController.addReaction);
+    router.post('/:id/share/:conversationId', messageController.shareMessage);
 
     return router;
 };

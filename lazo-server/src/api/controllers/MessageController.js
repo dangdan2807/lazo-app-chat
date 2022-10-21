@@ -9,6 +9,9 @@ class MessageController {
         this.addText = this.addText.bind(this);
         this.addFile = this.addFile.bind(this);
         this.addFileWithBase64 = this.addFileWithBase64.bind(this);
+        this.deleteById = this.deleteById.bind(this);
+        this.addReaction = this.addReaction.bind(this);
+        this.shareMessage = this.shareMessage.bind(this);
     }
 
     // [GET] /messages/:conversationId
@@ -158,8 +161,7 @@ class MessageController {
         const { id } = req.params;
 
         try {
-            const { conversationId, channelId } =
-                await messageService.deleteById(id, _id);
+            const { conversationId, channelId } = await messageService.deleteById(id, _id);
 
             this.io
                 .to(conversationId + '')
@@ -168,7 +170,7 @@ class MessageController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [DELETE] /channel/:id/only xóa ở phía tôi
     deleteOnlyMeById = async (req, res, next) => {
@@ -184,7 +186,7 @@ class MessageController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /:id/reacts/:type
     addReaction = async (req, res, next) => {
@@ -192,8 +194,11 @@ class MessageController {
         const { id, type } = req.params;
 
         try {
-            const { user, conversationId, channelId } =
-                await messageService.addReaction(id, type, _id);
+            const { user, conversationId, channelId } = await messageService.addReaction(
+                id,
+                type,
+                _id,
+            );
 
             this.io.to(conversationId + '').emit('add-reaction', {
                 conversationId,
@@ -207,7 +212,7 @@ class MessageController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /channel/:conversationId/files
     getListFiles = async (req, res, next) => {
@@ -231,6 +236,21 @@ class MessageController {
             }
 
             res.status(200).json(files);
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [POST] /:id/share/:conversationId
+    shareMessage = async (req, res, next) => {
+        const { _id } = req;
+        const { id, conversationId } = req.params;
+
+        try {
+            const message = await messageService.shareMessage(id, conversationId, _id);
+
+            this.io.to(conversationId + '').emit('new-message', conversationId, message);
+            res.status(201).json(message);
         } catch (err) {
             next(err);
         }
