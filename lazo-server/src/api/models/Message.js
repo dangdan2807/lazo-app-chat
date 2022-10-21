@@ -690,6 +690,33 @@ messageSchema.statics.getListByConversationIdAndUserIdOfIndividual = async (
     return messages;
 };
 
+messageSchema.statics.getListFilesByTypeAndConversationId = async (
+    type,
+    conversationId,
+    userId,
+    skip,
+    limit,
+) => {
+    const files = await Message.find(
+        {
+            conversationId,
+            type,
+            isDeleted: false,
+            deletedUserIds: { $nin: [userId] },
+        },
+        {
+            userId: 1,
+            content: 1,
+            type: 1,
+            createdAt: 1,
+        },
+    )
+        .skip(skip)
+        .limit(limit);
+
+    return files;
+};
+
 const Message = mongoose.model('message', messageSchema);
 
 module.exports = Message;

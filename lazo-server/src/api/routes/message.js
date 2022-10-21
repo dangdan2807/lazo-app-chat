@@ -7,6 +7,7 @@ const messageRouter = (io) => {
     router.get('/:conversationId', messageController.getList);
     router.get('/channel/:channelId', messageController.getListByChannelId);
     router.post('/text', messageController.addText);
+    router.get('/:conversationId/files', messageController.getListFiles);
     
     return router;
 };

@@ -88,6 +88,33 @@ class MessageController {
             next(err);
         }
     };
+
+    // [GET] /:conversationId/files
+    getListFiles = async (req, res, next) => {
+        const { _id } = req;
+        const { conversationId } = req.params;
+        const { senderId, type = 'ALL', startTime, endTime } = req.query;
+
+        try {
+            let files;
+            if (type === 'ALL') {
+                files = await messageService.getAllFiles(conversationId, _id);
+            } else {
+                files = await messageService.getListFiles(
+                    conversationId,
+                    _id,
+                    type,
+                    senderId,
+                    startTime,
+                    endTime,
+                );
+            }
+
+            res.status(200).json(files);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = MessageController;

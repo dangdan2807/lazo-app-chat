@@ -8,8 +8,10 @@ const messageValidate = require('../validate/messageValidate');
 
 const messageUtils = require('../../utils/messageUtils');
 const commonUtils = require('../../utils/commonUtils');
+const dateUtils = require('../../utils/dateUtils');
 
 const ArgumentError = require('../exception/ArgumentError');
+const MyError = require('../exception/MyError');
 
 class MessageService {
     getList = async (conversationId, userId, page, size) => {
@@ -97,7 +99,7 @@ class MessageService {
             totalPages,
             conversationId,
         };
-    }
+    };
 
     getById = async (_id, type) => {
         if (type) {
@@ -145,6 +147,74 @@ class MessageService {
         const { type } = await Conversation.findById(conversationId);
 
         return await this.getById(_id, type);
+    };
+
+    getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
+        if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
+            throw new MyError('Message type invalid, only image, video, file');
+        }
+
+        const startDate = dateUtils.toDate(startTime);
+        const endDate = dateUtils.toDate(endTime);
+
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        const query = {
+            conversationId,
+            type,
+            isDeleted: false,
+            deletedUserIds: { $nin: [userId] },
+        };
+
+        if (senderId) {
+            query.userId = senderId;
+        }
+
+        if (startDate && endDate) {
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        const files = await Message.find(query, {
+            userId: 1,
+            content: 1,
+            type: 1,
+            createdAt: 1,
+        });
+
+        return files;
+    }
+
+    getAllFiles = async (conversationId, userId) => {
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        const images = await Message.getListFilesByTypeAndConversationId(
+            'IMAGE',
+            conversationId,
+            userId,
+            0,
+            8,
+        );
+
+        const videos = await Message.getListFilesByTypeAndConversationId(
+            'VIDEO',
+            conversationId,
+            userId,
+            0,
+            8,
+        );
+        const files = await Message.getListFilesByTypeAndConversationId(
+            'FILE',
+            conversationId,
+            userId,
+            0,
+            8,
+        );
+
+        return {
+            images,
+            videos,
+            files,
+        };
     };
 }
 
