@@ -5,6 +5,7 @@ const channelRouter = (io) => {
 
     router.get('/:conversationId', channelController.getAllByConversationId);
     router.post('', channelController.add);
+    router.put('', channelController.update);
 
     return router;
 };

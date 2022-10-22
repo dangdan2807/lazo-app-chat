@@ -7,6 +7,10 @@ const messageService = require('../services/MessageService');
 
 const MyError = require('../exception/MyError');
 
+const CREATE_CHANNEL = 'CREATE_CHANNEL';
+const UPDATE_CHANNEL = 'UPDATE_CHANNEL';
+const DELETE_CHANNEL = 'DELETE_CHANNEL';
+
 class ChannelService {
     getAllByConversationId = async (conversationId, userId) => {
         await Conversation.getByIdAndUserId(conversationId, userId);
@@ -86,6 +90,32 @@ class ChannelService {
             message,
         };
     };
+
+    update = async (channelRequest, userId) => {
+        const { _id, name } = channelRequest;
+
+        const channel = await Channel.getById(_id);
+        const { conversationId } = channel;
+
+        await this.validateChannelRequest({ name, conversationId }, userId);
+
+        await Channel.updateOne({ _id }, { $set: { name } });
+
+        const message = await messageService.addNotifyMessage(
+            UPDATE_CHANNEL,
+            conversationId,
+            userId
+        );
+
+        return {
+            channel: {
+                _id,
+                name,
+                conversationId,
+            },
+            message,
+        };
+    }
 
     validateChannelRequest = async (channelRequest, userId) => {
         const { name, conversationId } = channelRequest;

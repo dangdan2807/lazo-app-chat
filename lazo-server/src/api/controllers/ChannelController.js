@@ -4,6 +4,7 @@ class ChannelController {
     constructor(io) {
         this.io = io;
         this.add = this.add.bind(this);
+        this.update = this.update.bind(this);
     }
     
     // [GET] /channels/:conversationId
@@ -39,6 +40,27 @@ class ChannelController {
                 .emit('new-message', conversationId, message);
 
             res.status(201).json({ channel, message });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [UPDATE] /channels
+    update = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            const { channel, message } = await channelService.update(
+                req.body,
+                _id
+            );
+            const { conversationId } = channel;
+            this.io.to(conversationId + '').emit('update-channel', channel);
+            this.io
+                .to(conversationId + '')
+                .emit('new-message', conversationId, message);
+
+            res.status(200).json({ channel, message });
         } catch (err) {
             next(err);
         }
