@@ -405,6 +405,7 @@ class MessageService {
 
         return await this.getById(_id, conversationShare.type);
     };
+
 }
 
 module.exports = new MessageService();
