@@ -406,6 +406,29 @@ class MessageService {
         return await this.getById(_id, conversationShare.type);
     };
 
+    addNotifyMessage = async (content, conversationId, userId) => {
+        // tin nhắn thêm vào group
+        const newMessage = new Message({
+            userId,
+            content,
+            type: 'NOTIFY',
+            conversationId,
+        });
+
+        const { _id, createdAt } = await newMessage.save();
+
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { lastMessageId: _id }
+        );
+
+        await Member.updateOne(
+            { conversationId, userId },
+            { lastView: createdAt }
+        );
+
+        return this.getById(_id, true);
+    }
 }
 
 module.exports = new MessageService();

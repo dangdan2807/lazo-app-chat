@@ -23,6 +23,26 @@ class ChannelController {
         }
     }
 
+    // [POST] /channels
+    add = async (req, res, next) => {
+        const { _id } = req;
+        try {
+            const { channel, message } = await channelService.add(
+                req.body,
+                _id
+            );
+            const { conversationId } = channel;
+
+            this.io.to(conversationId + '').emit('new-channel', channel);
+            this.io
+                .to(conversationId + '')
+                .emit('new-message', conversationId, message);
+
+            res.status(201).json({ channel, message });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ChannelController;

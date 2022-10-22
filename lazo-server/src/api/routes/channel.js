@@ -4,6 +4,7 @@ const channelRouter = (io) => {
     const channelController = new ChannelController(io);
 
     router.get('/:conversationId', channelController.getAllByConversationId);
+    router.post('', channelController.add);
 
     return router;
 };
