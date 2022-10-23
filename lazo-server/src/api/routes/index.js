@@ -11,6 +11,7 @@ const route = (app, io) => {
     const friendRouter = require('./friend')(io);
     const messageRouter = require('./message')(io);
     const channelRouter = require('./channel')(io);
+    const conversationRouter = require('./conversation')(io);
     
     app.use('/auth', authRouter);
     app.use('/users', auth, userRouter);
@@ -18,6 +19,7 @@ const route = (app, io) => {
     app.use('/friends', auth, friendRouter);
     app.use('/classifies', auth, classifyRouter);
     app.use('/messages', auth, messageRouter);
+    app.use('/conversations', auth, conversationRouter);
     app.use('/channels', auth, channelRouter);
     app.use('/common', commonInfoRouter);
 
