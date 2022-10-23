@@ -36,6 +36,21 @@ class ConversationController {
             next(err);
         }
     };
+
+    // [GET] /:id
+    getOne = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            const conversation =
+                await conversationService.getSummaryByIdAndUserId(id, _id);
+
+            res.status(200).json(conversation);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ConversationController;
