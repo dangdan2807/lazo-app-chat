@@ -6,6 +6,7 @@ const channelRouter = (io) => {
     router.get('/:conversationId', channelController.getAllByConversationId);
     router.post('', channelController.add);
     router.put('', channelController.update);
+    router.delete('/:channelId', channelController.deleteById);
 
     return router;
 };

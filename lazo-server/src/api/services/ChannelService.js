@@ -104,7 +104,7 @@ class ChannelService {
         const message = await messageService.addNotifyMessage(
             UPDATE_CHANNEL,
             conversationId,
-            userId
+            userId,
         );
 
         return {
@@ -115,7 +115,37 @@ class ChannelService {
             },
             message,
         };
-    }
+    };
+
+    deleteById = async (channelId, userId) => {
+        const channel = await Channel.getById(channelId);
+        const { conversationId } = channel;
+        const conversation = await Conversation.getById(conversationId);
+
+        if (conversation.leaderId + '' != userId) {
+            throw new MyError('Delete channel fail, not leader');
+        }
+
+        // delete all tin nhắn
+        await Message.deleteMany({ conversationId: channelId });
+        await Channel.deleteOne({ _id: channelId });
+        await Member.updateMany(
+            { conversationId },
+            { $pull: { lastViewOfChannels: { channelId } } },
+        );
+
+        const message = await messageService.addNotifyMessage(
+            DELETE_CHANNEL,
+            conversationId,
+            userId,
+        );
+
+        return {
+            channelId,
+            conversationId,
+            message,
+        };
+    };
 
     validateChannelRequest = async (channelRequest, userId) => {
         const { name, conversationId } = channelRequest;
