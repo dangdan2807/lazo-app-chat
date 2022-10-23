@@ -1,3 +1,5 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const Channel = require('../models/Channel');
 const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
@@ -145,6 +147,54 @@ class ChannelService {
             conversationId,
             message,
         };
+    };
+
+    getLastViewOfMembersInChannel = async (channelId, myId) => {
+        const channel = await Channel.getById(channelId);
+        const { conversationId } = channel;
+        await Conversation.getByIdAndUserId(conversationId, myId);
+
+        let members = await Member.aggregate([
+            {
+                $match: {
+                    conversationId: ObjectId(conversationId),
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $project: {
+                    _id: 0,
+                    user: {
+                        _id: 1,
+                        name: 1,
+                        avatar: 1,
+                    },
+                    lastViewOfChannels: 1,
+                },
+            },
+            { $unwind: '$lastViewOfChannels' },
+            {
+                $match: {
+                    'lastViewOfChannels.channelId': ObjectId(channelId),
+                },
+            },
+        ]);
+
+        members = members.map((ele) => ({
+            user: ele.user,
+            channelId: ele.lastViewOfChannels.channelId,
+            lastView: ele.lastViewOfChannels.lastView,
+        }));
+
+        return members;
     };
 
     validateChannelRequest = async (channelRequest, userId) => {

@@ -5,6 +5,7 @@ class ChannelController {
         this.io = io;
         this.add = this.add.bind(this);
         this.update = this.update.bind(this);
+        this.deleteById = this.deleteById.bind(this);
     }
 
     // [GET] /channels/:conversationId
@@ -60,7 +61,7 @@ class ChannelController {
         try {
             const result = await channelService.deleteById(channelId, _id);
             const { conversationId, message } = result;
-            
+
             this.io.to(conversationId + '').emit('delete-channel', { conversationId, channelId });
             this.io.to(conversationId + '').emit('new-message', conversationId, message);
 
@@ -69,6 +70,24 @@ class ChannelController {
             next(err);
         }
     };
+
+    // [GET] /:channelId/last-view
+    getLastViewOfMembersInChannel = async (req, res, next) => {
+        const { _id } = req;
+        const { channelId } = req.params;
+
+        try {
+            const lastViews =
+                await channelService.getLastViewOfMembersInChannel(
+                    channelId,
+                    _id
+                );
+
+            res.status(200).json(lastViews);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ChannelController;
