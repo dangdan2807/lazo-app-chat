@@ -37,7 +37,7 @@ class ConversationController {
         }
     };
 
-    // [GET] /:id
+    // [GET] /conversations/:id
     getOne = async (req, res, next) => {
         const { _id } = req;
         const { id } = req.params;
@@ -47,6 +47,24 @@ class ConversationController {
                 await conversationService.getSummaryByIdAndUserId(id, _id);
 
             res.status(200).json(conversation);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [GET] /conversations/:classifyId
+    async getListByClassifyId(req, res, next) {
+        const { _id } = req;
+        const { classifyId } = req.params;
+
+        try {
+            const conversations =
+                await conversationService.getListFollowClassify(
+                    classifyId,
+                    _id
+                );
+
+            res.status(200).json(conversations);
         } catch (err) {
             next(err);
         }

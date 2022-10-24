@@ -1,6 +1,7 @@
 const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
+const Classify = require('../models/Classify');
 
 const messageService = require('../services/MessageService');
 const userService = require('./UserService');
@@ -55,6 +56,14 @@ class ConversationService {
 
         return conversationsResult;
     };
+
+    getListFollowClassify = async (classifyId, userId) => {
+        // check user này có phân loại này không
+        const classify = await Classify.getByIdAndUserId(classifyId, userId);
+        const { conversationIds } = classify;
+
+        return await this.getListSummaryByIds(conversationIds, userId);
+    }
 
     // get thông tin tóm tắt của 1 cuộc hộp thoại.
     getSummaryByIdAndUserId = async (_id, userId) => {

@@ -6,7 +6,10 @@ const conversationRouter = (io) => {
 
     router.get('', conversationController.getList);
     router.get('/:id', conversationController.getOne);
-    
+    router.get(
+        '/classifies/:classifyId',
+        conversationController.getListByClassifyId
+    );
     
     return router;
 };
