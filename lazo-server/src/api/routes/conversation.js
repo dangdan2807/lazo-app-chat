@@ -14,7 +14,8 @@ const conversationRouter = (io) => {
         '/individuals/:userId',
         conversationController.createIndividualConversation
     );
-    
+    router.post('/groups', conversationController.createGroupConversation);
+
     return router;
 };
 

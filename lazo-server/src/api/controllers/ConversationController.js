@@ -82,6 +82,32 @@ class ConversationController {
             next(err);
         }
     };
+
+    // [POST] /conversations/groups
+    createGroupConversation = async (req, res, next) => {
+        const { _id } = req;
+        const { name = '', userIds = [] } = req.body;
+
+        try {
+            const conversationId =
+                await conversationService.createGroupConversation(
+                    _id,
+                    name,
+                    userIds.filter((userIdEle) => userIdEle != _id)
+                );
+
+            const userIdsTempt = [_id, ...userIds];
+            userIdsTempt.forEach((userIdEle) =>
+                this.io
+                    .to(userIdEle)
+                    .emit('create-conversation', conversationId)
+            );
+
+            res.status(201).json({ _id: conversationId });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ConversationController;

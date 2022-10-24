@@ -2,6 +2,7 @@ const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const Classify = require('../models/Classify');
+const User = require('../models/User');
 
 const messageService = require('../services/MessageService');
 const userService = require('./UserService');
@@ -23,30 +24,24 @@ class ConversationService {
 
     // type group
     getListGroup = async (name, userId) => {
-        const conversations =
-            await Conversation.getListGroupByNameContainAndUserId(name, userId);
+        const conversations = await Conversation.getListGroupByNameContainAndUserId(name, userId);
 
-        const conversationIds = conversations.map(
-            (conversationEle) => conversationEle._id
-        );
+        const conversationIds = conversations.map((conversationEle) => conversationEle._id);
 
         return await this.getListSummaryByIds(conversationIds, userId);
-    }
+    };
 
     // type individual
     getListIndividual = async (name, userId) => {
-        const conversations =
-            await Conversation.getListIndividualByNameContainAndUserId(
-                name,
-                userId
-            );
-
-        const conversationIds = conversations.map(
-            (conversationEle) => conversationEle._id
+        const conversations = await Conversation.getListIndividualByNameContainAndUserId(
+            name,
+            userId,
         );
 
+        const conversationIds = conversations.map((conversationEle) => conversationEle._id);
+
         return await this.getListSummaryByIds(conversationIds, userId);
-    }
+    };
 
     getListSummaryByIds = async (ids, userId) => {
         const conversationsResult = [];
@@ -64,7 +59,7 @@ class ConversationService {
         const { conversationIds } = classify;
 
         return await this.getListSummaryByIds(conversationIds, userId);
-    }
+    };
 
     // get thông tin tóm tắt của 1 cuộc hộp thoại.
     getSummaryByIdAndUserId = async (_id, userId) => {
@@ -136,6 +131,62 @@ class ConversationService {
         const saveMessage = await messageService.addText(newMessage, userId1);
 
         return { conversationId: _id, isExists, message: saveMessage };
+    };
+
+    // trả id conversation
+    createGroupConversation = async (userIdSelf, name, userIds) => {
+        if (userIds.length <= 0) {
+            throw new MyError('userIds invalid');
+        }
+
+        // kiểm tra user
+        const userIdsTempt = [userIdSelf, ...userIds];
+        await User.checkByIds(userIdsTempt);
+
+        // thêm cuộc trò chuyện
+        const newConversation = new Conversation({
+            name,
+            leaderId: userIdSelf,
+            members: [userIdSelf, ...userIds],
+            type: true,
+        });
+        const saveConversation = await newConversation.save();
+        const { _id } = saveConversation;
+
+        // tạo tin nhắn
+        const newMessage = new Message({
+            userId: userIdSelf,
+            content: 'Đã tạo nhóm',
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+
+        await newMessage.save();
+
+        // lưu danh sách user
+        for (const userId of userIdsTempt) {
+            const member = new Member({
+                conversationId: _id,
+                userId,
+                lastViewOfChannels: [],
+            });
+
+            member.save().then();
+        }
+
+        const memberAddMessage = new Message({
+            userId: userIdSelf,
+            manipulatedUserIds: [...userIds],
+            content: 'Đã thêm vào nhóm',
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+
+        memberAddMessage.save().then((message) => {
+            Conversation.updateOne({ _id }, { lastMessageId: message._id }).then();
+        });
+
+        return _id;
     };
 
     getIndividualConversation = async (_id, userId) => {
