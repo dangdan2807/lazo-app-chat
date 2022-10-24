@@ -96,6 +96,20 @@ userSchema.statics.findByCredentials = async (username, password) => {
     return user;
 };
 
+userSchema.statics.checkByIds = async (ids, message = 'User') => {
+    for (const idEle of ids) {
+        const user = await User.findOne({
+            _id: idEle,
+            isActived: true,
+            isDeleted: false,
+        });
+
+        if (!user) {
+            throw new NotFoundError(message);
+        }
+    }
+};
+
 userSchema.statics.getById = async (_id, message = 'User') => {
     const user = await User.findOne({ _id, isActived: true });
     if (!user) {

@@ -10,6 +10,10 @@ const conversationRouter = (io) => {
         '/classifies/:classifyId',
         conversationController.getListByClassifyId
     );
+    router.post(
+        '/individuals/:userId',
+        conversationController.createIndividualConversation
+    );
     
     return router;
 };

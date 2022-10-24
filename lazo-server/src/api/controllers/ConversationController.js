@@ -3,6 +3,7 @@ const conversationService = require('../services/ConversationService');
 class ConversationController {
     constructor(io) {
         this.io = io;
+        this.createIndividualConversation.bind(this);
     }
 
     // [GET] /conversations?name&type
@@ -43,32 +44,44 @@ class ConversationController {
         const { id } = req.params;
 
         try {
-            const conversation =
-                await conversationService.getSummaryByIdAndUserId(id, _id);
+            const conversation = await conversationService.getSummaryByIdAndUserId(id, _id);
 
             res.status(200).json(conversation);
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /conversations/:classifyId
-    async getListByClassifyId(req, res, next) {
+    getListByClassifyId = async (req, res, next) => {
         const { _id } = req;
         const { classifyId } = req.params;
 
         try {
-            const conversations =
-                await conversationService.getListFollowClassify(
-                    classifyId,
-                    _id
-                );
+            const conversations = await conversationService.getListFollowClassify(classifyId, _id);
 
             res.status(200).json(conversations);
         } catch (err) {
             next(err);
         }
-    }
+    };
+
+    // [POST] /conversations/individuals/:userId
+    createIndividualConversation = async (req, res, next) => {
+        const { _id } = req;
+        const { userId } = req.params;
+
+        try {
+            const result = await conversationService.createIndividualConversation(_id, userId);
+
+            if (!result.isExists) {
+                this.io.to(userId + '').emit('create-individual-conversation', result._id);
+            }
+            res.status(201).json(result);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = ConversationController;

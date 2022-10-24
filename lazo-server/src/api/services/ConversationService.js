@@ -8,6 +8,7 @@ const userService = require('./UserService');
 
 const conversationValidate = require('../validate/conversationValidate');
 
+const MyError = require('../exception/MyError');
 const dateUtils = require('../../utils/dateUtils');
 
 class ConversationService {
