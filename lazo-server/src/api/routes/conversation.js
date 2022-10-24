@@ -15,6 +15,7 @@ const conversationRouter = (io) => {
         conversationController.createIndividualConversation
     );
     router.post('/groups', conversationController.createGroupConversation);
+    router.patch('/:id/name', conversationController.rename);
 
     return router;
 };

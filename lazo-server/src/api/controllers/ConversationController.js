@@ -1,9 +1,13 @@
 const conversationService = require('../services/ConversationService');
 
+const MyError = require('../exception/MyError');
+
 class ConversationController {
     constructor(io) {
         this.io = io;
         this.createIndividualConversation.bind(this);
+        this.createGroupConversation = this.createGroupConversation.bind(this);
+        this.rename = this.rename.bind(this);
     }
 
     // [GET] /conversations?name&type
@@ -89,25 +93,48 @@ class ConversationController {
         const { name = '', userIds = [] } = req.body;
 
         try {
-            const conversationId =
-                await conversationService.createGroupConversation(
-                    _id,
-                    name,
-                    userIds.filter((userIdEle) => userIdEle != _id)
-                );
+            const conversationId = await conversationService.createGroupConversation(
+                _id,
+                name,
+                userIds.filter((userIdEle) => userIdEle != _id),
+            );
 
             const userIdsTempt = [_id, ...userIds];
             userIdsTempt.forEach((userIdEle) =>
-                this.io
-                    .to(userIdEle)
-                    .emit('create-conversation', conversationId)
+                this.io.to(userIdEle).emit('create-conversation', conversationId),
             );
 
             res.status(201).json({ _id: conversationId });
         } catch (err) {
             next(err);
         }
-    }
+    };
+
+    //[PATCH]  /conversations/:id/name
+    rename = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+        const { name } = req.body;
+
+        try {
+            if (!name) {
+                throw new MyError('Name invalid');
+            }
+
+            const message = await conversationService.rename(id, name, _id);
+
+            // là group thì bắt sự kiện socket
+            if (message) {
+                this.io.to(id + '').emit('rename-conversation', id, name, message);
+            }
+
+            res.status(200).json({
+                success: true,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = ConversationController;

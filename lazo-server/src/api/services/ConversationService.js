@@ -119,76 +119,6 @@ class ConversationService {
         };
     };
 
-    createIndividualConversationWhenWasFriend = async (userId1, userId2) => {
-        const { _id, isExists } = await this.createIndividualConversation(userId1, userId2);
-
-        // tạo message
-        const newMessage = {
-            content: 'Đã là bạn bè',
-            type: 'NOTIFY',
-            conversationId: _id,
-        };
-        const saveMessage = await messageService.addText(newMessage, userId1);
-
-        return { conversationId: _id, isExists, message: saveMessage };
-    };
-
-    // trả id conversation
-    createGroupConversation = async (userIdSelf, name, userIds) => {
-        if (userIds.length <= 0) {
-            throw new MyError('userIds invalid');
-        }
-
-        // kiểm tra user
-        const userIdsTempt = [userIdSelf, ...userIds];
-        await User.checkByIds(userIdsTempt);
-
-        // thêm cuộc trò chuyện
-        const newConversation = new Conversation({
-            name,
-            leaderId: userIdSelf,
-            members: [userIdSelf, ...userIds],
-            type: true,
-        });
-        const saveConversation = await newConversation.save();
-        const { _id } = saveConversation;
-
-        // tạo tin nhắn
-        const newMessage = new Message({
-            userId: userIdSelf,
-            content: 'Đã tạo nhóm',
-            type: 'NOTIFY',
-            conversationId: _id,
-        });
-
-        await newMessage.save();
-
-        // lưu danh sách user
-        for (const userId of userIdsTempt) {
-            const member = new Member({
-                conversationId: _id,
-                userId,
-                lastViewOfChannels: [],
-            });
-
-            member.save().then();
-        }
-
-        const memberAddMessage = new Message({
-            userId: userIdSelf,
-            manipulatedUserIds: [...userIds],
-            content: 'Đã thêm vào nhóm',
-            type: 'NOTIFY',
-            conversationId: _id,
-        });
-
-        memberAddMessage.save().then((message) => {
-            Conversation.updateOne({ _id }, { lastMessageId: message._id }).then();
-        });
-
-        return _id;
-    };
-
     getIndividualConversation = async (_id, userId) => {
         const datas = await Member.aggregate([
             {
@@ -289,6 +219,116 @@ class ConversationService {
 
         return { _id, isExists: false };
     };
+
+    createIndividualConversationWhenWasFriend = async (userId1, userId2) => {
+        const { _id, isExists } = await this.createIndividualConversation(userId1, userId2);
+
+        // tạo message
+        const newMessage = {
+            content: 'Đã là bạn bè',
+            type: 'NOTIFY',
+            conversationId: _id,
+        };
+        const saveMessage = await messageService.addText(newMessage, userId1);
+
+        return { conversationId: _id, isExists, message: saveMessage };
+    };
+
+    // trả id conversation
+    createGroupConversation = async (userIdSelf, name, userIds) => {
+        if (userIds.length <= 0) {
+            throw new MyError('userIds invalid');
+        }
+
+        // kiểm tra user
+        const userIdsTempt = [userIdSelf, ...userIds];
+        await User.checkByIds(userIdsTempt);
+
+        // thêm cuộc trò chuyện
+        const newConversation = new Conversation({
+            name,
+            leaderId: userIdSelf,
+            members: [userIdSelf, ...userIds],
+            type: true,
+        });
+        const saveConversation = await newConversation.save();
+        const { _id } = saveConversation;
+
+        // tạo tin nhắn
+        const newMessage = new Message({
+            userId: userIdSelf,
+            content: 'Đã tạo nhóm',
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+
+        await newMessage.save();
+
+        // lưu danh sách user
+        for (const userId of userIdsTempt) {
+            const member = new Member({
+                conversationId: _id,
+                userId,
+                lastViewOfChannels: [],
+            });
+
+            member.save().then();
+        }
+
+        const memberAddMessage = new Message({
+            userId: userIdSelf,
+            manipulatedUserIds: [...userIds],
+            content: 'Đã thêm vào nhóm',
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+
+        memberAddMessage.save().then((message) => {
+            Conversation.updateOne({ _id }, { lastMessageId: message._id }).then();
+        });
+
+        return _id;
+    };
+
+    rename = async (_id, name, userId) => {
+        const conversation = await Conversation.getByIdAndUserId(_id, userId);
+        const { type } = conversation;
+
+        // group
+        if (type) {
+            // thêm tin nhắn đổi tên
+            const newMessage = new Message({
+                userId,
+                content: `Đã đổi tên nhóm thành <b>"${name}"</b> `,
+                type: 'NOTIFY',
+                conversationId: _id,
+            });
+            const saveMessage = await newMessage.save();
+            // cập nhật tin nhắn mới nhất
+            await Conversation.updateOne(
+                { _id },
+                { name, lastMessageId: saveMessage._id }
+            );
+            // cập nhật lastView thằng đổi
+            await Member.updateOne(
+                { conversationId: _id, userId },
+                { lastView: saveMessage.createdAt }
+            );
+
+            return await messageService.getById(saveMessage._id, true);
+        }
+
+        // cá nhân
+        const { members } = conversation;
+        const otherUserId = members.filter((userIdEle) => userIdEle != userId);
+
+        await Member.updateOne(
+            { conversationId: _id, userId: otherUserId[0] },
+            { name }
+        );
+
+        return;
+    }
 }
 
 module.exports = new ConversationService();
