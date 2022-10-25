@@ -26,6 +26,7 @@ const conversationRouter = (io) => {
         '/:id/avatar/base64',
         conversationController.updateAvatarWithBase64
     );
+    router.delete('/:id/messages', conversationController.deleteAllMessage);
 
     return router;
 };

@@ -1,4 +1,5 @@
 const conversationService = require('../services/ConversationService');
+const messageService = require('../services/MessageService');
 
 const MyError = require('../exception/MyError');
 
@@ -176,6 +177,22 @@ class ConversationController {
                 .emit('update-avatar-conversation', id, avatar, lastMessage);
             this.io.to(id + '').emit('new-message', id, lastMessage);
             res.json({ avatar, lastMessage });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [DELETE] /conversations/:id/messages
+    deleteAllMessage = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            await messageService.deleteAll(id, _id);
+
+            res.status(204).json({
+                success: true,
+            });
         } catch (err) {
             next(err);
         }

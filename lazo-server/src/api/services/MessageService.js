@@ -309,6 +309,15 @@ class MessageService {
         };
     };
 
+    deleteAll = async (conversationId, userId) => {
+        await Member.getByConversationIdAndUserId(conversationId, userId);
+
+        Message.updateMany(
+            { conversationId, deletedUserIds: { $nin: [userId] } },
+            { $push: { deletedUserIds: userId } }
+        ).then();
+    }
+
     getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
         if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
             throw new MyError('Message type invalid, only image, video, file');
