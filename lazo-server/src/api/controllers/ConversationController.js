@@ -6,10 +6,14 @@ const MyError = require('../exception/MyError');
 class ConversationController {
     constructor(io) {
         this.io = io;
-        this.createIndividualConversation.bind(this);
+        this.createIndividualConversation =
+            this.createIndividualConversation.bind(this);
         this.createGroupConversation = this.createGroupConversation.bind(this);
         this.rename = this.rename.bind(this);
+        this.updateAvatar = this.updateAvatar.bind(this);
         this.updateAvatarWithBase64 = this.updateAvatarWithBase64.bind(this);
+        this.deleteById = this.deleteById.bind(this);
+
     }
 
     // [GET] /conversations?name&type
@@ -190,6 +194,23 @@ class ConversationController {
         try {
             await messageService.deleteAll(id, _id);
 
+            res.status(204).json({
+                success: true,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [DELETE] /conversations/:id
+    deleteById = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            await conversationService.deleteById(id, _id);
+
+            this.io.to(id).emit('delete-conversation', id);
             res.status(204).json({
                 success: true,
             });

@@ -1,8 +1,11 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const Classify = require('../models/Classify');
 const User = require('../models/User');
+const Channel = require('../models/Channel');
 
 const messageService = require('../services/MessageService');
 const userService = require('./UserService');
@@ -414,6 +417,21 @@ class ConversationService {
             avatar: avatarUrl,
             lastMessage: await messageService.getById(saveMessage._id, true),
         };
+    };
+
+    deleteById = async (conversationId, userId) => {
+        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+
+        // chỉ leader mới được xóa
+        const { type, leaderId } = conversation;
+        if (!type || leaderId != userId) {
+            throw new MyError('Not permission delete group');
+        }
+
+        await Member.deleteMany({ conversationId });
+        await Message.deleteMany({ conversationId });
+        await Channel.deleteMany({ conversationId });
+        await Conversation.deleteOne({ _id: conversationId });
     };
 }
 
