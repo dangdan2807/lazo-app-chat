@@ -22,6 +22,10 @@ const conversationRouter = (io) => {
         uploadFile.singleUploadMiddleware,
         conversationController.updateAvatar
     );
+    router.patch(
+        '/:id/avatar/base64',
+        conversationController.updateAvatarWithBase64
+    );
 
     return router;
 };

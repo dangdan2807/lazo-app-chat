@@ -9,6 +9,7 @@ const userService = require('./UserService');
 const awsS3Service = require('./AwsS3Service');
 
 const conversationValidate = require('../validate/conversationValidate');
+const messageValidate = require('../validate/messageValidate');
 
 const MyError = require('../exception/MyError');
 const dateUtils = require('../../utils/dateUtils');
@@ -346,6 +347,49 @@ class ConversationService {
         }
 
         const avatarUrl = await awsS3Service.uploadFile(file);
+
+        // thêm tin nhắn đổi tên
+        const newMessage = new Message({
+            userId,
+            content: `Ảnh đại diện nhóm đã thay đổi`,
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+        const saveMessage = await newMessage.save();
+        // cập nhật conversation
+        await Conversation.updateOne(
+            { _id },
+            { avatar: avatarUrl, lastMessageId: saveMessage._id },
+        );
+        // cập nhật lastView thằng đổi
+        await Member.updateOne(
+            { conversationId: _id, userId },
+            { lastView: saveMessage.createdAt },
+        );
+
+        return {
+            avatar: avatarUrl,
+            lastMessage: await messageService.getById(saveMessage._id, true),
+        };
+    };
+
+    // trả về link avatar
+    updateAvatarWithBase64 = async (_id, fileInfo, userId) => {
+        messageValidate.validateImageWithBase64(fileInfo);
+
+        const conversation = await Conversation.getByIdAndUserId(_id, userId);
+        const { type } = conversation;
+
+        // chỉ thay đổi ảnh nhóm
+        if (!type) {
+            throw new MyError('Upload file fail, only for group');
+        }
+
+        const { avatar } = conversation;
+        if (avatar) await awsS3Service.deleteFile(avatar);
+
+        const { fileName, fileExtension, fileBase64 } = fileInfo;
+        const avatarUrl = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
 
         // thêm tin nhắn đổi tên
         const newMessage = new Message({

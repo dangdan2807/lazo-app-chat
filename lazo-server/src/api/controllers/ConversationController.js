@@ -8,6 +8,7 @@ class ConversationController {
         this.createIndividualConversation.bind(this);
         this.createGroupConversation = this.createGroupConversation.bind(this);
         this.rename = this.rename.bind(this);
+        this.updateAvatarWithBase64 = this.updateAvatarWithBase64.bind(this);
     }
 
     // [GET] /conversations?name&type
@@ -136,7 +137,7 @@ class ConversationController {
         }
     };
 
-    //[PATCH] /:id/avatar
+    //[PATCH] /conversations/:id/avatar
     updateAvatar = async (req, res, next) => {
         const { _id, file } = req;
         const { id } = req.params;
@@ -150,8 +151,31 @@ class ConversationController {
                 .emit('update-avatar-conversation', id, avatar, lastMessage);
 
             this.io.to(id + '').emit('new-message', id, lastMessage);
-            
+
             res.status(200).json({ avatar, lastMessage });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    //[PATCH] /conversations/:id/avatar/base64
+    updateAvatarWithBase64 = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            const { avatar, lastMessage } =
+                await conversationService.updateAvatarWithBase64(
+                    id,
+                    req.body,
+                    _id
+                );
+
+            this.io
+                .to(id + '')
+                .emit('update-avatar-conversation', id, avatar, lastMessage);
+            this.io.to(id + '').emit('new-message', id, lastMessage);
+            res.json({ avatar, lastMessage });
         } catch (err) {
             next(err);
         }
