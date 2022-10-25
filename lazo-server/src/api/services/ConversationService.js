@@ -6,6 +6,7 @@ const User = require('../models/User');
 
 const messageService = require('../services/MessageService');
 const userService = require('./UserService');
+const awsS3Service = require('./AwsS3Service');
 
 const conversationValidate = require('../validate/conversationValidate');
 
@@ -305,14 +306,11 @@ class ConversationService {
             });
             const saveMessage = await newMessage.save();
             // cập nhật tin nhắn mới nhất
-            await Conversation.updateOne(
-                { _id },
-                { name, lastMessageId: saveMessage._id }
-            );
+            await Conversation.updateOne({ _id }, { name, lastMessageId: saveMessage._id });
             // cập nhật lastView thằng đổi
             await Member.updateOne(
                 { conversationId: _id, userId },
-                { lastView: saveMessage.createdAt }
+                { lastView: saveMessage.createdAt },
             );
 
             return await messageService.getById(saveMessage._id, true);
@@ -322,13 +320,57 @@ class ConversationService {
         const { members } = conversation;
         const otherUserId = members.filter((userIdEle) => userIdEle != userId);
 
-        await Member.updateOne(
-            { conversationId: _id, userId: otherUserId[0] },
-            { name }
-        );
+        await Member.updateOne({ conversationId: _id, userId: otherUserId[0] }, { name });
 
         return;
-    }
+    };
+
+    // trả về link avatar
+    updateAvatar = async (_id, file, userId) => {
+        const { mimetype } = file;
+        if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+            throw new MyError('Image invalid');
+        }
+
+        const conversation = await Conversation.getByIdAndUserId(_id, userId);
+        const { type } = conversation;
+
+        // chỉ thay đổi ảnh nhóm
+        if (!type) {
+            throw new MyError('Upload file fail, only for group');
+        }
+
+        const { avatar } = conversation;
+        if (avatar) {
+            await awsS3Service.deleteFile(avatar);
+        }
+
+        const avatarUrl = await awsS3Service.uploadFile(file);
+
+        // thêm tin nhắn đổi tên
+        const newMessage = new Message({
+            userId,
+            content: `Ảnh đại diện nhóm đã thay đổi`,
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+        const saveMessage = await newMessage.save();
+        // cập nhật conversation
+        await Conversation.updateOne(
+            { _id },
+            { avatar: avatarUrl, lastMessageId: saveMessage._id },
+        );
+        // cập nhật lastView thằng đổi
+        await Member.updateOne(
+            { conversationId: _id, userId },
+            { lastView: saveMessage.createdAt },
+        );
+
+        return {
+            avatar: avatarUrl,
+            lastMessage: await messageService.getById(saveMessage._id, true),
+        };
+    };
 }
 
 module.exports = new ConversationService();

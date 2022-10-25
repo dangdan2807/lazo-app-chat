@@ -135,6 +135,27 @@ class ConversationController {
             next(err);
         }
     };
+
+    //[PATCH] /:id/avatar
+    updateAvatar = async (req, res, next) => {
+        const { _id, file } = req;
+        const { id } = req.params;
+
+        try {
+            const { avatar, lastMessage } =
+                await conversationService.updateAvatar(id, file, _id);
+
+            this.io
+                .to(id + '')
+                .emit('update-avatar-conversation', id, avatar, lastMessage);
+
+            this.io.to(id + '').emit('new-message', id, lastMessage);
+            
+            res.status(200).json({ avatar, lastMessage });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ConversationController;
