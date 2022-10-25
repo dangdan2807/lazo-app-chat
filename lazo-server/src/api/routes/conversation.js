@@ -1,9 +1,12 @@
 const router = require('express').Router();
 const ConversationController = require('../controllers/ConversationController');
+const MemberController = require('../controllers/MemberController');
+
 const uploadFile = require('../middleware/uploadFile');
 
 const conversationRouter = (io) => {
     const conversationController = new ConversationController(io);
+    const memberController = new MemberController(io);
 
     router.get('', conversationController.getList);
     router.get('/:id', conversationController.getOne);
@@ -29,6 +32,9 @@ const conversationRouter = (io) => {
     router.delete('/:id/messages', conversationController.deleteAllMessage);
     router.delete('/:id', conversationController.deleteById);
 
+    // members
+    router.get('/:id/members', memberController.getList);
+    
     return router;
 };
 

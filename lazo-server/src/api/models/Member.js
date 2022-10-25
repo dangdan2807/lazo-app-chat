@@ -35,6 +35,40 @@ memberSchema.statics.getByConversationIdAndUserId = async (
     return member;
 };
 
+memberSchema.statics.getListInfosByConversationId = async (conversationId) => {
+    const users = await Member.aggregate([
+        { $match: { conversationId: ObjectId(conversationId) } },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user',
+            },
+        },
+        {
+            $unwind: '$user',
+        },
+        {
+            $project: {
+                _id: 0,
+                user: {
+                    _id: 1,
+                    name: 1,
+                    username: 1,
+                    avatar: 1,
+                    avatarColor: 1,
+                },
+            },
+        },
+        {
+            $replaceWith: '$user',
+        },
+    ]);
+
+    return users;
+};
+
 const Member = mongoose.model('member', memberSchema);
 
 module.exports = Member;
