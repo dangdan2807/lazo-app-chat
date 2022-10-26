@@ -229,7 +229,7 @@ class ConversationController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /conversations/:id/last-view
     getLastViewOfMembers = async (req, res, next) => {
@@ -237,14 +237,34 @@ class ConversationController {
         const { id } = req.params;
 
         try {
-            const lastViewOfMembers =
-                await conversationService.getLastViewOfMembers(id, _id);
+            const lastViewOfMembers = await conversationService.getLastViewOfMembers(id, _id);
 
             res.status(200).json(lastViewOfMembers);
         } catch (err) {
             next(err);
         }
-    }
+    };
+
+    // [PATCH] /conversations/:id/join-from-link/:isStatus
+    updateJoinFromLink = async (req, res, next) => {
+        const { _id } = req;
+        const { id, isStatus } = req.params;
+
+        try {
+            if (isStatus !== '0' && isStatus !== '1') {
+                throw new MyError('IsStatus must 0 or 1');
+            }
+
+            await conversationService.updateJoinFromLink(id, isStatus === '1' ? true : false, _id);
+
+            res.status(200).json({
+                success: true,
+                message: 'Update join from link success',
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = ConversationController;

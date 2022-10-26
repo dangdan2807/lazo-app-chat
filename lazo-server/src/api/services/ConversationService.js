@@ -475,6 +475,25 @@ class ConversationService {
 
         return members;
     };
+
+    updateJoinFromLink = async (conversationId, isStatus, myId) => {
+        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+
+        const { type, leaderId, managerIds } = conversation;
+
+        const isManager = managerIds.findIndex((userIdEle) => userIdEle + '' === myId);
+
+        if (!type || (leaderId + '' !== myId && isManager === -1)) {
+            throw new MyError(
+                'Update join from link fail, not is leader, not manager or only conversation group',
+            );
+        }
+
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { $set: { isJoinFromLink: isStatus } },
+        );
+    };
 }
 
 module.exports = new ConversationService();
