@@ -4,6 +4,16 @@ const User = require('../models/User');
 const MyError = require('../exception/MyError');
 
 const memberValidate = {
+    validateLeaveGroup: async (conversationId, userId) => {
+        // check  có trong nhóm không
+        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+        const { type, leaderId } = conversation;
+        // cá nhân hoặc đang là leader không thể out nhóm
+        if (!type || leaderId == userId) {
+            throw new MyError("Cant't leave group");
+        }
+    },
+
     validateAddMember: async (conversationId, userId, newUserIds) => {
         if (newUserIds.length <= 0) {
             throw new MyError('User must > 0');

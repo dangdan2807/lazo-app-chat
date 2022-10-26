@@ -5,6 +5,7 @@ const Message = require('../models/Message');
 const memberValidate = require('../validate/memberValidate');
 const messageService = require('../services/MessageService');
 
+const GROUP_LEAVE_MESSAGE = 'Đã rời khỏi nhóm';
 const MEMBER_ADD_MESSAGE = 'Đã thêm vào nhóm';
 
 class MemberService {
@@ -14,6 +15,33 @@ class MemberService {
         const users = await Member.getListInfosByConversationId(conversationId);
         return users;
     };
+
+    // rời nhóm
+    leaveGroup = async (conversationId, userId) => {
+        await memberValidate.validateLeaveGroup(conversationId, userId);
+
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { $pull: { members: userId, managerIds: userId } }
+        );
+        await Member.deleteOne({ conversationId, userId });
+
+        // lưu message rời nhóm
+        const newMessage = new Message({
+            userId,
+            content: GROUP_LEAVE_MESSAGE,
+            type: 'NOTIFY',
+            conversationId,
+        });
+        const { _id } = await newMessage.save();
+
+        Conversation.updateOne(
+            { _id: conversationId },
+            { lastMessageId: _id }
+        ).then();
+
+        return await messageService.getById(_id, true);
+    }
 
     // thêm thành viên
     addMembers = async (conversationId, userId, newUserIds) => {

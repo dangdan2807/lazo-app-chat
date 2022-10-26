@@ -2,6 +2,7 @@ const memberService = require('../services/MemberService');
 class MemberController {
     constructor(io) {
         this.io = io;
+        this.leaveGroup = this.leaveGroup.bind(this);
         this.addMember = this.addMember.bind(this);
     }
 
@@ -13,6 +14,25 @@ class MemberController {
             const users = await memberService.getList(id, _id);
 
             res.status(200).json(users);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    leaveGroup = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            const message = await memberService.leaveGroup(id, _id);
+
+            this.io.to(id).emit('new-message', id, message);
+            this.io.to(id).emit('update-member', id);
+
+            res.status(204).json({
+                success: true,
+                message: 'Leave group successfully',
+            });
         } catch (err) {
             next(err);
         }
