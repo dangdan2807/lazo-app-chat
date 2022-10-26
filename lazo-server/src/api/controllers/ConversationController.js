@@ -6,14 +6,12 @@ const MyError = require('../exception/MyError');
 class ConversationController {
     constructor(io) {
         this.io = io;
-        this.createIndividualConversation =
-            this.createIndividualConversation.bind(this);
+        this.createIndividualConversation = this.createIndividualConversation.bind(this);
         this.createGroupConversation = this.createGroupConversation.bind(this);
         this.rename = this.rename.bind(this);
         this.updateAvatar = this.updateAvatar.bind(this);
         this.updateAvatarWithBase64 = this.updateAvatarWithBase64.bind(this);
         this.deleteById = this.deleteById.bind(this);
-
     }
 
     // [GET] /conversations?name&type
@@ -148,12 +146,9 @@ class ConversationController {
         const { id } = req.params;
 
         try {
-            const { avatar, lastMessage } =
-                await conversationService.updateAvatar(id, file, _id);
+            const { avatar, lastMessage } = await conversationService.updateAvatar(id, file, _id);
 
-            this.io
-                .to(id + '')
-                .emit('update-avatar-conversation', id, avatar, lastMessage);
+            this.io.to(id + '').emit('update-avatar-conversation', id, avatar, lastMessage);
 
             this.io.to(id + '').emit('new-message', id, lastMessage);
 
@@ -161,7 +156,7 @@ class ConversationController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     //[PATCH] /conversations/:id/avatar/base64
     updateAvatarWithBase64 = async (req, res, next) => {
@@ -169,22 +164,19 @@ class ConversationController {
         const { id } = req.params;
 
         try {
-            const { avatar, lastMessage } =
-                await conversationService.updateAvatarWithBase64(
-                    id,
-                    req.body,
-                    _id
-                );
+            const { avatar, lastMessage } = await conversationService.updateAvatarWithBase64(
+                id,
+                req.body,
+                _id,
+            );
 
-            this.io
-                .to(id + '')
-                .emit('update-avatar-conversation', id, avatar, lastMessage);
+            this.io.to(id + '').emit('update-avatar-conversation', id, avatar, lastMessage);
             this.io.to(id + '').emit('new-message', id, lastMessage);
             res.json({ avatar, lastMessage });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [DELETE] /conversations/:id/messages
     deleteAllMessage = async (req, res, next) => {
@@ -200,7 +192,7 @@ class ConversationController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [DELETE] /conversations/:id
     deleteById = async (req, res, next) => {
@@ -213,6 +205,26 @@ class ConversationController {
             this.io.to(id).emit('delete-conversation', id);
             res.status(204).json({
                 success: true,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    // [PATCH] /conversations/:id/notify/:isNotify
+    updateConversationNotify = async (req, res, next) => {
+        const { _id } = req;
+        const { id, isNotify } = req.params;
+
+        try {
+            if (!isNotify || (isNotify != '0' && isNotify != '1')) {
+                throw new MyError('Value isNotify only 0 or 1');
+            }
+            await conversationService.updateConversationNotify(id, parseInt(isNotify), _id);
+
+            res.status(200).json({
+                success: true,
+                message: 'Update conversation notify success',
             });
         } catch (err) {
             next(err);

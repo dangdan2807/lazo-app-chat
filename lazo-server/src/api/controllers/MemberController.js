@@ -1,10 +1,12 @@
 const memberService = require('../services/MemberService');
+
 class MemberController {
     constructor(io) {
         this.io = io;
         this.leaveGroup = this.leaveGroup.bind(this);
         this.addMember = this.addMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
+        this.joinConversationFromLink = this.joinConversationFromLink.bind(this);
     }
 
     // [GET] /conversations/:id/members
@@ -78,7 +80,7 @@ class MemberController {
             this.io.to(id).emit('new-message', id, message);
             this.io.to(userId).emit('deleted-group', id);
             this.io.to(id).emit('update-member', id);
-            
+
             res.status(204).json({
                 success: true,
                 message: 'Deleted member successfully',
@@ -94,10 +96,7 @@ class MemberController {
         const { id } = req.params;
 
         try {
-            const message = await memberService.joinConversationFromLink(
-                id,
-                _id
-            );
+            const message = await memberService.joinConversationFromLink(id, _id);
 
             this.io.to(id + '').emit('new-message', id, message);
             this.io.to(_id + '').emit('added-group', id);
@@ -107,7 +106,7 @@ class MemberController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 }
 
 module.exports = MemberController;

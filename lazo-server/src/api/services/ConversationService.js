@@ -433,6 +433,16 @@ class ConversationService {
         await Channel.deleteMany({ conversationId });
         await Conversation.deleteOne({ _id: conversationId });
     };
+
+    updateConversationNotify = async (conversationId, isNotify, userId) => {
+        const member = await Member.getByConversationIdAndUserId(
+            conversationId,
+            userId
+        );
+
+        member.isNotify = isNotify === 1 ? true : false;
+        await member.save();
+    }
 }
 
 module.exports = new ConversationService();

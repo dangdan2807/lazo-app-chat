@@ -41,7 +41,10 @@ const conversationRouter = (io) => {
         '/:id/members/join-from-link',
         memberController.joinConversationFromLink
     );
-    
+    router.patch(
+        '/:id/notify/:isNotify',
+        conversationController.updateConversationNotify
+    );
     return router;
 };
 
