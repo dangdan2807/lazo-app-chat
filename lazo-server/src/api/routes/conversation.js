@@ -36,6 +36,7 @@ const conversationRouter = (io) => {
     router.get('/:id/members', memberController.getList);
     router.post('/:id/members', memberController.addMember);
     router.delete('/:id/members/leave', memberController.leaveGroup);
+    router.delete('/:id/members/:userId', memberController.deleteMember);
     
     return router;
 };

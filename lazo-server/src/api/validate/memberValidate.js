@@ -1,5 +1,6 @@
 const Conversation = require('../models/Conversation');
 const User = require('../models/User');
+const Member = require('../models/Member');
 
 const MyError = require('../exception/MyError');
 
@@ -36,6 +37,33 @@ const memberValidate = {
         });
         if (isExistsNewUsers) {
             throw new MyError('User exists in group');
+        }
+    },
+    validateDeleteMember: async (conversationId, userId, deleteUserId) => {
+        if (userId === deleteUserId) {
+            throw new MyError('Not delete your');
+        }
+        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+
+        // chỉ leader mới được xóa
+        const { type, leaderId, managerIds } = conversation;
+        const isManager = managerIds.findIndex((userIdEle) => userIdEle + '' === userId);
+
+        if (
+            !type ||
+            leaderId + '' == deleteUserId ||
+            (leaderId + '' !== userId && isManager === -1)
+        ) {
+            throw new MyError('Not permission delete member');
+        }
+
+        // check xem deledtedUser có tồn tại trong nhóm
+        const isExistsDeleteUser = await Member.existsByConversationIdAndUserId(
+            conversationId,
+            deleteUserId,
+        );
+        if (!isExistsDeleteUser) {
+            throw new MyError('User not exists in group');
         }
     },
 };
