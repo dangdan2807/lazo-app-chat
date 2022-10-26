@@ -45,6 +45,8 @@ const conversationRouter = (io) => {
         '/:id/notify/:isNotify',
         conversationController.updateConversationNotify
     );
+    router.get('/:id/last-view', conversationController.getLastViewOfMembers);
+
     return router;
 };
 

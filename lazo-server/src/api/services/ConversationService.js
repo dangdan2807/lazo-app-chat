@@ -435,14 +435,46 @@ class ConversationService {
     };
 
     updateConversationNotify = async (conversationId, isNotify, userId) => {
-        const member = await Member.getByConversationIdAndUserId(
-            conversationId,
-            userId
-        );
+        const member = await Member.getByConversationIdAndUserId(conversationId, userId);
 
         member.isNotify = isNotify === 1 ? true : false;
         await member.save();
-    }
+    };
+
+    getLastViewOfMembers = async (conversationId, userId) => {
+        await Member.getByConversationIdAndUserId(conversationId, userId);
+
+        const members = await Member.aggregate([
+            {
+                $match: {
+                    conversationId: ObjectId(conversationId),
+                },
+            },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $project: {
+                    _id: 0,
+                    user: {
+                        _id: 1,
+                        name: 1,
+                        avatar: 1,
+                    },
+                    lastView: 1,
+                },
+            },
+        ]);
+
+        return members;
+    };
 }
 
 module.exports = new ConversationService();

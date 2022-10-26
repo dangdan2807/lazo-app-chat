@@ -230,6 +230,21 @@ class ConversationController {
             next(err);
         }
     }
+
+    // [GET] /conversations/:id/last-view
+    getLastViewOfMembers = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+
+        try {
+            const lastViewOfMembers =
+                await conversationService.getLastViewOfMembers(id, _id);
+
+            res.status(200).json(lastViewOfMembers);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ConversationController;
