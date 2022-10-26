@@ -37,6 +37,10 @@ const conversationRouter = (io) => {
     router.post('/:id/members', memberController.addMember);
     router.delete('/:id/members/leave', memberController.leaveGroup);
     router.delete('/:id/members/:userId', memberController.deleteMember);
+    router.post(
+        '/:id/members/join-from-link',
+        memberController.joinConversationFromLink
+    );
     
     return router;
 };

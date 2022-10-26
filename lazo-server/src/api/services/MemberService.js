@@ -1,3 +1,5 @@
+const MyError = require('../exception/MyError');
+
 const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
@@ -8,6 +10,7 @@ const messageService = require('../services/MessageService');
 const GROUP_LEAVE_MESSAGE = 'Đã rời khỏi nhóm';
 const MEMBER_ADD_MESSAGE = 'Đã thêm vào nhóm';
 const MEMBER_DELETE_MESSAGE = 'Đã xóa ra khỏi nhóm';
+const JOIN_FROM_LINK = 'Tham gia từ link';
 
 class MemberService {
     getList = async (conversationId, userId) => {
@@ -100,6 +103,47 @@ class MemberService {
         Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id }).then();
 
         Member.updateOne({ conversationId, userId }, { lastView: createdAt }).then();
+
+        return await messageService.getById(_id, true);
+    };
+
+    joinConversationFromLink = async (conversationId, myId) => {
+        const conversation = await Conversation.getById(conversationId);
+        if (!conversation.type || !conversation.isJoinFromLink) {
+            throw new MyError('Only group conversation or group not permission join');
+        }
+
+        const isExistsInConversation = await Conversation.findOne({
+            _id: conversationId,
+            members: { $in: [myId] },
+        });
+
+        if (isExistsInConversation) {
+            throw new MyError('Exists in conversation');
+        }
+
+        // add member trong conversation
+        await Conversation.updateOne({ _id: conversationId }, { $push: { members: myId } });
+
+        const member = new Member({
+            conversationId,
+            userId: myId,
+        });
+        await member.save();
+
+        // tin nhắn thêm vào group
+        const newMessage = new Message({
+            userId: myId,
+            content: JOIN_FROM_LINK,
+            type: 'NOTIFY',
+            conversationId,
+        });
+
+        const { _id, createdAt } = await newMessage.save();
+
+        await Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id });
+
+        await Member.updateOne({ conversationId, userId: myId }, { lastView: createdAt });
 
         return await messageService.getById(_id, true);
     };
