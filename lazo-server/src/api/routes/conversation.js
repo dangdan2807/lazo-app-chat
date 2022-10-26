@@ -34,6 +34,7 @@ const conversationRouter = (io) => {
 
     // members
     router.get('/:id/members', memberController.getList);
+    router.post('/:id/members', memberController.addMember);
     
     return router;
 };
