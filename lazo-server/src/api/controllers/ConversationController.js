@@ -265,6 +265,19 @@ class ConversationController {
             next(err);
         }
     };
+
+    // [GET] /:id/summary
+    getConversationSummary = async (req, res, next) => {
+        const { id } = req.params;
+
+        try {
+            const conversationSummary = await conversationService.getConversationSummary(id);
+
+            res.status(200).json(conversationSummary);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 module.exports = ConversationController;

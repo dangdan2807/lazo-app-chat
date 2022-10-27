@@ -32,6 +32,8 @@ const conversationRouter = (io) => {
     router.patch('/:id/notify/:isNotify', conversationController.updateConversationNotify);
     router.get('/:id/last-view', conversationController.getLastViewOfMembers);
     router.patch('/:id/join-from-link/:isStatus', conversationController.updateJoinFromLink);
+    router.get('/:id/summary', conversationController.getConversationSummary);
+
     return router;
 };
 

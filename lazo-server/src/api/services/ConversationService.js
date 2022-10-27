@@ -494,6 +494,43 @@ class ConversationService {
             { $set: { isJoinFromLink: isStatus } },
         );
     };
+
+    getConversationSummary = async (conversationId) => {
+        const conversation = await Conversation.getById(conversationId);
+        const { type, isJoinFromLink } = conversation;
+        if (!type) {
+            throw new MyError('Only conversation group');
+        }
+        if (!isJoinFromLink) {
+            throw new MyError('Conversation not permission join from link');
+        }
+
+        const conversationSummary = await Conversation.aggregate([
+            { $match: { _id: ObjectId(conversationId) } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'users',
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    avatar: 1,
+                    users: {
+                        name: 1,
+                        avatar: 1,
+                        avatarColor: 1,
+                    },
+                },
+            },
+        ]);
+
+        return conversationSummary[0];
+    };
 }
 
 module.exports = new ConversationService();
