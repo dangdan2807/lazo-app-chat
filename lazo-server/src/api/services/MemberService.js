@@ -12,6 +12,7 @@ const MEMBER_ADD_MESSAGE = 'Đã thêm vào nhóm';
 const MEMBER_DELETE_MESSAGE = 'Đã xóa ra khỏi nhóm';
 const JOIN_FROM_LINK = 'Tham gia từ link';
 const ADD_MANAGERS = 'ADD_MANAGERS';
+const DELETE_MANAGERS = 'DELETE_MANAGERS';
 
 class MemberService {
     getList = async (conversationId, userId) => {
@@ -194,6 +195,57 @@ class MemberService {
         return {
             conversationId,
             managerIds: managerIdsTempt,
+            message,
+        };
+    };
+
+    deleteManagersForConversation = async (conversationId, deleteManagerIds, myId) => {
+        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+
+        const { type, leaderId, managerIds } = conversation;
+
+        if (!type || leaderId + '' !== myId) {
+            throw new MyError('Delete managers failed, not is leader or only conversation group');
+        }
+        let managerIdsTempt = [...managerIds];
+        const deleteManagerIdsTempt = [];
+        deleteManagerIds.forEach((userIdEle) => {
+            const index = managerIdsTempt.findIndex((ele) => ele + '' == userIdEle);
+
+            if (index !== -1 && userIdEle != myId) {
+                managerIdsTempt.splice(index, 1);
+                deleteManagerIdsTempt.push(userIdEle);
+            }
+        });
+
+        if (deleteManagerIdsTempt.length === 0) {
+            throw new MyError('Delete managers failed, not is leader or only conversation group');
+        }
+
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { $set: { managerIds: managerIdsTempt } },
+        );
+
+        // tin nhắn thêm vào group
+        const newMessage = new Message({
+            userId: myId,
+            manipulatedUserIds: deleteManagerIdsTempt,
+            content: DELETE_MANAGERS,
+            type: 'NOTIFY',
+            conversationId,
+        });
+        const saveMessage = await newMessage.save();
+
+        const message = await messageService.updateWhenHasNewMessage(
+            saveMessage,
+            conversationId,
+            myId,
+        );
+
+        return {
+            conversationId,
+            deleteManagerIds: deleteManagerIdsTempt,
             message,
         };
     };

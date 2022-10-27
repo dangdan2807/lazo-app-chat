@@ -38,7 +38,11 @@ const conversationRouter = (io) => {
         '/:id/managers',
         conversationController.addManagersForConversation
     );
-    
+    router.delete(
+        '/:id/managers',
+        conversationController.deleteManagersForConversation
+    );
+
     return router;
 };
 

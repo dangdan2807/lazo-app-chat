@@ -297,6 +297,31 @@ class ConversationController {
                 managerIds: result.managerIds,
             });
             this.io.to(id + '').emit('new-message', id, result.message);
+
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [DELETE] /conversations/:id/managers
+    deleteManagersForConversation = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+        const { managerIds } = req.body;
+
+        try {
+            const result = await memberService.deleteManagersForConversation(
+                id,
+                managerIds,
+                _id
+            );
+
+            this.io.to(id + '').emit('delete-managers', {
+                conversationId: id,
+                managerIds: result.deleteManagerIds,
+            });
+            this.io.to(id + '').emit('new-message', id, result.message);
             
             res.status(200).json(result);
         } catch (err) {
