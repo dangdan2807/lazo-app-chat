@@ -11,6 +11,7 @@ const GROUP_LEAVE_MESSAGE = 'Đã rời khỏi nhóm';
 const MEMBER_ADD_MESSAGE = 'Đã thêm vào nhóm';
 const MEMBER_DELETE_MESSAGE = 'Đã xóa ra khỏi nhóm';
 const JOIN_FROM_LINK = 'Tham gia từ link';
+const ADD_MANAGERS = 'ADD_MANAGERS';
 
 class MemberService {
     getList = async (conversationId, userId) => {
@@ -146,6 +147,55 @@ class MemberService {
         await Member.updateOne({ conversationId, userId: myId }, { lastView: createdAt });
 
         return await messageService.getById(_id, true);
+    };
+
+    addManagersForConversation = async (conversationId, newManagerIds, myId) => {
+        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+        const { type, leaderId, managerIds } = conversation;
+
+        if (!type || leaderId + '' !== myId) {
+            throw new MyError('Add managers failed, not is leader or only conversation group');
+        }
+        await Conversation.existsByUserIds(conversationId, newManagerIds);
+        let managerIdsTempt = [];
+        newManagerIds.forEach((userIdEle) => {
+            const index = managerIds.findIndex((ele) => ele + '' == userIdEle);
+
+            if (index === -1 && userIdEle != myId) {
+                managerIdsTempt.push(userIdEle);
+            }
+        });
+
+        if (managerIdsTempt.length === 0) {
+            throw new MyError('Add managers failed, not is leader or only conversation group');
+        }
+
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { $set: { managerIds: [...managerIds, ...managerIdsTempt] } },
+        );
+
+        // tin nhắn thêm vào group
+        const newMessage = new Message({
+            userId: myId,
+            manipulatedUserIds: managerIdsTempt,
+            content: ADD_MANAGERS,
+            type: 'NOTIFY',
+            conversationId,
+        });
+        const saveMessage = await newMessage.save();
+
+        const message = await messageService.updateWhenHasNewMessage(
+            saveMessage,
+            conversationId,
+            myId,
+        );
+
+        return {
+            conversationId,
+            managerIds: managerIdsTempt,
+            message,
+        };
     };
 }
 

@@ -34,6 +34,11 @@ const conversationRouter = (io) => {
     router.patch('/:id/join-from-link/:isStatus', conversationController.updateJoinFromLink);
     router.get('/:id/summary', conversationController.getConversationSummary);
 
+    router.post(
+        '/:id/managers',
+        conversationController.addManagersForConversation
+    );
+    
     return router;
 };
 

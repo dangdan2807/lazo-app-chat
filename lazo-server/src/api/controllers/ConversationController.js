@@ -1,5 +1,6 @@
 const conversationService = require('../services/ConversationService');
 const messageService = require('../services/MessageService');
+const memberService = require('../services/MemberService');
 
 const MyError = require('../exception/MyError');
 
@@ -266,7 +267,7 @@ class ConversationController {
         }
     };
 
-    // [GET] /:id/summary
+    // [GET] /conversations/:id/summary
     getConversationSummary = async (req, res, next) => {
         const { id } = req.params;
 
@@ -278,6 +279,30 @@ class ConversationController {
             next(err);
         }
     };
+
+    // [POST] /conversations/:id/managers
+    addManagersForConversation = async (req, res, next) => {
+        const { _id } = req;
+        const { id } = req.params;
+        const { managerIds } = req.body;
+
+        try {
+            const result = await memberService.addManagersForConversation(
+                id,
+                managerIds,
+                _id
+            );
+            this.io.to(id + '').emit('add-managers', {
+                conversationId: id,
+                managerIds: result.managerIds,
+            });
+            this.io.to(id + '').emit('new-message', id, result.message);
+            
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = ConversationController;
