@@ -21,6 +21,30 @@ class PinMessageController {
             next(err);
         }
     }
+
+    // [POST] /pin-messages/:messageId
+    addPinMessage = async (req, res, next) => {
+        const { _id } = req;
+        const { messageId } = req.params;
+
+        try {
+            const { conversationId, message } = await pinMessageService.add(
+                messageId,
+                _id
+            );
+
+            this.io
+                .to(conversationId + '')
+                .emit('new-message', conversationId, message);
+            this.io
+                .to(conversationId + '')
+                .emit('action-pin-message', conversationId);
+
+            res.status(201).json({ conversationId, message });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = PinMessageController;
