@@ -6,6 +6,7 @@ const pinMessageRouter = (io) => {
 
     router.get('/:conversationId', pinMessageController.getAllPinMessages);
     router.post('/:messageId', pinMessageController.addPinMessage);
+    router.delete('/:messageId', pinMessageController.deletePinMessage);
 
     return router;
 };

@@ -48,6 +48,32 @@ class PinMessageService {
             message: await messageService.updateWhenHasNewMessage(saveMessage, _id, userId),
         };
     };
+
+    delete = async (messageId, userId) => {
+        const conversation = await pinMessageValidate.validateMessage(messageId, userId);
+
+        const { _id, type, pinMessageIds } = conversation;
+
+        if (!type || pinMessageIds.length === 0) {
+            throw new MyError('Pin message only conversation');
+        }
+
+        await Conversation.updateOne({ _id }, { $pull: { pinMessageIds: messageId } });
+
+        const newMessage = new Message({
+            content: 'NOT_PIN_MESSAGE',
+            userId,
+            type: 'NOTIFY',
+            conversationId: _id,
+        });
+
+        const saveMessage = await newMessage.save();
+
+        return {
+            conversationId: _id,
+            message: await messageService.updateWhenHasNewMessage(saveMessage, _id, userId),
+        };
+    };
 }
 
 module.exports = new PinMessageService();
