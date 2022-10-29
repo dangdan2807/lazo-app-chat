@@ -51,6 +51,40 @@ class VoteService {
             totalPages,
         };
     };
+
+    addOptions = async (messageId, optionNames, userId) => {
+        const message = await this.validateVote(messageId, optionNames, userId);
+        const availableOptionNames = message.options.map((optionEle) => optionEle.name);
+        optionNames.forEach((optionNameEle) => {
+            if (
+                !(
+                    !optionNameEle ||
+                    optionNameEle.length === 0 ||
+                    optionNameEle.length > 200 ||
+                    availableOptionNames.includes(optionNameEle)
+                )
+            )
+                message.options.push({ name: optionNameEle, userIds: [] });
+        });
+
+        await message.save();
+    };
+
+    validateVote = async (messageId, optionNames, userId) => {
+        if (!optionNames || optionNames.length === 0) {
+            throw new MyError('Options not empty');
+        }
+
+        const message = await Message.getById(messageId);
+        const { type, conversationId } = message;
+        await Conversation.getByIdAndUserId(conversationId, userId);
+
+        if (type !== 'VOTE') {
+            throw new MyError('Only vote message');
+        }
+
+        return message;
+    };
 }
 
 module.exports = new VoteService();

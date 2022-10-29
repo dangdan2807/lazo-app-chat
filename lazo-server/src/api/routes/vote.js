@@ -6,6 +6,7 @@ const voteRouter = (io) => {
 
     router.get('/:conversationId', voteController.getListVotesByConversationId);
     router.post('', voteController.addVoteMessage);
+    router.post('/:messageId', voteController.addOptions);
 
 
     return router;

@@ -5,6 +5,7 @@ class VoteController {
     constructor(io) {
         this.io = io;
         this.addVoteMessage = this.addVoteMessage.bind(this);
+        this.addOptions = this.addOptions.bind(this);
     }
 
     // [GET] /votes/:conversationId
@@ -21,7 +22,7 @@ class VoteController {
                 _id
             );
 
-            res.json(votes);
+            res.status(200).json(votes);
         } catch (err) {
             next(err);
         }
@@ -40,6 +41,31 @@ class VoteController {
             this.io
                 .to(conversationId + '')
                 .emit('new-message', conversationId, voteMessage);
+
+            res.status(201).json(voteMessage);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [POST] /:messageId
+    addOptions = async (req, res, next) => {
+        const { _id } = req;
+        const { messageId } = req.params;
+        const { options } = req.body;
+
+        try {
+            await voteService.addOptions(
+                messageId,
+                Array.from(new Set(options)),
+                _id
+            );
+
+            const voteMessage = await messageService.getById(messageId, true);
+            const { conversationId } = voteMessage;
+            this.io
+                .to(conversationId + '')
+                .emit('update-vote-message', conversationId, voteMessage);
 
             res.status(201).json(voteMessage);
         } catch (err) {
