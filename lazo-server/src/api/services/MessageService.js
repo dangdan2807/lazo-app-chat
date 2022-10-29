@@ -386,6 +386,41 @@ class MessageService {
         };
     };
 
+    addVoteMessage = async (voteMessageInfo, userId) => {
+        const { content, options, conversationId } =
+            await messageValidate.validateVoteMessage(voteMessageInfo, userId);
+
+        const newMessage = new Message({
+            userId,
+            content,
+            type: 'VOTE',
+            options: options.map((optionNameEle) => {
+                return {
+                    name: optionNameEle,
+                    userIds: [],
+                };
+            }),
+            conversationId,
+        });
+
+        // lưu xuống
+        const saveMessage = await newMessage.save();
+
+        const { _id, createdAt } = saveMessage;
+        // update lại message mới nhất
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { lastMessageId: _id }
+        );
+
+        await Member.updateOne(
+            { conversationId, userId },
+            { $set: { lastView: createdAt } }
+        );
+
+        return await this.getById(_id, true);
+    }
+
     shareMessage = async (messageId, conversationId, userId) => {
         const message = await Message.getById(messageId);
         const { content, type } = message;

@@ -1,4 +1,5 @@
 const voteService = require('../services/VoteService');
+const messageService = require('../services/MessageService');
 
 class VoteController {
     constructor(io) {
@@ -21,6 +22,26 @@ class VoteController {
             );
 
             res.json(votes);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [POST] /votes
+    addVoteMessage = async (req, res, next) => {
+        const { _id } = req;
+
+        try {
+            const voteMessage = await messageService.addVoteMessage(
+                req.body,
+                _id
+            );
+            const { conversationId } = voteMessage;
+            this.io
+                .to(conversationId + '')
+                .emit('new-message', conversationId, voteMessage);
+
+            res.status(201).json(voteMessage);
         } catch (err) {
             next(err);
         }

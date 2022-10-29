@@ -1,4 +1,5 @@
 const MyError = require('../exception/MyError');
+
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const Channel = require('../models/Channel');
@@ -131,6 +132,30 @@ const messageValidate = {
         await Conversation.getByIdAndUserId(conversationId, userId);
 
         if (channelId) await Channel.getByIdAndConversationId(channelId, conversationId);
+    },
+
+    validateVoteMessage: async (voteMessageInfo, userId) => {
+        const { content, options, conversationId } = voteMessageInfo;
+
+        if (!content || content.length > 500) {
+            throw new MyError('Content not empty ');
+        }
+
+        if (!options || options.length < 2) {
+            throw new MyError('Options not empty');
+        }
+
+        const { type } = await Conversation.getByIdAndUserId(conversationId, userId);
+
+        if (!type) {
+            throw new MyError('Only group conversation');
+        }
+
+        return {
+            content,
+            options,
+            conversationId,
+        };
     },
 
     validateImageWithBase64(fileInfo) {
