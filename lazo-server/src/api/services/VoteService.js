@@ -70,6 +70,55 @@ class VoteService {
         await message.save();
     };
 
+    deleteOptions = async (messageId, optionNames, userId) => {
+        const message = await this.validateVote(messageId, optionNames, userId);
+
+        message.options = message.options.filter(
+            (optionEle) => !optionNames.includes(optionEle.name),
+        );
+
+        await message.save();
+    };
+
+    addVoteChoices = async (messageId, optionNames, userId) => {
+        const message = await this.validateVote(messageId, ['1'], userId);
+
+        message.options = message.options.map((optionEle) => {
+            const { name, userIds } = optionEle;
+
+            if (optionNames.includes(name) && !userIds.includes(userId)) {
+                userIds.push(userId);
+            }
+
+            return {
+                name,
+                userIds,
+            };
+        });
+
+        await message.save();
+    };
+
+    deleteVoteChoices = async (messageId, optionNames, userId) => {
+        const message = await this.validateVote(messageId, ['1'], userId);
+
+        message.options = message.options.map((optionEle) => {
+            const { name, userIds } = optionEle;
+
+            const index = userIds.findIndex((userIdEle) => userIdEle == userId);
+            if (optionNames.includes(name) && index !== -1) {
+                userIds.splice(index, 1);
+            }
+
+            return {
+                name,
+                userIds,
+            };
+        });
+
+        await message.save();
+    };
+
     validateVote = async (messageId, optionNames, userId) => {
         if (!optionNames || optionNames.length === 0) {
             throw new MyError('Options not empty');
