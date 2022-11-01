@@ -1,6 +1,7 @@
 const authRouter = require('./auth');
 const userRouter = require('./user');
 const classifyRouter = require('./classify');
+const stickerRouter = require('./sticker');
 
 const commonInfoRouter = require('./commonInfo');
 
@@ -24,6 +25,7 @@ const route = (app, io) => {
     app.use('/conversations', auth, conversationRouter);
     app.use('/pin-messages', auth, pinMessageRouter);
     app.use('/votes', auth, voteRouter);
+    app.use('/stickers', auth, stickerRouter);
     app.use('/channels', auth, channelRouter);
     app.use('/common', commonInfoRouter);
 
