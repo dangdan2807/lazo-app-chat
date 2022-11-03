@@ -2,8 +2,8 @@ const authRouter = require('./auth');
 const userRouter = require('./user');
 const classifyRouter = require('./classify');
 const stickerRouter = require('./sticker');
+const stickerManagerRouter = require('./stickerManager');
 const userManagerRouter = require('./userManager');
-
 const commonInfoRouter = require('./commonInfo');
 
 const auth = require('../middleware/auth');
@@ -29,6 +29,7 @@ const route = (app, io) => {
     app.use('/votes', auth, voteRouter);
     app.use('/stickers', auth, stickerRouter);
     app.use('/channels', auth, channelRouter);
+    app.use('/admin/stickers-manager', auth, adminAuth, stickerManagerRouter);
     app.use('/admin/users-manager', auth, adminAuth, userManagerRouter);
     app.use('/common', commonInfoRouter);
 
