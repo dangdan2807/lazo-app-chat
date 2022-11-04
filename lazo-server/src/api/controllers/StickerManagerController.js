@@ -32,7 +32,7 @@ class StickerManagerController {
         }
     }
 
-    // [DELETE] /:id
+    // [DELETE] /admin/stickers-manager/:id
     deleteStickerGroup = async (req, res, next) => {
         const { id } = req.params;
 
@@ -42,6 +42,37 @@ class StickerManagerController {
             res.status(204).json({
                 success: true,
                 message: 'Sticker group deleted successfully',
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // [POST] /admin/stickers-manager/:id
+    addSticker = async (req, res, next) => {
+        const { file } = req;
+        const { id } = req.params;
+
+        try {
+            const url = await stickerService.addSticker(id, file);
+            await redisDb.set('stickers', await stickerService.getAll());
+            res.status(201).json({ url });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    //[DELETE] /admin/stickers-manager/:id/sticker?url=
+    deleteSticker = async (req, res, next) => {
+        const { id } = req.params;
+        const { url = '' } = req.query;
+
+        try {
+            await stickerService.deleteSticker(id, url);
+            await redisDb.set('stickers', await stickerService.getAll());
+            res.status(204).json({
+                success: true,
+                message: 'Sticker deleted successfully',
             });
         } catch (err) {
             next(err);

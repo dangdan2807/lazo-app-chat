@@ -13,10 +13,10 @@ const route = (app, io) => {
     const meRouter = require('./me')(io);
     const friendRouter = require('./friend')(io);
     const messageRouter = require('./message')(io);
-    const channelRouter = require('./channel')(io);
     const conversationRouter = require('./conversation')(io);
     const pinMessageRouter = require('./pinMessage')(io);
     const voteRouter = require('./vote')(io);
+    const channelRouter = require('./channel')(io);
     
     app.use('/auth', authRouter);
     app.use('/users', auth, userRouter);
