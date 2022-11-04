@@ -69,7 +69,7 @@ function LoginPage(props) {
             <div className="account-wrapper">
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '#a64bf4' }}>Đăng Nhập</Text>
+                        <Text style={{ color: '$purple-light' }}>Đăng Nhập</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">

@@ -129,7 +129,7 @@ function RegistryPage(props) {
             <div className="account-wrapper">
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '#a64bf4' }}>Đăng Ký</Text>
+                        <Text style={{ color: '$purple-zelo' }}>Đăng Ký</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">

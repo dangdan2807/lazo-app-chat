@@ -37,7 +37,7 @@
         height: 40px;
         border: none;
         border-radius: 50px;
-        background: #a64bf4;
+        background: $purple-light;
 
         z-index: -1;
         color: white;
@@ -52,7 +52,7 @@
         text-align: center;
         a {
             margin: 0.5rem 0;
-            color: #a64bf4;
+            color: $purple-light;
         }
     }
 

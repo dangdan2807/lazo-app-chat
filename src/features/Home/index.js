@@ -17,7 +17,6 @@ function Home(props) {
         <Spin size="large" spinning={isLoading}>
             <div className="home_page">
                 <Header data={infoApp} />
-                
             </div>
         </Spin>
     );

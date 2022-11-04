@@ -24,13 +24,13 @@ ul {
     }
 
     &--item:hover {
-        color: $strong-blue;
+        color: $strong-purple;
     }
 }
 
 #sidebar_wrapper {
     height: 100vh;
-    background: #a64bf4;
+    background: $purple-light;
     display: flex;
     flex-direction: column;
     // width: 64px;
@@ -76,11 +76,11 @@ ul {
                 }
             }
             &_item.active {
-                background: #6c349d;
+                background: $strong-purple;
             }
 
             &_item.active:hover {
-                background: #6c349d;
+                background: $strong-purple;
             }
 
             &_item.icon-avatar {
