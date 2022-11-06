@@ -93,11 +93,11 @@
                     box-shadow: none;
                 }
                 .content-message.my-message-bg {
-                    background: $purple-491;
+                    background: $purple-500;
                 }
                 .content-message {
                     background: $white-color;
-                    padding: 1.4rem 1.4rem;
+                    padding: 1rem 1rem;
                     display: flex;
                     flex-direction: column;
 
@@ -147,7 +147,7 @@
                     }
 
                     .reacted-block {
-                        margin-top: 1rem;
+                        // margin-top: 1rem;
                         display: flex;
                         align-items: center;
                         cursor: pointer;
@@ -217,13 +217,13 @@
                     }
 
                     .author-message {
-                        font-size: 1.3rem;
+                        font-size: 1.1rem;
                         color: $normal-text;
                         padding-bottom: 0.4rem;
                     }
 
                     .time-send {
-                        font-size: 1.3rem;
+                        font-size: 1.1rem;
                         color: $thumbnail-text;
                     }
                 }

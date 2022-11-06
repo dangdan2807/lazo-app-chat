@@ -32,97 +32,75 @@ function ModalUpdateProfile({ isVisible, onCancel, onOk, loading }) {
     const { user } = useSelector((state) => state.global);
     const formRef = useRef();
 
-
-
-    // 
+    //
     const [avatar, setAvatar] = useState(null);
     const [coverImg, setCoverImg] = useState(null);
     const [isClear, setIsClear] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const refInitValue = useRef();
 
-
-
-
     const handleGetCoverImg = (coverImg) => {
         setCoverImg(coverImg);
-    }
+    };
 
     const handleGetAvatar = (avatar) => {
         console.log('avatar', avatar);
         setAvatar(avatar);
-    }
-
-
+    };
 
     useEffect(() => {
         if (isVisible) {
-            setIsClear(false)
+            setIsClear(false);
             refInitValue.current = {
                 name: user.name,
                 dateOfBirth: user.dateOfBirth,
-                gender: user.gender
-            }
+                gender: user.gender,
+            };
         }
     }, [isVisible]);
 
-
-
     const checkChangeValue = (value1, value2) => {
         if (value1.name !== value2.name) {
-            return false
+            return false;
         }
         if (value1.dateOfBirth !== value2.dateOfBirth) {
-            return false
+            return false;
         }
         if (value1.gender !== value2.gender) {
-            return false
+            return false;
         }
         return true;
-    }
-
-
-
-
+    };
 
     const handleCancel = () => {
         onCancel(false);
         setIsClear(true);
         setCoverImg(null);
-        setAvatar(null)
+        setAvatar(null);
     };
 
     const handleSubmit = async (values) => {
         setConfirmLoading(true);
 
         try {
-
             if (!checkChangeValue(values, refInitValue.current)) {
                 const { name, dateOfBirth, gender } = values;
                 await meApi.updateProfile(name, dateOfBirth, gender);
-
             }
-
 
             if (coverImg) {
                 const frmData = new FormData();
-                frmData.append('file', coverImg)
+                frmData.append('file', coverImg);
                 const response = await meApi.updateCoverImage(frmData);
-
             }
-
 
             if (avatar) {
                 const frmData = new FormData();
-                frmData.append('file', avatar)
+                frmData.append('file', avatar);
                 const response = await meApi.updateAvatar(frmData);
                 dispatch(setAvatarProfile(response.avatar));
-
-
             }
             setIsClear(true);
-
-
         } catch (error) {
             console.log(error);
         }
@@ -130,10 +108,8 @@ function ModalUpdateProfile({ isVisible, onCancel, onOk, loading }) {
         setConfirmLoading(false);
 
         if (onCancel) {
-            onCancel()
+            onCancel();
         }
-
-
     };
 
     const handleOke = () => {
@@ -150,13 +126,13 @@ function ModalUpdateProfile({ isVisible, onCancel, onOk, loading }) {
             onCancel={handleCancel}
             width={400}
             bodyStyle={{ padding: 0 }}
-            okText='Cập nhật'
-            cancelText='Hủy'
+            okText="Cập nhật"
+            okButtonProps={{shape: 'round'}}
+            cancelText="Hủy"
+            cancelButtonProps={{shape: 'round'}}
             centered
             confirmLoading={confirmLoading}
-
         >
-
             <div className="profile-update_wrapper">
                 <div className="profile-update_img">
                     <div className="profile-update_cover-image">
@@ -230,7 +206,6 @@ function ModalUpdateProfile({ isVisible, onCancel, onOk, loading }) {
                     </Formik>
                 </div>
             </div>
-
         </Modal>
     );
 }

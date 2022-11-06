@@ -29,7 +29,7 @@
         }
         border-radius: 20px;
     }
-    .button-login {
+    .button-custom {
         justify-content: center;
         align-items: center;
         padding: 0 20px;
@@ -37,7 +37,7 @@
         height: 40px;
         border: none;
         border-radius: 50px;
-        background: $purple-light;
+        background: $purple-zelo;
 
         z-index: -1;
         color: white;
@@ -52,7 +52,7 @@
         text-align: center;
         a {
             margin: 0.5rem 0;
-            color: $purple-light;
+            color: $purple-zelo;
         }
     }
 

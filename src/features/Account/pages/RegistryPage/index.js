@@ -129,7 +129,7 @@ function RegistryPage(props) {
             <div className="account-wrapper">
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '$purple-zelo' }}>Đăng Ký</Text>
+                        <Text style={{ color: '#a64bf4' }}>Đăng Ký</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">
@@ -280,7 +280,7 @@ function RegistryPage(props) {
                                                     Xác nhận
                                                 </Button> */}
                                                 <div className='button-container'>
-                                                    <button className='button-login' type='submit'>
+                                                    <button className='button-custom' type='submit'>
                                                         Xác nhận
                                                     </button>
                                                 </div>

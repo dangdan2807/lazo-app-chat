@@ -13,7 +13,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import IMAGE_ACCOUNT_PAGE from 'assets/images/account/account-bg.png';
+import IMAGE_ACCOUNT_PAGE from 'assets/images/account/bg-01.webp';
 
 const { Text, Title } = Typography;
 
@@ -45,7 +45,7 @@ function LoginPage(props) {
                 if (isAdmin) history.push('/admin');
                 else history.push('/chat');
             } else {
-                message.error('hãy xác thực capcha', 5);
+                message.error('Bạn chưa xác thực captcha', 5);
             }
         } catch (error) {
             setError(true);
@@ -69,7 +69,7 @@ function LoginPage(props) {
             <div className="account-wrapper">
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '$purple-light' }}>Đăng Nhập</Text>
+                        <Text style={{ color: '#a64bf4' }}>Đăng Nhập</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">
@@ -146,8 +146,11 @@ function LoginPage(props) {
                                                 >
                                                     Đăng nhập
                                                 </Button> */}
-                                                <div className='button-container'>
-                                                    <button className='button-login' type='submit'>
+                                                <div className="button-container">
+                                                    <button
+                                                        className="button-custom"
+                                                        type="submit"
+                                                    >
                                                         Xác nhận
                                                     </button>
                                                 </div>

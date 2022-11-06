@@ -73,7 +73,7 @@ function UserTable({ usersPage, onDeleteUStatusUpdate }) {
                                 >
                                     {isDeleted
                                         ? 'Kích hoạt'
-                                        : 'Không kích hoạt'}
+                                        : 'Vô hiệu hoá'}
                                 </Popconfirm>
                             </Menu.Item>
                         </Menu>
@@ -81,7 +81,7 @@ function UserTable({ usersPage, onDeleteUStatusUpdate }) {
                     arrow
                 >
                     {isDeleted ? (
-                        <Tag color="red">Không kích hoạt</Tag>
+                        <Tag color="red">Vô hiệu hoá</Tag>
                     ) : (
                         <Tag color="blue">Kích hoạt</Tag>
                     )}

@@ -1,3 +1,9 @@
+@import '../../../../scss/_variables.scss';
+.ant-modal-footer .ant-btn-primary {
+    background-color: $purple-zelo;
+    border-color: $purple-zelo;
+}
+
 .profile-update {
     &_cover-image {
         position: relative;
