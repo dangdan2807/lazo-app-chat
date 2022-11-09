@@ -1,0 +1,104 @@
+[
+    {
+        "_id": {
+            "$oid": "61a9e07212cb26274964b1b3"
+        },
+        "name": "infoweb",
+        "value": {
+            "image": "https://lazo-data-store.s3.ap-southeast-1.amazonaws.com/lazo-1638437348255-web_intro.png",
+            "title": "Dễ sử dụng và là giải pháp hiệu quả trong việc trò chuyện, trao đổi làm việc nhóm ",
+            "desciption": [
+                "Đồng bộ tin nhắn với điện thoại",
+                "Tối ưu cho chat nhóm và trao đổi công việc",
+                "Tích hợp tính năng gợi ý kết bạn",
+                "Dễ dàng trong việc quản lý các cuộc trò chuyện bằng tính năng phân loại"
+            ],
+            "additionalInfo": {
+                "aboutUs": "Đồ án môn học, lấy ý tưởng và tham khảo thử Zalo",
+                "copyright": "©Copy right || @2021"
+            }
+        }
+    },
+    {
+        "_id": {
+            "$oid": "61a9e0d012cb26274964b1c5"
+        },
+        "name": "infoapp",
+        "value": {
+            "title": "Ứng dụng trò chuyện trực tuyến",
+            "linkDownload": "",
+            "image": "https://lazo-data-store.s3.ap-southeast-1.amazonaws.com/lazo-1638433339837-phone.png",
+            "appname": "lazo",
+            "description": "Ứng dụng vô cùng tiện ích trong việc chat nhóm, trao đổi công việc, chia sẻ đa phương tiện"
+        }
+    },
+    {
+        "_id": {
+            "$oid": "61a9e15b12cb26274964b1d9"
+        },
+        "name": "developers",
+        "value": [
+            {
+                "name": "Thành viên 1",
+                "mail": "thanhvien1@demo.com",
+                "github": "https://github.com/thanhvien1",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&usqp=CAU",
+                "id": "1"
+            },
+            {
+                "name": "Thành viên 2",
+                "mail": "thanhvien2@demo.com",
+                "github": "https://github.com/thanhvien2",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&usqp=CAU",
+                "id": "2"
+            },
+            {
+                "name": "Thành viên 3",
+                "mail": "thanhvien3@demo.com",
+                "github": "https://github.com/thanhvien3",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&usqp=CAU",
+                "id": "3"
+            },
+            {
+                "name": "Thành viên 4",
+                "mail": "thanhvien4@demo.com",
+                "github": "https://github.com/thanhvien4",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&usqp=CAU",
+                "id": "4"
+            },
+            {
+                "name": "Thành viên 5",
+                "mail": "thanhvien5@demo.com",
+                "github": "https://github.com/thanhvien5",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&usqp=CAU",
+                "id": "5"
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "61a9e19112cb26274964b1e5"
+        },
+        "name": "features",
+        "value": [
+            {
+                "title": "Chat nhóm",
+                "image": "https://lazo-data-store.s3.ap-southeast-1.amazonaws.com/lazo-1638435371889-inapp-welcome-screen-02.7f8cab265c34128a01a19f3bcd5f327a.jpg",
+                "descrpition": "Tạo cuộc trò chuyện với nhiều thành viên, tiện ích trong việc làm việc nhóm",
+                "id": "1"
+            },
+            {
+                "title": "Giải quyết công việc hiệu quả",
+                "image": "https://lazo-data-store.s3.ap-southeast-1.amazonaws.com/lazo-1638435897181-cong%20viec.jpg",
+                "descrpition": "Giải quyết công việc hiệu quả hơn với các chức năng như ghim tin nhắn, tạo cuộc khảo sát, tạo kênh trò chuyện",
+                "id": "2"
+            },
+            {
+                "title": "Chia sẻ đa phương tiện",
+                "image": "https://lazo-data-store.s3.ap-southeast-1.amazonaws.com/lazo-1638436090819-da%20phuong%20tien.jpg",
+                "descrpition": "Chỉa sẻ hình ảnh, video và một số định dạng file khác như .zip, .rar, .pdf...",
+                "id": "3"
+            }
+        ]
+    }
+]
