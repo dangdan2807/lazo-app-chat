@@ -1,4 +1,7 @@
+const bcrypt = require('bcryptjs');
+
 const commonUtils = require('../../utils/commonUtils');
+const dateUtils = require('../../utils/dateUtils');
 
 const MyError = require('../exception/MyError');
 
@@ -8,6 +11,8 @@ const NAME_INVALID = 'Tên không hợp lệ';
 const USERNAME_INVALID = 'Tài khoản không hợp lệ';
 const USERNAME_EXISTS_INVALID = 'Tài khoản đã tồn tại';
 const PASSWORD_INVALID = 'Mật khẩu không hợp lệ, từ 8 đến 50 kí tự';
+const DATE_INVALID = 'Ngày sinh không hợp lệ';
+const GENDER_INVALID = 'Giới tính không hợp lệ';
 
 class userValidate {
     validateEmail = (email) => {
@@ -69,6 +74,19 @@ class userValidate {
         }
     };
 
+    validatePhonesList = (phones) => {
+        if (!phones || !Array.isArray(phones)) {
+            throw new MyError('Phones invalid');
+        }
+
+        phones.forEach((phoneEle) => {
+            const { phone, name } = phoneEle;
+            if (!name || !phone || !this.validatePhone(phone)) {
+                throw new MyError('Phones invalid');
+            }
+        });
+    };
+
     checkRegistryInfo = async (userInfo) => {
         const { name, username, password } = userInfo;
         const error = {};
@@ -93,6 +111,52 @@ class userValidate {
         }
 
         return { name, username, password };
+    };
+
+    checkProfile = (profile) => {
+        const { name, dateOfBirth, gender } = profile;
+
+        const error = {};
+
+        if (!name || !NAME_REGEX.test(name)) {
+            error.name = NAME_INVALID;
+        }
+
+        if (!this.validateDateOfBirth(dateOfBirth)) {
+            error.dateOfBirth = DATE_INVALID;
+        }
+
+        if (gender !== 0 && gender !== 1) {
+            error.gender = GENDER_INVALID;
+        }
+
+        if (!commonUtils.isEmpty(error)) {
+            throw new MyError(error);
+        }
+
+        return {
+            name,
+            dateOfBirth: dateUtils.toDateFromObject(dateOfBirth),
+            gender: new Boolean(gender),
+        };
+    };
+
+    validateEnterPassword = async (_id, enterPassword) => {
+        const { password } = await User.checkById(_id);
+        const isPasswordMatch = await bcrypt.compare(enterPassword, password);
+        if (!isPasswordMatch) {
+            throw new MyError('Password wrong');
+        }
+    };
+
+    validateChangePassword = (oldPassword, newPassword) => {
+        if (
+            !this.validatePassword(oldPassword) ||
+            !this.validatePassword(newPassword) ||
+            oldPassword == newPassword
+        ) {
+            throw new MyError('Body change password invalid');
+        }
     };
 }
 
