@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
+const NotFoundError = require('../exception/NotFoundError');
 
 const friendSchema = new Schema({
     userIds: [ObjectId],
@@ -16,6 +17,17 @@ friendSchema.statics.existsByIds = async (userId1, userId2) => {
     }
 
     return false;
+};
+
+friendSchema.statics.deleteByIds = async (userId1, userId2, message = 'Friend') => {
+    const queryResult = await Friend.deleteOne({
+        userIds: { $all: [userId1, userId2] },
+    });
+
+    const { deletedCount } = queryResult;
+    if (deletedCount === 0) {
+        throw new NotFoundError(message);
+    }
 };
 
 const Friend = mongoose.model('friend', friendSchema);

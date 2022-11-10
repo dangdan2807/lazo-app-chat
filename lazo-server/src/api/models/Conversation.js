@@ -24,10 +24,35 @@ const conversationSchema = new Schema(
         },
         type: Boolean,
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 conversationSchema.index({ name: 'text' });
+
+conversationSchema.statics.existsIndividualConversation = async (userId1, userId2) => {
+    const conversation = await Conversation.findOne({
+        type: false,
+        members: { $all: [userId1, userId2] },
+    });
+
+    if (conversation) {
+        return conversation._id;
+    }
+    return null;
+};
+
+conversationSchema.statics.existsByUserIds = async (_id, userIds, message = 'Conversation') => {
+    const conversation = await Conversation.findOne({
+        _id,
+        members: { $all: [...userIds] },
+    });
+
+    if (!conversation) {
+        throw new NotFoundError(message);
+    }
+
+    return conversation;
+};
 
 const Conversation = mongoose.model('conversation', conversationSchema);
 
