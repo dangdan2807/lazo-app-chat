@@ -17,6 +17,15 @@ const channelSchema = new Schema(
     { timestamps: true },
 );
 
+channelSchema.statics.getById = async (_id, message = 'Channel') => {
+    const channel = await Channel.findById(_id);
+    if (!channel) {
+        throw new NotFoundError(message);
+    }
+
+    return channel;
+};
+
 channelSchema.statics.getByIdAndConversationId = async (
     _id,
     conversationId,

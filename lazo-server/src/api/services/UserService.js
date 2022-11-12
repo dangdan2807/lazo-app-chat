@@ -1,10 +1,12 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const User = require('../models/User');
 const Friend = require('../models/Friend');
 const FriendRequest = require('../models/FriendRequest');
 const Conversation = require('../models/Conversation');
 
 const NotFoundError = require('../exception/NotFoundError');
-const ObjectId = require('mongoose').Types.ObjectId;
+const commonUtils = require('../../utils/commonUtils');
 
 const FRIEND_STATUS = ['FRIEND', 'FOLLOWER', 'YOU_FOLLOW', 'NOT_FRIEND'];
 
@@ -36,17 +38,11 @@ class UserService {
         const searchUserResult = await User.getById(searchUserId);
 
         searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
-        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
-            _id,
-            searchUserId
-        );
-        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
-            _id,
-            searchUserId
-        );
+        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(_id, searchUserId);
+        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(_id, searchUserId);
 
         return searchUserResult;
-    }
+    };
 
     getNumberCommonGroup = async (myId, searchUserId) => {
         return await Conversation.countDocuments({
@@ -69,7 +65,7 @@ class UserService {
             },
         ]);
         friendIdsOfSearchUser = friendIdsOfSearchUser.map((friendIdEle) => friendIdEle.userIds);
-        
+
         friendIdsOfSearchUser = friendIdsOfSearchUser.filter(
             (friendIdEle) => friendIdEle + '' != myId,
         );
@@ -96,6 +92,40 @@ class UserService {
             status = FRIEND_STATUS[2];
         }
         return status;
+    };
+
+    getList = async (username, page, size) => {
+        const { skip, limit, totalPages } = commonUtils.getPagination(
+            page,
+            size,
+            await User.countDocuments({
+                username: { $regex: '.*' + username + '.*' },
+            }),
+        );
+
+        const users = await User.find(
+            {
+                username: { $regex: '.*' + username + '.*' },
+            },
+            'name username gender isActived isDeleted isAdmin',
+        )
+            .skip(skip)
+            .limit(limit);
+
+        return {
+            data: users,
+            page,
+            size,
+            totalPages,
+        };
+    };
+
+    updateActived = async (userId, status) => {
+        const { nModified } = await User.updateOne({ _id: userId }, { isDeleted: status });
+
+        if (nModified === 0) {
+            throw new NotFoundError('User');
+        }
     };
 }
 
