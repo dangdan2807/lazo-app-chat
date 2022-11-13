@@ -12,7 +12,7 @@ const FRIEND_STATUS = ['FRIEND', 'FOLLOWER', 'YOU_FOLLOW', 'NOT_FRIEND'];
 
 class UserService {
     getUserSummaryInfo = async (username) => {
-        const user = await User.findOne({ username }, '-_id username name avatar isActived');
+        const user = await User.findOne({ username }, '-_id username name avatar isActived avatarColor gender');
 
         if (!user) {
             throw new NotFoundError('User');

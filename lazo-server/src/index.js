@@ -36,22 +36,22 @@ server.listen(HTTP_PORT, function () {
 });
 
 // https
-const key = fs.readFileSync('./https/private.key');
-const cert = fs.readFileSync('./https/certificate.crt');
+// const key = fs.readFileSync('./https/private.key');
+// const cert = fs.readFileSync('./https/certificate.crt');
 
-const serverHttps = https.createServer(
-    {
-        key,
-        cert,
-    },
-    app,
-);
+// const serverHttps = https.createServer(
+//     {
+//         key,
+//         cert,
+//     },
+//     app,
+// );
 
-const ioHttps = socketio(serverHttps);
-socket(ioHttps);
-routes(app, ioHttps);
+// const ioHttps = socketio(serverHttps);
+// socket(ioHttps);
+// routes(app, ioHttps);
 
-const HTTPS_PORT = process.env.HTTPS_PORT || 443;
-serverHttps.listen(HTTPS_PORT, function () {
-    console.log('App https listening at http://localhost:' + HTTPS_PORT);
-});
+// const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+// serverHttps.listen(HTTPS_PORT, function () {
+//     console.log('App https listening at http://localhost:' + HTTPS_PORT);
+// });

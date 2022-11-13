@@ -123,7 +123,7 @@ class AuthService {
 
     resetPassword = async (username, otpPhone, password) => {
         userValidate.validateResetPassword(username, otpPhone, password);
-
+        
         const user = await User.findOne({
             username,
             isActived: true,

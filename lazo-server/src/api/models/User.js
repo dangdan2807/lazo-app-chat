@@ -88,10 +88,14 @@ userSchema.statics.findByCredentials = async (username, password) => {
         isDeleted: false,
     });
 
-    if (!user) throw new NotFoundError('User');
+    if (!user) {
+        throw new NotFoundError('User');
+    }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) throw new MyError('Password invalid');
+    if (!isPasswordMatch) {
+        throw new MyError('Password invalid');
+    }
 
     return user;
 };

@@ -17,7 +17,7 @@ class MeController {
                 await redisDb.set(_id, await meService.getProfile(_id));
             }
 
-            res.json(await redisDb.get(_id));
+            res.status(200).json(await redisDb.get(_id));
         } catch (err) {
             next(err);
         }
@@ -29,11 +29,10 @@ class MeController {
 
         try {
             await meService.updateProfile(_id, req.body);
-            await redisDb.set(_id, await meService.getProfile(_id));
-            res.status(201).json({
-                success: true,
-                message: 'Profile updated successfully',
-            });
+            const user = await meService.getProfile(_id);
+            console.log(user);
+            await redisDb.set(_id, user);
+            res.status(201).json(user);
         } catch (err) {
             next(err);
         }
