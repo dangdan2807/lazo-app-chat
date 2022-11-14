@@ -51,7 +51,9 @@ class MeService {
 
         const user = await User.getById(_id);
         const { coverImage } = user;
-        if (coverImage) await awsS3Service.deleteFile(coverImage);
+        if (coverImage) {
+            await awsS3Service.deleteFile(coverImage);
+        }
 
         const coverImageUrl = await awsS3Service.uploadFile(file);
         await User.updateOne({ _id }, { coverImage: coverImageUrl });
@@ -64,7 +66,9 @@ class MeService {
 
         const user = await User.getById(_id);
         const { avatar } = user;
-        if (avatar) await awsS3Service.deleteFile(avatar);
+        if (avatar) {
+            await awsS3Service.deleteFile(avatar);
+        }
 
         const { fileName, fileExtension, fileBase64 } = fileInfo;
         const avatarUrl = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
@@ -136,16 +140,10 @@ class MeService {
     revokeToken = async (_id, password, source) => {
         await userValidate.validateEnterPassword(_id, password);
 
-        await User.updateOne(
-            { _id },
-            { $set: { timeRevokeToken: new Date(), refreshTokens: [] } }
-        );
+        await User.updateOne({ _id }, { $set: { timeRevokeToken: new Date(), refreshTokens: [] } });
 
-        return await authService.generateAndUpdateAccessTokenAndRefreshToken(
-            _id,
-            source
-        );
-    }
+        return await authService.generateAndUpdateAccessTokenAndRefreshToken(_id, source);
+    };
 }
 
 module.exports = new MeService();
