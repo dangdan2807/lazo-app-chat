@@ -133,12 +133,9 @@ function ForgotPage(props) {
     return (
         <div className="account-common-page">
             <div className="account-wrapper">
-                <div className="account_left">
-                    <img src={IMAGE_ACCOUNT_PAGE} alt="zelo_forgot" />
-                </div>
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '#4d93ff' }}>Quên Mật Khẩu</Text>
+                        <Text style={{ color: '#A64BF4' }}>Quên Mật Khẩu</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">
@@ -159,7 +156,7 @@ function ForgotPage(props) {
                                             <Col span={24}>
                                                 <Text
                                                     style={{
-                                                        color: '#08aeea',
+                                                        color: '#A64BF4',
                                                         textAlign: 'center',
                                                     }}
                                                 >
@@ -267,13 +264,18 @@ function ForgotPage(props) {
                                                         />
                                                     </Col>
                                                     <Col span={24}>
-                                                        <Button
+                                                        {/* <Button
                                                             htmlType="submit"
                                                             block
                                                             type="primary"
                                                         >
                                                             Xác nhận
-                                                        </Button>
+                                                        </Button> */}
+                                                        <div className='button-container'>
+                                                    <button className='button-login' type='submit'>
+                                                        Xác nhận
+                                                    </button>
+                                                </div>
                                                     </Col>
                                                 </>
                                             )}

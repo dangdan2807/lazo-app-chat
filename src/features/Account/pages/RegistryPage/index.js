@@ -61,7 +61,9 @@ function RegistryPage(props) {
             await loginApi
                 .fetchUser(username)
                 .then((value) => {
+                    // openNotification(`Đã gửi lại mã OTP đến  ${username}`);
                     message.error('Email hoặc số điện thoại đã được đăng ký');
+
                 })
                 .catch(async () => {
                     try {
@@ -165,7 +167,7 @@ function RegistryPage(props) {
                                                     </Col>
 
                                                     <Col span={24}>
-                                                        <Button
+                                                        {/* <Button
                                                             onClick={() =>
                                                                 handleResendOTP(
                                                                     formikProps
@@ -181,13 +183,31 @@ function RegistryPage(props) {
                                                                     : false
                                                             }
                                                         >
-                                                            Gửi lại OTP{' '}
+                                                            
+                                                        </Button> */
+                                                        <div className='button-container'>
+                                                        <button className='button-login' type='submit' onClick={() =>
+                                                                handleResendOTP(
+                                                                    formikProps
+                                                                        .values
+                                                                        .username
+                                                                )
+                                                            }  block
+                                                            disabled={
+                                                                counter > 0
+                                                                    ? true
+                                                                    : false
+                                                            }>
+                                                        Gửi lại OTP{' '}
                                                             {`${
                                                                 counter > 0
                                                                     ? `sau ${counter}`
                                                                     : ''
                                                             }`}
-                                                        </Button>
+                                                    </button>
+                                                </div>
+                                                        }
+
                                                     </Col>
                                                 </>
                                             ) : (
