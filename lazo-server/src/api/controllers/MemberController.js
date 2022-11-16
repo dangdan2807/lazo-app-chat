@@ -6,7 +6,8 @@ class MemberController {
         this.leaveGroup = this.leaveGroup.bind(this);
         this.addMember = this.addMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
-        this.joinConversationFromLink = this.joinConversationFromLink.bind(this);
+        this.joinConversationFromLink =
+            this.joinConversationFromLink.bind(this);
     }
 
     // [GET] /conversations/:id/members
@@ -34,10 +35,7 @@ class MemberController {
             this.io.to(id).emit('new-message', id, message);
             this.io.to(id).emit('update-member', id);
 
-            res.status(204).json({
-                success: true,
-                message: 'Leave group successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
@@ -57,11 +55,13 @@ class MemberController {
             );
 
             this.io.to(id).emit('new-message', id, message);
-            userIds.forEach((userIdEle) => this.io.to(userIdEle).emit('added-group', id));
+            userIds.forEach((userIdEle) =>
+                this.io.to(userIdEle).emit('added-group', id),
+            );
             this.io.to(id).emit('update-member', id);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Added members successfully',
             });
         } catch (err) {
@@ -80,11 +80,8 @@ class MemberController {
             this.io.to(id).emit('new-message', id, message);
             this.io.to(userId).emit('deleted-group', id);
             this.io.to(id).emit('update-member', id);
-
-            res.status(204).json({
-                success: true,
-                message: 'Deleted member successfully',
-            });
+            
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
@@ -96,7 +93,10 @@ class MemberController {
         const { id } = req.params;
 
         try {
-            const message = await memberService.joinConversationFromLink(id, _id);
+            const message = await memberService.joinConversationFromLink(
+                id,
+                _id,
+            );
 
             this.io.to(id + '').emit('new-message', id, message);
             this.io.to(_id + '').emit('added-group', id);

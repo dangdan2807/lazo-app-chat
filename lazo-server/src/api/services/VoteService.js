@@ -1,8 +1,8 @@
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 
-const commonUtils = require('../../utils/commonUtils');
 const messageUtils = require('../../utils/messageUtils');
+const commonUtils = require('../../utils/commonUtils');
 
 const MyError = require('../exception/MyError');
 const ArgumentError = require('../exception/ArgumentError');
@@ -15,7 +15,10 @@ class VoteService {
             throw new ArgumentError();
         }
 
-        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            myId,
+        );
         const { type } = conversation;
         if (!type) {
             throw new MyError('Only group conversation');
@@ -32,13 +35,14 @@ class VoteService {
             totalVoteMessages,
         );
 
-        const messagesTempt = await Message.getListByConversationIdAndTypeAndUserId(
-            conversationId,
-            VOTE,
-            myId,
-            skip,
-            limit,
-        );
+        const messagesTempt =
+            await Message.getListByConversationIdAndTypeAndUserId(
+                conversationId,
+                VOTE,
+                myId,
+                skip,
+                limit,
+            );
 
         const messages = messagesTempt.map((messageEle) =>
             messageUtils.convertMessageOfGroup(messageEle),
@@ -54,7 +58,9 @@ class VoteService {
 
     addOptions = async (messageId, optionNames, userId) => {
         const message = await this.validateVote(messageId, optionNames, userId);
-        const availableOptionNames = message.options.map((optionEle) => optionEle.name);
+        const availableOptionNames = message.options.map(
+            (optionEle) => optionEle.name,
+        );
         optionNames.forEach((optionNameEle) => {
             if (
                 !(
@@ -63,8 +69,9 @@ class VoteService {
                     optionNameEle.length > 200 ||
                     availableOptionNames.includes(optionNameEle)
                 )
-            )
+            ) {
                 message.options.push({ name: optionNameEle, userIds: [] });
+            }
         });
 
         await message.save();

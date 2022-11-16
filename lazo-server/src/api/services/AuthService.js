@@ -22,7 +22,10 @@ class AuthService {
         userValidate.validateLogin(username, password);
         const { _id } = await User.findByCredentials(username, password);
 
-        return await this.generateAndUpdateAccessTokenAndRefreshToken(_id, source);
+        return await this.generateAndUpdateAccessTokenAndRefreshToken(
+            _id,
+            source,
+        );
     };
 
     generateAndUpdateAccessTokenAndRefreshToken = async (_id, source) => {
@@ -35,11 +38,13 @@ class AuthService {
             process.env.JWT_LIFE_REFRESH_TOKEN,
         );
 
-        await User.updateOne({ _id }, { $pull: { refreshTokens: { source } } });
-        await User.updateOne(
-            { _id },
-            { $push: { refreshTokens: { token: refreshToken, source } } },
-        );
+        Promise.all([
+            User.updateOne({ _id }, { $pull: { refreshTokens: { source } } }),
+            User.updateOne(
+                { _id },
+                { $push: { refreshTokens: { token: refreshToken, source } } },
+            ),
+        ]);
 
         return {
             token,
@@ -123,7 +128,7 @@ class AuthService {
 
     resetPassword = async (username, otpPhone, password) => {
         userValidate.validateResetPassword(username, otpPhone, password);
-        
+
         const user = await User.findOne({
             username,
             isActived: true,
@@ -139,28 +144,29 @@ class AuthService {
         // cập nhật lại password
         const hashPassword = await commonUtils.hashPassword(password);
 
-        await User.updateOne({ username }, { password: hashPassword, otp: null, otpTime: null });
+        await User.updateOne(
+            { username },
+            { password: hashPassword, otp: null, otpTime: null },
+        );
     };
 
     sendOTP = async (_id, username) => {
         // email: true
         let type = true;
 
-        if (userValidate.validatePhone(username)) {
-            type = false;
-        }
+        // if (userValidate.validatePhone(username)) type = false;
 
         const otp = commonUtils.getRandomOTP();
         const otpTime = new Date();
         otpTime.setMinutes(otpTime.getMinutes() + OTP_EXPIRE_MINUTE);
         await User.updateOne({ _id }, { otp, otpTime });
-        if (type)
+        if (type) {
             mailer.sendMail(
                 username,
                 'Lazo - OTP xác nhận tài khoản',
                 templateHtml.getOtpHtml(otp, OTP_EXPIRE_MINUTE),
             );
-        else {
+        } else {
             const { data } = await axios.post(process.env.BALANCE_API_URL, {
                 ApiKey: process.env.PHONE_API_KEY,
                 SecretKey: process.env.PHONE_API_SECRET,

@@ -1,10 +1,7 @@
 const Sticker = require('../models/Sticker');
-
-const MyError = require('../exception/MyError');
 const NotFoundError = require('../exception/NotFoundError');
-
+const MyError = require('../exception/MyError');
 const awsS3Service = require('./AwsS3Service');
-
 const AWS_BUCKET_NAME_ADMIN = process.env.AWS_BUCKET_NAME_ADMIN;
 
 class StickerService {
@@ -23,7 +20,10 @@ class StickerService {
     updateStickerGroup = async (_id, stickerGroupInfo) => {
         await this.validateStickerGroup(stickerGroupInfo);
         const { name, description } = stickerGroupInfo;
-        const { nModified } = await Sticker.updateOne({ _id }, { name, description });
+        const { nModified } = await Sticker.updateOne(
+            { _id },
+            { name, description },
+        );
 
         if (nModified === 0) {
             throw new NotFoundError('Sticker group');
@@ -33,7 +33,12 @@ class StickerService {
     validateStickerGroup = async (stickerGroupInfo) => {
         const { name, description = '' } = stickerGroupInfo;
 
-        if (!name || name.length < 1 || name.length > 100 || description.length > 100) {
+        if (
+            !name ||
+            name.length < 1 ||
+            name.length > 100 ||
+            description.length > 100
+        ) {
             throw new MyError('1 <= name <= 100, description <= 100');
         }
     };

@@ -1,9 +1,8 @@
 const MyError = require('../exception/MyError');
-
 const User = require('../models/User');
 
-const userService = require('./UserService');
 const awsS3Service = require('./AwsS3Service');
+const userService = require('./UserService');
 const authService = require('./AuthService');
 
 const userValidate = require('../validate/userValidate');
@@ -25,10 +24,11 @@ class MeService {
 
         const profileWasValidate = userValidate.checkProfile(profile);
 
-        // check user
-        await User.getById(_id);
-
-        await User.updateOne({ _id }, { ...profileWasValidate });
+        Promise.all([
+            // check user
+            User.getById(_id),
+            User.updateOne({ _id }, { ...profileWasValidate }),
+        ]);
     };
 
     changeAvatar = async (_id, file) => {
@@ -71,7 +71,11 @@ class MeService {
         }
 
         const { fileName, fileExtension, fileBase64 } = fileInfo;
-        const avatarUrl = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
+        const avatarUrl = await awsS3Service.uploadWithBase64(
+            fileBase64,
+            fileName,
+            fileExtension,
+        );
         await User.updateOne({ _id }, { avatar: avatarUrl });
 
         return avatarUrl;
@@ -82,7 +86,9 @@ class MeService {
 
         const user = await User.getById(_id);
         const { coverImage } = user;
-        if (coverImage) await awsS3Service.deleteFile(coverImage);
+        if (coverImage) {
+            await awsS3Service.deleteFile(coverImage);
+        }
 
         const { fileName, fileExtension, fileBase64 } = fileInfo;
         const coverImageUrl = await awsS3Service.uploadWithBase64(
@@ -112,7 +118,10 @@ class MeService {
             const { name, phone } = userPhoneBookEle;
 
             try {
-                const searchUser = await userService.getStatusFriendOfUser(_id, phone);
+                const searchUser = await userService.getStatusFriendOfUser(
+                    _id,
+                    phone,
+                );
 
                 result.push({ ...searchUser, isExists: true });
             } catch (err) {
@@ -125,8 +134,10 @@ class MeService {
 
     syncPhoneBooks = async (_id, phones) => {
         userValidate.validatePhonesList(phones);
-        await User.getById(_id);
-        await User.updateOne({ _id }, { $set: { phoneBooks: phones } });
+        Promise.all([
+            await User.getById(_id),
+            await User.updateOne({ _id }, { $set: { phoneBooks: phones } }),
+        ]);
     };
 
     changePassword = async (_id, oldPassword, newPassword) => {
@@ -140,9 +151,15 @@ class MeService {
     revokeToken = async (_id, password, source) => {
         await userValidate.validateEnterPassword(_id, password);
 
-        await User.updateOne({ _id }, { $set: { timeRevokeToken: new Date(), refreshTokens: [] } });
+        await User.updateOne(
+            { _id },
+            { $set: { timeRevokeToken: new Date(), refreshTokens: [] } },
+        );
 
-        return await authService.generateAndUpdateAccessTokenAndRefreshToken(_id, source);
+        return await authService.generateAndUpdateAccessTokenAndRefreshToken(
+            _id,
+            source,
+        );
     };
 }
 

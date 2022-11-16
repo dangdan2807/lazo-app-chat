@@ -100,6 +100,14 @@ userSchema.statics.findByCredentials = async (username, password) => {
     return user;
 };
 
+userSchema.statics.existsById = async (_id) => {
+    const user = await User.findOne({ _id, isActived: true });
+    if (user) {
+        return true;
+    }
+    return false;
+};
+
 userSchema.statics.checkByIds = async (ids, message = 'User') => {
     for (const idEle of ids) {
         const user = await User.findOne({
@@ -145,6 +153,17 @@ userSchema.statics.getById = async (_id, message = 'User') => {
     };
 };
 
+userSchema.statics.existsByUsername = async (username) => {
+    const user = await User.findOne({
+        username,
+        isActived: true,
+    });
+    if (user) {
+        return true;
+    }
+    return false;
+};
+
 userSchema.statics.findByUsername = async (username, message = 'User') => {
     const user = await User.findOne({
         username,
@@ -155,7 +174,8 @@ userSchema.statics.findByUsername = async (username, message = 'User') => {
         throw new NotFoundError(message);
     }
 
-    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } = user;
+    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } =
+        user;
     return {
         _id,
         name,

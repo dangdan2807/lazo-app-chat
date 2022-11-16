@@ -7,7 +7,10 @@ const pinMessageValidate = {
         const message = await Message.getById(messageId);
         const { conversationId } = message;
 
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         const { type } = conversation;
 

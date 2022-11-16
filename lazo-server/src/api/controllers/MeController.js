@@ -30,7 +30,7 @@ class MeController {
         try {
             await meService.updateProfile(_id, req.body);
             const user = await meService.getProfile(_id);
-            console.log(user);
+
             await redisDb.set(_id, user);
             res.status(201).json(user);
         } catch (err) {
@@ -124,7 +124,7 @@ class MeController {
             await meService.syncPhoneBooks(_id, phones);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Phone books synced successfully',
             });
         } catch (err) {
@@ -141,7 +141,7 @@ class MeController {
             await meService.changePassword(_id, oldPassword, newPassword);
 
             res.status(200).json({
-                success: true,
+                status: 200,
                 message: 'Password changed successfully',
             });
         } catch (err) {

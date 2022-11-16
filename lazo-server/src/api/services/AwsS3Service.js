@@ -89,14 +89,14 @@ class AwsS3Service {
             Key: key,
         };
         try {
-            // await s3.deleteObject(params).promise();
-            s3.deleteObject(params, function (err, data) {
-                if (err) {
-                    console.log(err, err.stack); // error
-                } else {
-                    console.log(); // deleted
-                }
-            });
+            await s3.deleteObject(params).promise();
+            // s3.deleteObject(params, function (err, data) {
+            //     if (err) {
+            //         console.log(err, err.stack); // error
+            //     } else {
+            //         console.log(); // deleted
+            //     }
+            // });
         } catch (err) {
             throw new MyError('Delete file Aws S3 failed');
         }

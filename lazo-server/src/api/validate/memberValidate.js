@@ -1,13 +1,15 @@
 const Conversation = require('../models/Conversation');
 const User = require('../models/User');
-const Member = require('../models/Member');
-
 const MyError = require('../exception/MyError');
+const Member = require('../models/Member');
 
 const memberValidate = {
     validateLeaveGroup: async (conversationId, userId) => {
         // check  có trong nhóm không
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
         const { type, leaderId } = conversation;
         // cá nhân hoặc đang là leader không thể out nhóm
         if (!type || leaderId == userId) {
@@ -20,7 +22,10 @@ const memberValidate = {
             throw new MyError('User must > 0');
         }
 
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         const { type } = conversation;
         // cá nhân không thể thêm thành viên
@@ -39,15 +44,22 @@ const memberValidate = {
             throw new MyError('User exists in group');
         }
     },
+
     validateDeleteMember: async (conversationId, userId, deleteUserId) => {
         if (userId === deleteUserId) {
             throw new MyError('Not delete your');
         }
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         // chỉ leader mới được xóa
         const { type, leaderId, managerIds } = conversation;
-        const isManager = managerIds.findIndex((userIdEle) => userIdEle + '' === userId);
+        const isManager = managerIds.findIndex(
+            (userIdEle) => userIdEle + '' === userId,
+        );
 
         if (
             !type ||

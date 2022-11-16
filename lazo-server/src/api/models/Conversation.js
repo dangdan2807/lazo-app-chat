@@ -37,7 +37,7 @@ conversationSchema.statics.getListByUserId = async (userId) => {
 
 conversationSchema.statics.getListGroupByNameContainAndUserId = async (
     name,
-    userId
+    userId,
 ) => {
     return await Conversation.find({
         name: { $regex: name, $options: 'i' },
@@ -48,7 +48,7 @@ conversationSchema.statics.getListGroupByNameContainAndUserId = async (
 
 conversationSchema.statics.getListIndividualByNameContainAndUserId = async (
     name,
-    userId
+    userId,
 ) => {
     return await Conversation.aggregate([
         {
@@ -97,7 +97,9 @@ conversationSchema.statics.getListNameAndAvatarOfMembersById = async (_id) => {
                 members: 1,
             },
         },
-        { $unwind: '$members' },
+        {
+            $unwind: '$members',
+        },
         {
             $lookup: {
                 from: 'users',
@@ -106,7 +108,9 @@ conversationSchema.statics.getListNameAndAvatarOfMembersById = async (_id) => {
                 as: 'user',
             },
         },
-        { $unwind: '$user' },
+        {
+            $unwind: '$user',
+        },
         {
             $project: {
                 name: '$user.name',
@@ -117,7 +121,10 @@ conversationSchema.statics.getListNameAndAvatarOfMembersById = async (_id) => {
     ]);
 };
 
-conversationSchema.statics.existsIndividualConversation = async (userId1, userId2) => {
+conversationSchema.statics.existsIndividualConversation = async (
+    userId1,
+    userId2,
+) => {
     const conversation = await Conversation.findOne({
         type: false,
         members: { $all: [userId1, userId2] },
@@ -129,7 +136,11 @@ conversationSchema.statics.existsIndividualConversation = async (userId1, userId
     return null;
 };
 
-conversationSchema.statics.getByIdAndUserId = async (_id, userId, message = 'Conversation') => {
+conversationSchema.statics.getByIdAndUserId = async (
+    _id,
+    userId,
+    message = 'Conversation',
+) => {
     const conversation = await Conversation.findOne({
         _id,
         members: { $in: [userId] },
@@ -144,12 +155,18 @@ conversationSchema.statics.getByIdAndUserId = async (_id, userId, message = 'Con
 
 conversationSchema.statics.getById = async (_id, message = 'Conversation') => {
     const conversation = await Conversation.findById(_id);
-    if (!conversation) throw new NotFoundError(message);
+    if (!conversation) {
+        throw new NotFoundError(message);
+    }
 
     return conversation;
 };
 
-conversationSchema.statics.existsByUserIds = async (_id, userIds, message = 'Conversation') => {
+conversationSchema.statics.existsByUserIds = async (
+    _id,
+    userIds,
+    message = 'Conversation',
+) => {
     const conversation = await Conversation.findOne({
         _id,
         members: { $all: [...userIds] },

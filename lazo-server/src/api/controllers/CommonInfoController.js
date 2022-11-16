@@ -6,6 +6,7 @@ class CommonInfoController {
     getWebInfo = async (req, res, next) => {
         try {
             const isExistsCached = await redisDb.exists('web-info');
+
             let webInfo;
             if (!isExistsCached) {
                 webInfo = await WebInfo.find();
@@ -13,6 +14,7 @@ class CommonInfoController {
             } else {
                 webInfo = await redisDb.get('web-info');
             }
+            
             res.status(200).json(webInfo);
         } catch (err) {
             next(err);
@@ -20,7 +22,7 @@ class CommonInfoController {
     }
 
     // [GET] /common/google-captcha
-    async getGoogleCaptcha(req, res, next) {
+    getGoogleCaptcha = async (req, res, next) => {
         res.status(200).json({
             ENABLE_GOOGLE_CAPTCHA: new Boolean(process.env.ENABLE_GOOGLE_CAPTCHA),
             KEY_GOOGLE_CAPTCHA: process.env.KEY_GOOGLE_CAPTCHA,

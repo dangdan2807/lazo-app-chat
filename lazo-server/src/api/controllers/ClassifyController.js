@@ -48,13 +48,13 @@ class ClassifyController {
             await classifyService.update(_id, classify);
 
             res.status(200).json({
-                success: true,
+                status: 200,
                 message: 'Classify updated successfully',
             });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [PUT] /classifies/:id
     delete = async (req, res, next) => {
@@ -64,17 +64,14 @@ class ClassifyController {
         try {
             await classifyService.delete(_id, id);
 
-            res.status(204).json({
-                success: true,
-                message: 'Classify deleted successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /classifies/:id/conversations/:conversationId
-    async addConversation(req, res, next) {
+    addConversation = async (req, res, next) => {
         const { _id } = req;
         const { id, conversationId } = req.params;
 
@@ -82,30 +79,27 @@ class ClassifyController {
             await classifyService.addConversation(_id, id, conversationId);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Conversation added successfully',
             });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [DELETE] /classifies/:id/conversations/:id
-    async deleteConversation(req, res, next) {
+    deleteConversation = async (req, res, next) => {
         const { _id } = req;
         const { id, conversationId } = req.params;
 
         try {
             await classifyService.deleteConversation(_id, id, conversationId);
 
-            res.status(204).json({
-                success: true,
-                message: 'Conversation deleted successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
-    }
+    };
 }
 
 module.exports = new ClassifyController();

@@ -7,6 +7,8 @@ const Message = require('../models/Message');
 
 const messageService = require('../services/MessageService');
 
+const channelValidate = require('../validate/channelValidate');
+
 const MyError = require('../exception/MyError');
 
 const CREATE_CHANNEL = 'CREATE_CHANNEL';
@@ -26,7 +28,11 @@ class ChannelService {
         for (const channelEle of channels) {
             const { _id, name, createdAt } = channelEle;
 
-            const numberUnread = await this.getNumberUnread(conversationId, channelEle._id, userId);
+            const numberUnread = await this.getNumberUnread(
+                conversationId,
+                channelEle._id,
+                userId,
+            );
 
             channelsResult.push({
                 _id,
@@ -44,7 +50,9 @@ class ChannelService {
         const member = await Member.findOne({ conversationId, userId });
 
         const { lastViewOfChannels } = member;
-        const index = lastViewOfChannels.findIndex((ele) => ele.channelId + '' == channelId + '');
+        const index = lastViewOfChannels.findIndex(
+            (ele) => ele.channelId + '' == channelId + '',
+        );
 
         if (index !== -1) {
             const { lastView } = lastViewOfChannels[index];
@@ -59,7 +67,7 @@ class ChannelService {
     };
 
     add = async (channelRequest, userId) => {
-        await this.validateChannelRequest(channelRequest, userId);
+        await channelValidate.validateChannelRequest(channelRequest, userId);
 
         const { name, conversationId } = channelRequest;
 
@@ -99,7 +107,7 @@ class ChannelService {
         const channel = await Channel.getById(_id);
         const { conversationId } = channel;
 
-        await this.validateChannelRequest({ name, conversationId }, userId);
+        await channelValidate.validateChannelRequest({ name, conversationId }, userId);
 
         await Channel.updateOne({ _id }, { $set: { name } });
 
@@ -129,12 +137,14 @@ class ChannelService {
         }
 
         // delete all tin nhắn
-        await Message.deleteMany({ conversationId: channelId });
-        await Channel.deleteOne({ _id: channelId });
-        await Member.updateMany(
-            { conversationId },
-            { $pull: { lastViewOfChannels: { channelId } } },
-        );
+        Promise.all([
+            await Message.deleteMany({ conversationId: channelId }),
+            await Channel.deleteOne({ _id: channelId }),
+            await Member.updateMany(
+                { conversationId },
+                { $pull: { lastViewOfChannels: { channelId } } },
+            ),
+        ]).then();
 
         const message = await messageService.addNotifyMessage(
             DELETE_CHANNEL,
@@ -168,7 +178,9 @@ class ChannelService {
                     as: 'user',
                 },
             },
-            { $unwind: '$user' },
+            {
+                $unwind: '$user',
+            },
             {
                 $project: {
                     _id: 0,
@@ -180,7 +192,9 @@ class ChannelService {
                     lastViewOfChannels: 1,
                 },
             },
-            { $unwind: '$lastViewOfChannels' },
+            {
+                $unwind: '$lastViewOfChannels',
+            },
             {
                 $match: {
                     'lastViewOfChannels.channelId': ObjectId(channelId),
@@ -195,24 +209,6 @@ class ChannelService {
         }));
 
         return members;
-    };
-
-    validateChannelRequest = async (channelRequest, userId) => {
-        const { name, conversationId } = channelRequest;
-
-        if (!name || typeof name !== 'string' || name.length === 0 || name.length > 100) {
-            throw new MyError('Channel name invalid,  0 < length <= 100 ');
-        }
-
-        const { type } = await Conversation.getByIdAndUserId(conversationId, userId);
-
-        if (!type) {
-            throw new MyError('Only conversation group');
-        }
-
-        if (await Channel.findOne({ name, conversationId })) {
-            throw new MyError('Channel name exists');
-        }
     };
 }
 

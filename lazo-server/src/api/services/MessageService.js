@@ -1,20 +1,20 @@
 const Message = require('../models/Message');
-const Conversation = require('../models/Conversation');
-const Channel = require('../models/Channel');
-const User = require('../models/User');
 const Member = require('../models/Member');
+const Conversation = require('../models/Conversation');
+const User = require('../models/User');
+const Channel = require('../models/Channel');
 
-const lastViewService = require('../services/LastViewService');
+const MyError = require('../exception/MyError');
+const ArgumentError = require('../exception/ArgumentError');
+
 const awsS3Service = require('../services/AwsS3Service');
+const lastViewService = require('../services/LastViewService');
 
 const messageValidate = require('../validate/messageValidate');
 
-const messageUtils = require('../../utils/messageUtils');
 const commonUtils = require('../../utils/commonUtils');
+const messageUtils = require('../../utils/messageUtils');
 const dateUtils = require('../../utils/dateUtils');
-
-const ArgumentError = require('../exception/ArgumentError');
-const MyError = require('../exception/MyError');
 
 class MessageService {
     getList = async (conversationId, userId, page, size) => {
@@ -22,41 +22,54 @@ class MessageService {
             throw new ArgumentError();
         }
 
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
-
-        const totalMessages = await Message.countDocumentsByConversationIdAndUserId(
+        const conversation = await Conversation.getByIdAndUserId(
             conversationId,
             userId,
         );
 
-        const { skip, limit, totalPages } = commonUtils.getPagination(page, size, totalMessages);
+        const totalMessages =
+            await Message.countDocumentsByConversationIdAndUserId(
+                conversationId,
+                userId,
+            );
+
+        const { skip, limit, totalPages } = commonUtils.getPagination(
+            page,
+            size,
+            totalMessages,
+        );
 
         let messages;
 
         if (conversation.type) {
-            const messagesTempt = await Message.getListByConversationIdAndUserIdOfGroup(
-                conversationId,
-                userId,
-                skip,
-                limit,
-            );
+            const messagesTempt =
+                await Message.getListByConversationIdAndUserIdOfGroup(
+                    conversationId,
+                    userId,
+                    skip,
+                    limit,
+                );
 
             messages = messagesTempt.map((messageEle) =>
                 messageUtils.convertMessageOfGroup(messageEle),
             );
         } else {
-            const messagesTempt = await Message.getListByConversationIdAndUserIdOfIndividual(
-                conversationId,
-                userId,
-                skip,
-                limit,
-            );
+            const messagesTempt =
+                await Message.getListByConversationIdAndUserIdOfIndividual(
+                    conversationId,
+                    userId,
+                    skip,
+                    limit,
+                );
             messages = messagesTempt.map((messageEle) =>
                 messageUtils.convertMessageOfIndividual(messageEle),
             );
         }
 
-        await lastViewService.updateLastViewOfConversation(conversationId, userId);
+        await lastViewService.updateLastViewOfConversation(
+            conversationId,
+            userId,
+        );
 
         return {
             data: messages,
@@ -81,7 +94,11 @@ class MessageService {
                 $nin: [userId],
             },
         });
-        const { skip, limit, totalPages } = commonUtils.getPagination(page, size, totalMessages);
+        const { skip, limit, totalPages } = commonUtils.getPagination(
+            page,
+            size,
+            totalMessages,
+        );
 
         const messagesTempt = await Message.getListByChannelIdAndUserId(
             channelId,
@@ -93,7 +110,11 @@ class MessageService {
             messageUtils.convertMessageOfGroup(messageEle),
         );
 
-        await lastViewService.updateLastViewOfChannel(conversationId, channelId, userId);
+        await lastViewService.updateLastViewOfChannel(
+            conversationId,
+            channelId,
+            userId,
+        );
 
         return {
             data: messages,
@@ -133,12 +154,22 @@ class MessageService {
         // lưu xuống
         const saveMessage = await newMessage.save();
 
-        return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+        return this.updateWhenHasNewMessage(
+            saveMessage,
+            conversationId,
+            userId,
+        );
     };
 
     // send file
     addFile = async (file, type, conversationId, channelId, userId) => {
-        await messageValidate.validateFileMessage(file, type, conversationId, channelId, userId);
+        await messageValidate.validateFileMessage(
+            file,
+            type,
+            conversationId,
+            channelId,
+            userId,
+        );
 
         // upload ảnh
         const content = await awsS3Service.uploadFile(file);
@@ -162,11 +193,21 @@ class MessageService {
         // lưu xuống
         const saveMessage = await newMessage.save();
 
-        return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+        return this.updateWhenHasNewMessage(
+            saveMessage,
+            conversationId,
+            userId,
+        );
     };
 
     // send file base64
-    addFileWithBase64 = async (fileInfo, type, conversationId, channelId, userId) => {
+    addFileWithBase64 = async (
+        fileInfo,
+        type,
+        conversationId,
+        channelId,
+        userId,
+    ) => {
         await messageValidate.validateFileMessageWithBase64(
             fileInfo,
             type,
@@ -177,7 +218,11 @@ class MessageService {
         const { fileBase64, fileName, fileExtension } = fileInfo;
 
         // upload ảnh
-        const content = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
+        const content = await awsS3Service.uploadWithBase64(
+            fileBase64,
+            fileName,
+            fileExtension,
+        );
 
         const newMessageTempt = {
             userId,
@@ -196,18 +241,33 @@ class MessageService {
         });
         const saveMessage = await newMessage.save();
 
-        return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+        return this.updateWhenHasNewMessage(
+            saveMessage,
+            conversationId,
+            userId,
+        );
     };
 
     updateWhenHasNewMessage = async (saveMessage, conversationId, userId) => {
         const { _id, channelId } = saveMessage;
 
         if (channelId) {
-            await lastViewService.updateLastViewOfChannel(conversationId, channelId, userId);
+            await lastViewService.updateLastViewOfChannel(
+                conversationId,
+                channelId,
+                userId,
+            );
         } else {
-            await Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id });
-
-            await lastViewService.updateLastViewOfConversation(conversationId, userId);
+            Promise.all([
+                Conversation.updateOne(
+                    { _id: conversationId },
+                    { lastMessageId: _id },
+                ),
+                lastViewService.updateLastViewOfConversation(
+                    conversationId,
+                    userId,
+                ),
+            ]);
         }
 
         const { type } = await Conversation.findById(conversationId);
@@ -248,7 +308,10 @@ class MessageService {
         if (isDeleted) {
             return;
         }
-        const index = deletedUserIds.findIndex((userIdEle) => userIdEle == userId);
+
+        const index = deletedUserIds.findIndex(
+            (userIdEle) => userIdEle == userId,
+        );
         // tìm thấy, thì không thêm vô nữa
         if (index !== -1) {
             return;
@@ -266,7 +329,8 @@ class MessageService {
         }
 
         const message = await Message.getById(_id);
-        const { isDeleted, deletedUserIds, reacts, conversationId, channelId } = message;
+        const { isDeleted, deletedUserIds, reacts, conversationId, channelId } =
+            message;
 
         // nếu tin nhắn đã xóa
         if (isDeleted || deletedUserIds.includes(userId)) {
@@ -274,7 +338,9 @@ class MessageService {
         }
 
         // tìm react thả bởi user
-        const reactIndex = reacts.findIndex((reactEle) => reactEle.userId == userId);
+        const reactIndex = reacts.findIndex(
+            (reactEle) => reactEle.userId == userId,
+        );
 
         const reactTempt = [...reacts];
         // không tìm thấy
@@ -310,15 +376,23 @@ class MessageService {
     };
 
     deleteAll = async (conversationId, userId) => {
-        await Member.getByConversationIdAndUserId(conversationId, userId);
+        Promise.all([
+            Member.getByConversationIdAndUserId(conversationId, userId),
+            Message.updateMany(
+                { conversationId, deletedUserIds: { $nin: [userId] } },
+                { $push: { deletedUserIds: userId } },
+            ),
+        ]).then();
+    };
 
-        Message.updateMany(
-            { conversationId, deletedUserIds: { $nin: [userId] } },
-            { $push: { deletedUserIds: userId } }
-        ).then();
-    }
-
-    getListFiles = async (conversationId, userId, type, senderId, startTime, endTime) => {
+    getListFiles = async (
+        conversationId,
+        userId,
+        type,
+        senderId,
+        startTime,
+        endTime,
+    ) => {
         if (type !== 'IMAGE' && type !== 'VIDEO' && type !== 'FILE') {
             throw new MyError('Message type invalid, only image, video, file');
         }
@@ -407,25 +481,30 @@ class MessageService {
         const saveMessage = await newMessage.save();
 
         const { _id, createdAt } = saveMessage;
-        // update lại message mới nhất
-        await Conversation.updateOne(
-            { _id: conversationId },
-            { lastMessageId: _id }
-        );
-
-        await Member.updateOne(
-            { conversationId, userId },
-            { $set: { lastView: createdAt } }
-        );
+        Promise.all([
+            // update lại message mới nhất
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId },
+                { $set: { lastView: createdAt } },
+            ),
+        ]).then();
 
         return await this.getById(_id, true);
-    }
+    };
 
     shareMessage = async (messageId, conversationId, userId) => {
         const message = await Message.getById(messageId);
         const { content, type } = message;
+
         await Conversation.getByIdAndUserId(message.conversationId, userId);
-        const conversationShare = await Conversation.getByIdAndUserId(conversationId, userId);
+        const conversationShare = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         if (type === 'NOTIFY' || type === 'VOTE') {
             throw new MyError('Not share message type is NOTIFY or Vote');
@@ -442,10 +521,17 @@ class MessageService {
         const saveMessage = await newMessage.save();
 
         const { _id, createdAt } = saveMessage;
-        // update lại message mới nhất
-        await Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id });
-
-        await Member.updateOne({ conversationId, userId }, { $set: { lastView: createdAt } });
+        Promise.all([
+            // update lại message mới nhất
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId },
+                { $set: { lastView: createdAt } },
+            ),
+        ]);
 
         return await this.getById(_id, conversationShare.type);
     };
@@ -461,18 +547,19 @@ class MessageService {
 
         const { _id, createdAt } = await newMessage.save();
 
-        await Conversation.updateOne(
-            { _id: conversationId },
-            { lastMessageId: _id }
-        );
-
-        await Member.updateOne(
-            { conversationId, userId },
-            { lastView: createdAt }
-        );
+        Promise.all([
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId },
+                { lastView: createdAt },
+            ),
+        ]).then();
 
         return this.getById(_id, true);
-    }
+    };
 }
 
 module.exports = new MessageService();

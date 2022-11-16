@@ -19,6 +19,16 @@ friendSchema.statics.existsByIds = async (userId1, userId2) => {
     return false;
 };
 
+friendSchema.statics.checkByIds = async (userId1, userId2, message = 'Friend') => {
+    const isExists = await Friend.findOne({
+        userIds: { $all: [userId1, userId2] },
+    });
+
+    if (!isExists) {
+        throw new NotFoundError(message);
+    }
+};
+
 friendSchema.statics.deleteByIds = async (userId1, userId2, message = 'Friend') => {
     const queryResult = await Friend.deleteOne({
         userIds: { $all: [userId1, userId2] },

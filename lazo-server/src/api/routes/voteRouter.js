@@ -11,7 +11,6 @@ const voteRouter = (io) => {
     router.post('/:messageId/choices', voteController.addVoteChoices);
     router.delete('/:messageId/choices', voteController.deleteVoteChoices);
 
-
     return router;
 };
 

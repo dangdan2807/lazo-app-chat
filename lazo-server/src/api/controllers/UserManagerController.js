@@ -1,5 +1,4 @@
 const userService = require('../services/UserService');
-
 const MyError = require('../exception/MyError');
 
 class UserManagerController {
@@ -8,7 +7,11 @@ class UserManagerController {
         const { username = '', page = 0, size = 20 } = req.query;
 
         try {
-            const users = await userService.getList(username, parseInt(page), parseInt(size));
+            const users = await userService.getList(
+                username,
+                parseInt(page),
+                parseInt(size),
+            );
 
             res.status(200).json(users);
         } catch (err) {
@@ -33,8 +36,8 @@ class UserManagerController {
             await userService.updateActived(id, status);
 
             res.status(200).json({
-                success: true,
-                message: 'Update success',
+                status: 200,
+                message: 'Update actived successfully',
             });
         } catch (err) {
             next(err);

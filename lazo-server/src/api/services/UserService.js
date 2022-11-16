@@ -6,17 +6,19 @@ const FriendRequest = require('../models/FriendRequest');
 const Conversation = require('../models/Conversation');
 
 const NotFoundError = require('../exception/NotFoundError');
+
 const commonUtils = require('../../utils/commonUtils');
 
 const FRIEND_STATUS = ['FRIEND', 'FOLLOWER', 'YOU_FOLLOW', 'NOT_FRIEND'];
 
 class UserService {
     getUserSummaryInfo = async (username) => {
-        const user = await User.findOne({ username }, '-_id username name avatar isActived avatarColor gender');
+        const user = await User.findOne(
+            { username },
+            '-_id username name avatar isActived',
+        );
 
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
 
         return user;
     };
@@ -27,8 +29,14 @@ class UserService {
         const searchUserId = searchUserResult._id;
 
         searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
-        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(_id, searchUserId);
-        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(_id, searchUserId);
+        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
+            _id,
+            searchUserId,
+        );
+        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
+            _id,
+            searchUserId,
+        );
 
         return searchUserResult;
     };
@@ -38,8 +46,14 @@ class UserService {
         const searchUserResult = await User.getById(searchUserId);
 
         searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
-        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(_id, searchUserId);
-        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(_id, searchUserId);
+        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
+            _id,
+            searchUserId,
+        );
+        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
+            _id,
+            searchUserId,
+        );
 
         return searchUserResult;
     };
@@ -64,14 +78,18 @@ class UserService {
                 $match: { userIds: { $ne: ObjectId(searchUserId) } },
             },
         ]);
-        friendIdsOfSearchUser = friendIdsOfSearchUser.map((friendIdEle) => friendIdEle.userIds);
-
+        friendIdsOfSearchUser = friendIdsOfSearchUser.map(
+            (friendIdEle) => friendIdEle.userIds,
+        );
         friendIdsOfSearchUser = friendIdsOfSearchUser.filter(
             (friendIdEle) => friendIdEle + '' != myId,
         );
 
         const commonFriends = await Friend.find({
-            $and: [{ userIds: { $in: [...friendIdsOfSearchUser] } }, { userIds: { $in: [myId] } }],
+            $and: [
+                { userIds: { $in: [...friendIdsOfSearchUser] } },
+                { userIds: { $in: [myId] } },
+            ],
         });
 
         return commonFriends.length;
@@ -80,17 +98,14 @@ class UserService {
     getFriendStatus = async (myId, searchUserId) => {
         let status = FRIEND_STATUS[3];
         // check xem có bạn bè không
-        if (await Friend.existsByIds(myId, searchUserId)) {
+        if (await Friend.existsByIds(myId, searchUserId))
             status = FRIEND_STATUS[0];
-        }
         // check đối phương  gởi lời mời
-        else if (await FriendRequest.existsByIds(searchUserId, myId)) {
+        else if (await FriendRequest.existsByIds(searchUserId, myId))
             status = FRIEND_STATUS[1];
-        }
         // check mình gởi lời mời
-        else if (await FriendRequest.existsByIds(myId, searchUserId)) {
+        else if (await FriendRequest.existsByIds(myId, searchUserId))
             status = FRIEND_STATUS[2];
-        }
         return status;
     };
 
@@ -121,7 +136,10 @@ class UserService {
     };
 
     updateActived = async (userId, status) => {
-        const { nModified } = await User.updateOne({ _id: userId }, { isDeleted: status });
+        const { nModified } = await User.updateOne(
+            { _id: userId },
+            { isDeleted: status },
+        );
 
         if (nModified === 0) {
             throw new NotFoundError('User');

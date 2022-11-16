@@ -32,20 +32,17 @@ app.use(handleErr);
 
 const HTTP_PORT = process.env.HTTP_PORT || 80;
 server.listen(HTTP_PORT, function () {
-    console.log('App listening at http://localhost:' + HTTP_PORT);
+  console.log('App listening at http://localhost:' + HTTP_PORT);
 });
 
 // https
 // const key = fs.readFileSync('./https/private.key');
 // const cert = fs.readFileSync('./https/certificate.crt');
 
-// const serverHttps = https.createServer(
-//     {
-//         key,
-//         cert,
-//     },
-//     app,
-// );
+// const serverHttps = https.createServer({
+//   key,
+//   cert,
+// }, app);
 
 // const ioHttps = socketio(serverHttps);
 // socket(ioHttps);
@@ -53,5 +50,5 @@ server.listen(HTTP_PORT, function () {
 
 // const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 // serverHttps.listen(HTTPS_PORT, function () {
-//     console.log('App https listening at http://localhost:' + HTTPS_PORT);
+//   console.log('App https listening at http://localhost:' + HTTPS_PORT);
 // });

@@ -8,7 +8,12 @@ class AuthController {
         const source = req.headers['user-agent'];
 
         try {
-            const { token, refreshToken } = await authService.login(username, password, source);
+            const { token, refreshToken } = await authService.login(
+                username,
+                password,
+                source,
+            );
+
             res.status(201).json({ status: 201, token, refreshToken });
         } catch (err) {
             next(err);

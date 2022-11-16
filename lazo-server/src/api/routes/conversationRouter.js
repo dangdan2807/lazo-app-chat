@@ -10,8 +10,14 @@ const conversationRouter = (io) => {
 
     router.get('', conversationController.getList);
     router.get('/:id', conversationController.getOne);
-    router.get('/classifies/:classifyId', conversationController.getListByClassifyId);
-    router.post('/individuals/:userId', conversationController.createIndividualConversation);
+    router.get(
+        '/classifies/:classifyId',
+        conversationController.getListByClassifyId,
+    );
+    router.post(
+        '/individuals/:userId',
+        conversationController.createIndividualConversation,
+    );
     router.post('/groups', conversationController.createGroupConversation);
     router.patch('/:id/name', conversationController.rename);
     router.patch(
@@ -19,7 +25,10 @@ const conversationRouter = (io) => {
         uploadFile.singleUploadMiddleware,
         conversationController.updateAvatar,
     );
-    router.patch('/:id/avatar/base64', conversationController.updateAvatarWithBase64);
+    router.patch(
+        '/:id/avatar/base64',
+        conversationController.updateAvatarWithBase64,
+    );
     router.delete('/:id/messages', conversationController.deleteAllMessage);
     router.delete('/:id', conversationController.deleteById);
 
@@ -28,21 +37,30 @@ const conversationRouter = (io) => {
     router.post('/:id/members', memberController.addMember);
     router.delete('/:id/members/leave', memberController.leaveGroup);
     router.delete('/:id/members/:userId', memberController.deleteMember);
-    router.post('/:id/members/join-from-link', memberController.joinConversationFromLink);
-    router.patch('/:id/notify/:isNotify', conversationController.updateConversationNotify);
+    router.post(
+        '/:id/members/join-from-link',
+        memberController.joinConversationFromLink,
+    );
+    router.patch(
+        '/:id/notify/:isNotify',
+        conversationController.updateConversationNotify,
+    );
     router.get('/:id/last-view', conversationController.getLastViewOfMembers);
-    router.patch('/:id/join-from-link/:isStatus', conversationController.updateJoinFromLink);
+    router.patch(
+        '/:id/join-from-link/:isStatus',
+        conversationController.updateJoinFromLink,
+    );
     router.get('/:id/summary', conversationController.getConversationSummary);
 
+    // admin
     router.post(
         '/:id/managers',
-        conversationController.addManagersForConversation
+        conversationController.addManagersForConversation,
     );
     router.delete(
         '/:id/managers',
-        conversationController.deleteManagersForConversation
+        conversationController.deleteManagersForConversation,
     );
-
     return router;
 };
 

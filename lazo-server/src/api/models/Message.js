@@ -24,7 +24,16 @@ const messageSchema = new Schema(
         replyMessageId: ObjectId,
         type: {
             type: String,
-            enum: ['TEXT', 'IMAGE', 'STICKER', 'VIDEO', 'FILE', 'HTML', 'NOTIFY', 'VOTE'],
+            enum: [
+                'TEXT',
+                'IMAGE',
+                'STICKER',
+                'VIDEO',
+                'FILE',
+                'HTML',
+                'NOTIFY',
+                'VOTE',
+            ],
             require: true,
         },
         reacts: {
@@ -82,7 +91,9 @@ messageSchema.statics.getByIdOfGroup = async (_id) => {
                 as: 'user',
             },
         },
-        { $unwind: '$user' },
+        {
+            $unwind: '$user',
+        },
         {
             $lookup: {
                 from: 'users',
@@ -266,6 +277,13 @@ messageSchema.statics.getByIdOfIndividual = async (_id) => {
     throw new NotFoundError('Message');
 };
 
+messageSchema.statics.countUnread = async (time, conversationId) => {
+    return await Message.countDocuments({
+        createdAt: { $gt: time },
+        conversationId,
+    });
+};
+
 messageSchema.statics.getById = async (_id, message = 'Message') => {
     const messageResult = await Message.findById(_id);
 
@@ -293,7 +311,11 @@ messageSchema.statics.getByIdAndConversationId = async (
     return messageResult;
 };
 
-messageSchema.statics.getByIdAndChannelId = async (_id, channelId, message = 'Message') => {
+messageSchema.statics.getByIdAndChannelId = async (
+    _id,
+    channelId,
+    message = 'Message',
+) => {
     const messageResult = await Message.findOne({
         _id,
         channelId,
@@ -306,7 +328,10 @@ messageSchema.statics.getByIdAndChannelId = async (_id, channelId, message = 'Me
     return messageResult;
 };
 
-messageSchema.statics.countDocumentsByConversationIdAndUserId = async (conversationId, userId) => {
+messageSchema.statics.countDocumentsByConversationIdAndUserId = async (
+    conversationId,
+    userId,
+) => {
     const totalMessages = await Message.countDocuments({
         conversationId,
         deletedUserIds: {
@@ -491,7 +516,9 @@ messageSchema.statics.getListByConversationIdAndTypeAndUserId = async (
                 as: 'user',
             },
         },
-        { $unwind: '$user' },
+        {
+            $unwind: '$user',
+        },
         {
             $lookup: {
                 from: 'users',
@@ -594,16 +621,33 @@ messageSchema.statics.getListByConversationIdAndTypeAndUserId = async (
                 createdAt: 1,
             },
         },
-        { $sort: { createdAt: -1 } },
-        { $skip: skip },
-        { $limit: limit },
-        { $sort: { createdAt: 1 } },
+        {
+            $sort: {
+                createdAt: -1,
+            },
+        },
+        {
+            $skip: skip,
+        },
+        {
+            $limit: limit,
+        },
+        {
+            $sort: {
+                createdAt: 1,
+            },
+        },
     ]);
 
     return messages;
 };
 
-messageSchema.statics.getListByChannelIdAndUserId = async (channelId, userId, skip, limit) => {
+messageSchema.statics.getListByChannelIdAndUserId = async (
+    channelId,
+    userId,
+    skip,
+    limit,
+) => {
     const messages = await Message.aggregate([
         {
             $match: {
