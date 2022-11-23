@@ -22,33 +22,39 @@ app.use(useragent.express());
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
-// http
-const server = http.createServer(app);
-const io = socketio(server);
-socket(io);
-routes(app, io);
+const isHttps = process.env.HTTPS === 'true';
+if (isHttps) {
+    // https
+    const key = fs.readFileSync('./https/private.key');
+    const cert = fs.readFileSync('./https/certificate.crt');
 
-app.use(handleErr);
+    const serverHttps = https.createServer(
+        {
+            key,
+            cert,
+        },
+        app,
+    );
 
-const HTTP_PORT = process.env.HTTP_PORT || 80;
-server.listen(HTTP_PORT, function () {
-  console.log('App listening at http://localhost:' + HTTP_PORT);
-});
+    const ioHttps = socketio(serverHttps);
+    socket(ioHttps);
+    routes(app, ioHttps);
 
-// https
-// const key = fs.readFileSync('./https/private.key');
-// const cert = fs.readFileSync('./https/certificate.crt');
+    const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+    serverHttps.listen(HTTPS_PORT, function () {
+        console.log('App https listening at http://localhost:' + HTTPS_PORT);
+    });
+} else {
+    // http
+    const server = http.createServer(app);
+    const io = socketio(server);
+    socket(io);
+    routes(app, io);
 
-// const serverHttps = https.createServer({
-//   key,
-//   cert,
-// }, app);
+    app.use(handleErr);
 
-// const ioHttps = socketio(serverHttps);
-// socket(ioHttps);
-// routes(app, ioHttps);
-
-// const HTTPS_PORT = process.env.HTTPS_PORT || 443;
-// serverHttps.listen(HTTPS_PORT, function () {
-//   console.log('App https listening at http://localhost:' + HTTPS_PORT);
-// });
+    const HTTP_PORT = process.env.HTTP_PORT || 80;
+    server.listen(HTTP_PORT, function () {
+        console.log('App listening at http://localhost:' + HTTP_PORT);
+    });
+}
