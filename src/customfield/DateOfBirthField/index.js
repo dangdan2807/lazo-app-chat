@@ -110,6 +110,7 @@ function DateOfBirthField({ field }) {
                 defaultValue={day}
                 style={{ width: 120 }}
                 onChange={handleDayChange}
+                dropDownStyle={{ position: 'fixed' }}
             >
                 {renderDays()}
             </Select>

@@ -1,4 +1,8 @@
-import { EditOutlined, InfoCircleFilled, SearchOutlined } from '@ant-design/icons';
+import {
+    EditOutlined,
+    InfoCircleFilled,
+    SearchOutlined,
+} from '@ant-design/icons';
 import { Checkbox, Col, Divider, Input, Modal, Row } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import PropTypes from 'prop-types';
@@ -19,18 +23,17 @@ ModalCreateGroup.defaultProps = {
     isVisible: false,
     onCancel: null,
     onOk: null,
-    loading: false
+    loading: false,
 };
 
 function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
     const [checkList, setCheckList] = useState([]);
     const [itemSelected, setItemSelected] = useState([]);
-    const { friends } = useSelector(state => state.chat);
+    const { friends } = useSelector((state) => state.chat);
     const [isShowError, setIsShowError] = useState(false);
     const [nameGroup, setNameGroup] = useState('');
     const [frInput, setFrInput] = useState('');
     const [initalFriend, setInitalFriend] = useState([]);
-
 
     useEffect(() => {
         if (isVisible) {
@@ -42,54 +45,49 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
             setNameGroup('');
             setIsShowError(false);
         }
-    }, [isVisible])
-
-
-
-
+    }, [isVisible]);
 
     const handleOk = () => {
-        const userIds = itemSelected.map(item => item._id);
+        const userIds = itemSelected.map((item) => item._id);
         if (onOk) {
             onOk({
                 name: nameGroup,
                 userIds,
-            })
+            });
         }
     };
 
     const handleCancel = () => {
         if (onCancel) {
-            onCancel(false)
+            onCancel(false);
         }
     };
 
-
-
     const handleRemoveItem = (id) => {
-
         let checkListTemp = [...checkList];
         let itemSelectedTemp = [...itemSelected];
 
-        itemSelectedTemp = itemSelectedTemp.filter(element => element._id !== id);
+        itemSelectedTemp = itemSelectedTemp.filter(
+            (element) => element._id !== id
+        );
 
-        checkListTemp = checkListTemp.filter(element => element !== id);
+        checkListTemp = checkListTemp.filter((element) => element !== id);
 
         setCheckList(checkListTemp);
         setItemSelected(itemSelectedTemp);
 
         setFrInput('');
         setInitalFriend(friends);
-    }
+    };
 
     const handleChange = (e) => {
         const value = e.target.value;
         setNameGroup(value);
-    }
+    };
 
     const handleOnBlur = (e) => {
         !nameGroup.length > 0 ? setIsShowError(true) : setIsShowError(false);
-    }
+    };
 
     const handleChangeFriend = (e) => {
         const value = e.target.value;
@@ -105,30 +103,35 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
                 if (index > -1) {
                     realFriends.push(ele);
                 }
-            })
+            });
             setInitalFriend(realFriends);
         }
-    }
+    };
 
     const handleChangeCheckBox = (e) => {
         const value = e.target.value;
 
         // check xem có trong checklist chưa
-        const index = checkList.findIndex(element => element === value);
+        const index = checkList.findIndex((element) => element === value);
         let checkListTemp = [...checkList];
         let itemSelectedTemp = [...itemSelected];
 
-
         // nếu như đã có
         if (index !== -1) {
-            itemSelectedTemp = itemSelectedTemp.filter(element => element._id !== value);
+            itemSelectedTemp = itemSelectedTemp.filter(
+                (element) => element._id !== value
+            );
 
-            checkListTemp = checkListTemp.filter(element => element !== value);
+            checkListTemp = checkListTemp.filter(
+                (element) => element !== value
+            );
 
             // chưa có
         } else {
             checkListTemp.push(value);
-            const index = initalFriend.findIndex(element => element._id === value);
+            const index = initalFriend.findIndex(
+                (element) => element._id === value
+            );
 
             if (index !== -1) {
                 itemSelectedTemp.push(initalFriend[index]);
@@ -136,10 +139,7 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
         }
         setCheckList(checkListTemp);
         setItemSelected(itemSelectedTemp);
-
-    }
-
-
+    };
 
     return (
         <Modal
@@ -148,12 +148,12 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
             onOk={handleOk}
             onCancel={handleCancel}
             centered={true}
-            okText='Tạo nhóm'
-            cancelText='Hủy'
-            okButtonProps={{ disabled: !(itemSelected.length > 0 && nameGroup.length > 0) }}
+            okText="Tạo nhóm"
+            cancelText="Hủy"
+            okButtonProps={{
+                disabled: !(itemSelected.length > 0 && nameGroup.length > 0),
+            }}
             confirmLoading={loading}
-
-
         >
             <div id="modal-create-group">
                 <div className="heading-group">
@@ -171,11 +171,18 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
                             onChange={handleChange}
                         />
 
-                        {isShowError && <Text type="danger"><InfoCircleFilled /> Tên nhóm không được để trống</Text>}
+                        {isShowError && (
+                            <Text type="danger">
+                                <InfoCircleFilled /> Tên nhóm không được để
+                                trống
+                            </Text>
+                        )}
                     </div>
                 </div>
 
-                <Divider orientation="left" plain><span className='divider-title'>Thêm bạn vào nhóm</span></Divider>
+                <Divider orientation="left" plain>
+                    <span className="divider-title">Thêm bạn vào nhóm</span>
+                </Divider>
                 <div className="search-friend-input">
                     <Input
                         size="middle"
@@ -187,15 +194,17 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
                     />
                 </div>
 
-
                 <Divider />
 
                 <div className="list-friend-interact">
-                    <div className={`list-friend-interact--left ${itemSelected.length > 0 ? '' : 'full-container'}`}>
+                    <div
+                        className={`list-friend-interact--left ${
+                            itemSelected.length > 0 ? '' : 'full-container'
+                        }`}
+                    >
                         <div className="title-list-friend">
                             <span>Danh sách bạn bè</span>
                         </div>
-
 
                         <div className="checkbox-list-friend">
                             <Checkbox.Group
@@ -204,36 +213,44 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
                                 value={checkList}
                             >
                                 <Row gutter={[0, 12]}>
-
                                     {initalFriend.map((element, index) => (
                                         <Col span={24} key={index}>
-                                            <Checkbox value={element._id} onChange={handleChangeCheckBox}>
+                                            <Checkbox
+                                                value={element._id}
+                                                onChange={handleChangeCheckBox}
+                                            >
                                                 <div className="item-checkbox">
                                                     <PersonalIcon
                                                         demention={36}
                                                         avatar={element.avatar}
                                                         name={element.name}
-                                                        color={element.avatarColor}
+                                                        color={
+                                                            element.avatarColor
+                                                        }
                                                     />
 
-                                                    <span className='item-name'>{element.name}</span>
+                                                    <span className="item-name">
+                                                        {element.name}
+                                                    </span>
                                                 </div>
                                             </Checkbox>
                                         </Col>
-
-
                                     ))}
-
                                 </Row>
                             </Checkbox.Group>
-
                         </div>
                     </div>
 
-
-                    <div className={`list-friend-interact--right ${itemSelected.length > 0 ? '' : 'close'}`}>
+                    <div
+                        className={`list-friend-interact--right ${
+                            itemSelected.length > 0 ? '' : 'close'
+                        }`}
+                    >
                         <div className="title-list-friend-checked">
-                            <strong>Đã chọn: {itemSelected.length > 0 && itemSelected.length}</strong>
+                            <strong>
+                                Đã chọn:{' '}
+                                {itemSelected.length > 0 && itemSelected.length}
+                            </strong>
                         </div>
 
                         <div className="checkbox-list-friend">
@@ -241,14 +258,11 @@ function ModalCreateGroup({ isVisible, onCancel, onOk, loading }) {
                                 items={itemSelected}
                                 onRemove={handleRemoveItem}
                             />
-
                         </div>
                     </div>
                 </div>
-
-
             </div>
-        </Modal >
+        </Modal>
     );
 }
 

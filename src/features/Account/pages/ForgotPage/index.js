@@ -212,39 +212,43 @@ function ForgotPage(props) {
                                                     </Col>
 
                                                     <Col span={24}>
-                                                        <Button
-                                                            block
-                                                            type="primary"
-                                                            disabled={
-                                                                counter > 0
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                            onClick={() =>
-                                                                handleResendOTP(
-                                                                    formikProps
-                                                                        .values
-                                                                        .username
-                                                                )
-                                                            }
-                                                        >
-                                                            Gửi lại OTP{' '}
-                                                            {`${
-                                                                counter > 0
-                                                                    ? `sau ${counter}`
-                                                                    : ''
-                                                            }`}
-                                                        </Button>
+                                                        <div className="button-container">
+                                                            <button
+                                                                className="button-custom"
+                                                                type="submit"
+                                                                onClick={() =>
+                                                                    handleResendOTP(
+                                                                        formikProps
+                                                                            .values
+                                                                            .username
+                                                                    )
+                                                                }
+                                                                block
+                                                                disabled={
+                                                                    counter > 0
+                                                                        ? true
+                                                                        : false
+                                                                }
+                                                            >
+                                                                Gửi lại OTP{' '}
+                                                                {`${
+                                                                    counter > 0
+                                                                        ? `sau ${counter}`
+                                                                        : ''
+                                                                }`}
+                                                            </button>
+                                                        </div>
                                                     </Col>
 
                                                     <Col span={24}>
-                                                        <Button
-                                                            block
-                                                            type="primary"
-                                                            htmlType="submit"
-                                                        >
-                                                            Xác nhận
-                                                        </Button>
+                                                        <div className="button-container">
+                                                            <button
+                                                                className="button-custom"
+                                                                type="submit"
+                                                            >
+                                                                Xác nhận
+                                                            </button>
+                                                        </div>
                                                     </Col>
                                                 </>
                                             ) : (
@@ -264,18 +268,23 @@ function ForgotPage(props) {
                                                         />
                                                     </Col>
                                                     <Col span={24}>
-                                                        {/* <Button
+                                                        {/* {/* <Button
                                                             htmlType="submit"
                                                             block
                                                             type="primary"
+                                                                shape="round"
+                                                                style={{backgroundColor:"#ca24ae", borderColor:"#ca24ae"}}
                                                         >
                                                             Xác nhận
                                                         </Button> */}
-                                                        <div className='button-container'>
-                                                    <button className='button-login' type='submit'>
-                                                        Xác nhận
-                                                    </button>
-                                                </div>
+                                                        <div className="button-container">
+                                                            <button
+                                                                className="button-custom"
+                                                                type="submit"
+                                                            >
+                                                                Xác nhận
+                                                            </button>
+                                                        </div>
                                                     </Col>
                                                 </>
                                             )}

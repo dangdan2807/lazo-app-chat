@@ -63,7 +63,6 @@ function RegistryPage(props) {
                 .then((value) => {
                     // openNotification(`Đã gửi lại mã OTP đến  ${username}`);
                     message.error('Email hoặc số điện thoại đã được đăng ký');
-
                 })
                 .catch(async () => {
                     try {
@@ -131,7 +130,7 @@ function RegistryPage(props) {
             <div className="account-wrapper">
                 <div className="account_right">
                     <Title level={2} style={{ textAlign: 'center' }}>
-                        <Text style={{ color: '$purple-zelo' }}>Đăng Ký</Text>
+                        <Text style={{ color: '#a64bf4' }}>Đăng Ký</Text>
                     </Title>
                     <Divider />
                     <div className="form-account">
@@ -167,7 +166,8 @@ function RegistryPage(props) {
                                                     </Col>
 
                                                     <Col span={24}>
-                                                        {/* <Button
+                                                        {
+                                                            /* <Button
                                                             onClick={() =>
                                                                 handleResendOTP(
                                                                     formikProps
@@ -185,29 +185,35 @@ function RegistryPage(props) {
                                                         >
                                                             
                                                         </Button> */
-                                                        <div className='button-container'>
-                                                        <button className='button-login' type='submit' onClick={() =>
-                                                                handleResendOTP(
-                                                                    formikProps
-                                                                        .values
-                                                                        .username
-                                                                )
-                                                            }  block
-                                                            disabled={
-                                                                counter > 0
-                                                                    ? true
-                                                                    : false
-                                                            }>
-                                                        Gửi lại OTP{' '}
-                                                            {`${
-                                                                counter > 0
-                                                                    ? `sau ${counter}`
-                                                                    : ''
-                                                            }`}
-                                                    </button>
-                                                </div>
+                                                            <div className="button-container">
+                                                                <button
+                                                                    className="button-custom"
+                                                                    type="submit"
+                                                                    onClick={() =>
+                                                                        handleResendOTP(
+                                                                            formikProps
+                                                                                .values
+                                                                                .username
+                                                                        )
+                                                                    }
+                                                                    block
+                                                                    disabled={
+                                                                        counter >
+                                                                        0
+                                                                            ? true
+                                                                            : false
+                                                                    }
+                                                                >
+                                                                    Gửi lại OTP{' '}
+                                                                    {`${
+                                                                        counter >
+                                                                        0
+                                                                            ? `sau ${counter}`
+                                                                            : ''
+                                                                    }`}
+                                                                </button>
+                                                            </div>
                                                         }
-
                                                     </Col>
                                                 </>
                                             ) : (
@@ -299,8 +305,11 @@ function RegistryPage(props) {
                                                 >
                                                     Xác nhận
                                                 </Button> */}
-                                                <div className='button-container'>
-                                                    <button className='button-login' type='submit'>
+                                                <div className="button-container">
+                                                    <button
+                                                        className="button-custom"
+                                                        type="submit"
+                                                    >
                                                         Xác nhận
                                                     </button>
                                                 </div>
