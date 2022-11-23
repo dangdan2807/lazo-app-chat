@@ -162,11 +162,6 @@ function NavigationChatBox(props) {
                     </UploadFile>
                 </li>
 
-                <li className='item-chat-box'>
-                    <div title='Định dạng tin nhắn' onClick={handleOnClickTextFormat}>
-                        <FontColorsOutlined />
-                    </div>
-                </li>
 
                 {checkIsGroup && (
                     <li className='item-chat-box'>
