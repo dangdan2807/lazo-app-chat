@@ -25,8 +25,14 @@ app.use(express.json({ limit: '50mb' }));
 const isHttps = process.env.HTTPS === 'true';
 if (isHttps) {
     // https
-    const key = fs.readFileSync('./https/private.key');
-    const cert = fs.readFileSync('./https/certificate.crt');
+    let key = "";
+    let cert = "";
+    try {
+        key = fs.readFileSync('./https/private.key');
+        cert = fs.readFileSync('./https/certificate.crt');
+    } catch (error) {
+        console.log(error);
+    }
 
     const serverHttps = https.createServer(
         {
