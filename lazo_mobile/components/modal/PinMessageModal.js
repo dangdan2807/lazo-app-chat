@@ -191,7 +191,7 @@ const PinMessageModal = props => {
                                   type={iconType}
                                   // name="message1"
                                   // type="antdesign"
-                                  color="#4cacfc"
+                                  color="#a64bf4"
                                 />
                                 <ListItem.Content>
                                   <ListItem.Title>{content}</ListItem.Title>
@@ -225,7 +225,7 @@ const PinMessageModal = props => {
               <Button
                 title="Quay lại"
                 containerStyle={styles.buttonClose}
-                buttonStyle={{borderRadius: 50}}
+                buttonStyle={{borderRadius: 50,backgroundColor:'#a64bf4'}}
                 onPress={handleCloseModal}
               />
             </View>
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#a64bf4',
     width: '100%',
     borderRadius: 50,
   },

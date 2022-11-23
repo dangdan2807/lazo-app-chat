@@ -114,7 +114,10 @@ const ChangePasswordModal = props => {
                   titleStyle={{color: 'black'}}
                   containerStyle={{marginRight: 20}}
                 />
-                <Button title="Thay đổi" onPress={handleSubmit} type="clear" />
+                {/* <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+                  <Text style={{color:'#a64bf4',fontSize:16}}>Thay đổi</Text>
+                </TouchableOpacity> */}
+                <Button titleStyle={{color:'#a64bf4'}} title="Thay đổi" onPress={handleSubmit} type="clear" />
               </View>
             </>
           );
@@ -156,6 +159,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 5,
     // padding: 15,
+  },
+  button:{
+    padding:10,
   },
 
   header: {

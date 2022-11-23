@@ -30,7 +30,7 @@ const VoteProgress = props => {
         <View
           style={
             ([StyleSheet.absoluteFill],
-            {backgroundColor: '#bfe0ff', borderRadius: 5, width: `${percent}%`})
+            {backgroundColor: '#f3e7fd', borderRadius: 5, width: `${percent}%`})
           }>
           <View
             style={{
@@ -56,7 +56,7 @@ const VoteProgress = props => {
                   <Icon
                     name="check-circle"
                     type="material-community"
-                    color="#1194ff"
+                    color="#a64bf4"
                   />
                 }
                 uncheckedIcon={

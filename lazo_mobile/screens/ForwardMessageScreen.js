@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF5B05',
+    backgroundColor: '#a64bf4',
     marginTop: -26,
     marginLeft: 14,
   },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   bottomDivider: {
     width: '100%',
-    backgroundColor: '#E5E6E8',
+    backgroundColor: '#a64bf4',
     height: 1,
     marginLeft: 82,
     // alignItems: "center",

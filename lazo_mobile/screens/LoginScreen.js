@@ -61,7 +61,7 @@ const LoginScreen = ({navigation}) => {
     <KeyboardAvoidingView style={styles.container}>
       <LinearGradient
         // Background Linear Gradient
-        colors={['#257afe', '#00bafa']}
+        colors={['#a64bf4', '#cf9ff9']}
         style={{height: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight}}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   lazo: {
     textAlign: 'center',
-    color: '#0068FF',
+    color: '#a64bf4',
     fontWeight: 'bold',
     fontSize: 80,
     // marginTop: 80,

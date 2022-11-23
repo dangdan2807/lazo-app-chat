@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     minWidth: 60,
   },
-  buttonTitle: {fontSize: 13},
+  buttonTitle: {fontSize: 13,color:'#a64bf4'},
   buttonContainer: {
     borderRadius: 50,
     marginRight: 10,

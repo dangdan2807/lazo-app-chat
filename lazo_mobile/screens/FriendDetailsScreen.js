@@ -257,6 +257,7 @@ export default function FriendDetailsScreen({navigation}) {
               <Button
                 containerStyle={styles.buttonContainer}
                 title="Từ chối"
+                titleStyle={{color:'white'}}
                 buttonStyle={styles.button}
                 type="outline"
                 onPress={handleDeleteFriendRequest}
@@ -267,6 +268,7 @@ export default function FriendDetailsScreen({navigation}) {
                 <Button
                   containerStyle={styles.buttonContainer}
                   title="Nhắn tin"
+                  titleStyle={{color:'white'}}
                   buttonStyle={styles.button}
                   type="outline"
                   onPress={() =>
@@ -277,6 +279,7 @@ export default function FriendDetailsScreen({navigation}) {
             <Button
               containerStyle={styles.buttonContainer}
               title={buttonTitle}
+              titleStyle={{color:'white'}}
               buttonStyle={styles.button}
               onPress={handleOnPress}
               type={
@@ -405,5 +408,5 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 20,
   },
-  button: {borderRadius: 20, minWidth: WINDOW_WIDTH / 3},
+  button: {borderRadius: 20, minWidth: WINDOW_WIDTH / 3,backgroundColor:'#a64bf4'},
 });

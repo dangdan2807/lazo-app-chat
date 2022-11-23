@@ -27,9 +27,10 @@ export default function TabNavigator(props) {
       screenOptions={({route, navigation}) => ({
         tabBarLabelStyle: {fontSize: 12},
         tabBarItemStyle: {height: 50},
-        tabBarActiveTintColor: '#0275d8',
+        tabBarActiveTintColor: '#a64bf4',
         tabBarInactiveTintColor: 'grey',
         swipeEnabled: true,
+        tabBarPressColor:'#f3e7fd',
 
         // tabBarLabel: navigation.isFocused() ? route.name : "",
         tabBarLabel: ({focused, color}) => {
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF5B05',
+    backgroundColor: '#a64bf4',
     marginTop: -26,
     marginLeft: 14,
   },

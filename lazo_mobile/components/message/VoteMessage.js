@@ -66,9 +66,10 @@ const VoteMessage = props => {
         )}
         <Button
           title="Bình chọn"
+          titleStyle={{color:'#a64bf4'}}
           type="clear"
           onPress={goToVoteScreen}
-          buttonStyle={{backgroundColor: '#f0f8fb', borderRadius: 50}}
+          buttonStyle={{backgroundColor: '#f3e7fd', borderRadius: 50}}
           containerStyle={{borderRadius: 50, width: '100%', marginTop: 8}}
         />
       </View>

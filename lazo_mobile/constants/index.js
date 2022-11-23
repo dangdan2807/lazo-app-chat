@@ -1,5 +1,5 @@
-export const REACT_APP_API_URL = 'https://13.212.201.145';
-export const REACT_APP_SOCKET_URL = 'https://13.212.201.145';
+export const REACT_APP_API_URL = 'http://13.212.201.145';
+export const REACT_APP_SOCKET_URL = 'http://13.212.201.145';
 
 export const DEFAULT_MESSAGE_PARAMS = {
   page: 0,

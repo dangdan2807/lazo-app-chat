@@ -183,6 +183,7 @@ const VoteDetailScreen = ({navigation}) => {
         })}
         <Button
           title="+ Thêm phương án"
+          titleStyle={{color:'#a64bf4'}}
           type="clear"
           containerStyle={{marginVertical: 8}}
           onPress={() => {
@@ -220,7 +221,7 @@ const VoteDetailScreen = ({navigation}) => {
         <Button
           title="Bình chọn"
           disabled={isDisable}
-          buttonStyle={{borderRadius: 50}}
+          buttonStyle={{borderRadius: 50,backgroundColor:'#a64bf4'}}
           containerStyle={{width: '100%', borderRadius: 50}}
           onPress={handleOnPressVote}
         />

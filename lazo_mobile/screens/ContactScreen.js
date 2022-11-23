@@ -136,7 +136,7 @@ export default function ContactScreen({navigation}) {
                     name="group"
                     type="material"
                     title="Lời mời kết bạn"
-                    backgroundColor="#00a4f4"
+                    backgroundColor="#a64bf4"
                     handlePress={() => navigation.navigate('Lời mời kết bạn')}
                   />
                   <ContactAction
@@ -189,7 +189,7 @@ export default function ContactScreen({navigation}) {
             name="group"
             type="material"
             title="Lời mời kết bạn"
-            backgroundColor="#00a4f4"
+            backgroundColor="#a64bf4"
             handlePress={() => navigation.navigate('Lời mời kết bạn')}
           />
           <ContactAction
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   bottomDivider: {
     width: '100%',
-    backgroundColor: '#E5E6E8',
+    backgroundColor: '#c387f7',
     height: 1,
     marginLeft: 82,
     // alignItems: "center",

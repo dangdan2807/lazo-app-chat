@@ -24,7 +24,7 @@ export default function FriendRequestScreen() {
       screenOptions={({route, navigation}) => ({
         tabBarLabelStyle: {fontSize: 12},
         tabBarItemStyle: {height: 50},
-        tabBarActiveTintColor: '#0275d8',
+        tabBarActiveTintColor: '#9327f1',
         tabBarInactiveTintColor: 'grey',
         swipeEnabled: true,
         // tabBarLabel: navigation.isFocused() ? route.name : "",
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF5B05',
+    backgroundColor: '#a64bf4',
     marginTop: -26,
     marginLeft: 14,
   },

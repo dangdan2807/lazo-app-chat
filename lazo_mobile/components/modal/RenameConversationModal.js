@@ -81,7 +81,7 @@ const RenameConversationModal = props => {
                         titleStyle={{color: 'black'}}
                         containerStyle={{marginRight: 20}}
                       />
-                      <Button title="Lưu" onPress={handleSubmit} type="clear" />
+                      <Button title="Lưu" titleStyle={{color:'#a64bf4'}} onPress={handleSubmit} type="clear" />
                     </View>
                   </>
                 );

@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   focusCell: {
-    borderBottomColor: '#007AFF',
+    borderBottomColor: '#a64bf4',
     borderBottomWidth: 2,
   },
 

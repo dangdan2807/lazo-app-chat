@@ -241,8 +241,8 @@ export default function FriendItem(props) {
                 ? 'outline'
                 : 'solid'
             }
-            buttonStyle={styles.buttonStyle}
-            titleStyle={styles.buttonTitle}
+            buttonStyle={{backgroundColor:'#a64bf4',borderRadius:50,paddingHorizontal:15,paddingVertical:5,minWidth:60}}
+            titleStyle={{color:'white'}}
             onPress={handleOnPress}
           />
         )}
@@ -282,11 +282,13 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     borderRadius: 50,
+    borderColor:'#a64bf4',
+    backgroundColor:'white',
     paddingHorizontal: 15,
     paddingVertical: 5,
     minWidth: 60,
   },
-  buttonTitle: {fontSize: 13},
+  buttonTitle: {fontSize: 13,color:'#a64bf4'},
   buttonContainer: {
     marginRight: 10,
     minWidth: 60,

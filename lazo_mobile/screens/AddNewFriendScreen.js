@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Pressable,
   SafeAreaView,
@@ -62,6 +63,7 @@ export default function AddNewFriendScreen({navigation}) {
         setErrorMessage('');
       } catch (error) {
         commonFuc.notifyMessage('Không tìm thấy');
+        //Alert.alert('Khong tim thay');
         console.error('Không tìm thấy', error);
       }
     }
@@ -189,7 +191,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     minWidth: 60,
   },
-  buttonTitle: {fontSize: 13},
+  buttonTitle: {
+    fontSize: 13,
+    color:'#a64bf4',
+  },
   buttonContainer: {
     borderRadius: 50,
   },

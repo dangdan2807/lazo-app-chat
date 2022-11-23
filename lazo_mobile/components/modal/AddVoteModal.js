@@ -157,6 +157,7 @@ const AddVoteModal = props => {
 
               <Button
                 title="Thêm phương án"
+                titleStyle={{color:'#a64bf4'}}
                 type="clear"
                 onPress={addInput}
                 containerStyle={{marginTop: 10}}
@@ -167,6 +168,7 @@ const AddVoteModal = props => {
               <View style={styles.footer}>
                 <Button
                   title="Hủy"
+                  titleStyle={{color:'#a64bf4'}}
                   type="outline"
                   containerStyle={styles.buttonClose}
                   buttonStyle={{
@@ -179,6 +181,7 @@ const AddVoteModal = props => {
                   containerStyle={styles.buttonClose}
                   buttonStyle={{
                     borderRadius: 50,
+                    backgroundColor:'#a64bf4'
                   }}
                   onPress={handleCreateVote}
                 />
@@ -262,6 +265,7 @@ const styles = StyleSheet.create({
     width: '45%',
     borderRadius: 50,
   },
+
   option: {
     fontSize: 15,
     // backgroundColor: 'red',

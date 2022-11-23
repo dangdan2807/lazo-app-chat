@@ -175,6 +175,7 @@ const ListChannel = props => {
       )}
       <Button
         title="Thêm channel"
+        titleStyle={{color:'#a64bf4'}}
         onPress={onAddChannelPress}
         type="outline"
         containerStyle={{marginHorizontal: 10, marginVertical: 5}}
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF5B05',
+    backgroundColor: '#a64bf4',
   },
   badgeElement: {color: 'white', fontSize: 10},
 });

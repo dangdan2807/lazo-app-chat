@@ -15,9 +15,9 @@ export const SCREEN_HEIGHT = Dimensions.get('screen').height;
 
 export const STICKER_SIZE = WINDOW_WIDTH * 0.2;
 
-export const MAIN_COLOR = '#0068FF';
+export const MAIN_COLOR = '#a64bf4';
 export const GREY_COLOR = '#889197';
-export const OVERLAY_AVATAR_COLOR = '#019dd7';
+export const OVERLAY_AVATAR_COLOR = '#cf9ff9';
 export const OVERLAY_AVATAR_COLOR_GREY = '#d9dfeb';
 
 const config = {
@@ -37,7 +37,7 @@ export const globalScreenOptions = {
   headerBackground: () => (
     <LinearGradient
       // Background Linear Gradient
-      colors={['#257afe', '#00bafa']}
+      colors={['#a64bf4', '#cf9ff9']}
       style={StyleSheet.absoluteFill}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}
@@ -64,7 +64,7 @@ const globalStyles = StyleSheet.create({
   },
   lazo: {
     textAlign: 'center',
-    color: '#4c92ff',
+    color: '#a64bf4',
     fontWeight: 'bold',
     fontSize: 80,
     // marginTop: 80,
@@ -106,7 +106,7 @@ const globalStyles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF5B05',
+    backgroundColor: '#a64bf4',
   },
   badgeElement: {color: 'white', fontSize: 10},
   imageMessage: {

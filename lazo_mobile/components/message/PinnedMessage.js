@@ -51,7 +51,7 @@ const PinnedMessage = props => {
       <TouchableOpacity onPress={handleOpenPinMessage}>
         <View style={styles.container}>
           <ListItem containerStyle={styles.item}>
-            <Icon name="message1" type="antdesign" color="#4cacfc" />
+            <Icon name="message1" type="antdesign" color="#a64bf4" />
             <ListItem.Content>
               <ListItem.Title numberOfLines={1}>
                 {renderContent()}

@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   lazo: {
     textAlign: 'center',
-    color: '#0068FF',
+    color: '#a64bf4',
     fontWeight: 'bold',
     fontSize: 80,
     // marginTop: 80,

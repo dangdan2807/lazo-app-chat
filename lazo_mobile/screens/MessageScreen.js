@@ -58,6 +58,7 @@ import {fetchPinMessages, resetPinSlice} from '../redux/pinSlice';
 const page = DEFAULT_PAGE;
 const size = DEFAULT_PAGE_SIZE;
 
+//Nhom7_Hongthuy-TrungTin
 export default function MessageScreen({navigation, route}) {
   // Props
   const {conversationId, channelIdRef} = route.params;
