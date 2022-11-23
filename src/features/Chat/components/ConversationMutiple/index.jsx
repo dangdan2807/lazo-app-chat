@@ -45,11 +45,11 @@ function ConversationMutiple(props) {
             </div>
 
             <div className='middle-side-box'>
-                <span className='name-box'>U30 Đồ Sơn</span>
+                <span className='name-box'>Test</span>
 
                 <div className='lastest-message'>
                     <span>Suzy: </span>
-                    <span>Em Xuân iu các</span>
+                    <span>hello các bạn</span>
                 </div>
             </div>
 

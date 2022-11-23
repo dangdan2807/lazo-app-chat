@@ -61,6 +61,7 @@ function RegistryPage(props) {
             await loginApi
                 .fetchUser(username)
                 .then((value) => {
+                    // openNotification(`Đã gửi lại mã OTP đến  ${username}`);
                     message.error('Email hoặc số điện thoại đã được đăng ký');
                 })
                 .catch(async () => {
@@ -165,7 +166,8 @@ function RegistryPage(props) {
                                                     </Col>
 
                                                     <Col span={24}>
-                                                        <Button
+                                                        {
+                                                            /* <Button
                                                             onClick={() =>
                                                                 handleResendOTP(
                                                                     formikProps
@@ -181,13 +183,37 @@ function RegistryPage(props) {
                                                                     : false
                                                             }
                                                         >
-                                                            Gửi lại OTP{' '}
-                                                            {`${
-                                                                counter > 0
-                                                                    ? `sau ${counter}`
-                                                                    : ''
-                                                            }`}
-                                                        </Button>
+                                                            
+                                                        </Button> */
+                                                            <div className="button-container">
+                                                                <button
+                                                                    className="button-custom"
+                                                                    type="submit"
+                                                                    onClick={() =>
+                                                                        handleResendOTP(
+                                                                            formikProps
+                                                                                .values
+                                                                                .username
+                                                                        )
+                                                                    }
+                                                                    block
+                                                                    disabled={
+                                                                        counter >
+                                                                        0
+                                                                            ? true
+                                                                            : false
+                                                                    }
+                                                                >
+                                                                    Gửi lại OTP{' '}
+                                                                    {`${
+                                                                        counter >
+                                                                        0
+                                                                            ? `sau ${counter}`
+                                                                            : ''
+                                                                    }`}
+                                                                </button>
+                                                            </div>
+                                                        }
                                                     </Col>
                                                 </>
                                             ) : (
@@ -279,8 +305,11 @@ function RegistryPage(props) {
                                                 >
                                                     Xác nhận
                                                 </Button> */}
-                                                <div className='button-container'>
-                                                    <button className='button-custom' type='submit'>
+                                                <div className="button-container">
+                                                    <button
+                                                        className="button-custom"
+                                                        type="submit"
+                                                    >
                                                         Xác nhận
                                                     </button>
                                                 </div>
