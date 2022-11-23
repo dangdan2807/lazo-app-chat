@@ -12,7 +12,7 @@ const messageRouter = (io) => {
     router.post(
         '/files',
         uploadFile.singleUploadMiddleware,
-        messageController.addFile
+        messageController.addFile,
     );
     router.post('/files/base64', messageController.addFileWithBase64);
     router.delete('/:id', messageController.deleteById);

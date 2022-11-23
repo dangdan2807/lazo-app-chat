@@ -8,8 +8,7 @@ router.delete('/:id', stickerManagerController.deleteStickerGroup);
 router.post(
     '/:id',
     uploadFile.singleUploadMiddleware,
-    stickerManagerController.addSticker
+    stickerManagerController.addSticker,
 );
 router.delete('/:id/sticker', stickerManagerController.deleteSticker);
-
 module.exports = router;

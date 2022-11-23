@@ -8,11 +8,11 @@ router.put('/:id', classifyController.update);
 router.delete('/:id', classifyController.delete);
 router.post(
     '/:id/conversations/:conversationId',
-    classifyController.addConversation
+    classifyController.addConversation,
 );
 router.delete(
     '/:id/conversations/:conversationId',
-    classifyController.deleteConversation
+    classifyController.deleteConversation,
 );
 
 module.exports = router;

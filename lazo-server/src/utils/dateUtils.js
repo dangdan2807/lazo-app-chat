@@ -14,7 +14,9 @@ const dateUtils = {
     toDate: (dateString) => {
         if (!dateString) return null;
         const date = new Date(dateString);
-        if (date.toDateString() === 'Invalid Date') return null;
+        if (date.toDateString() === 'Invalid Date') {
+            return null;
+        }
 
         return date;
     },

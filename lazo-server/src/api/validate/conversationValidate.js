@@ -1,9 +1,13 @@
 const Conversation = require('../models/Conversation');
+const MyError = require('../exception/MyError');
 const User = require('../models/User');
 
 const conversationValidate = {
     validateIndividualConversation: async (userId1, userId2) => {
-        const conversationId = await Conversation.existsIndividualConversation(userId1, userId2);
+        const conversationId = await Conversation.existsIndividualConversation(
+            userId1,
+            userId2,
+        );
         if (conversationId) {
             return { conversationId };
         }

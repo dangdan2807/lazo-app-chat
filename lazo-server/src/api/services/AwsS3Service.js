@@ -12,6 +12,8 @@ const s3 = new S3({
     secretAccessKey,
 });
 
+const FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE);
+
 class AwsS3Service {
     uploadFile = async (file, bucketName = BucketName) => {
         const fileStream = fs.readFileSync(file.path);
@@ -86,9 +88,15 @@ class AwsS3Service {
             Bucket: bucketName,
             Key: key,
         };
-
         try {
             await s3.deleteObject(params).promise();
+            // s3.deleteObject(params, function (err, data) {
+            //     if (err) {
+            //         console.log(err, err.stack); // error
+            //     } else {
+            //         console.log(); // deleted
+            //     }
+            // });
         } catch (err) {
             throw new MyError('Delete file Aws S3 failed');
         }

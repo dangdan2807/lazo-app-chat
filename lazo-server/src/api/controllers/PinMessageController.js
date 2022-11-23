@@ -3,6 +3,9 @@ const pinMessageService = require('../services/PinMessageService');
 class PinMessageController {
     constructor(io) {
         this.io = io;
+
+        this.addPinMessage = this.addPinMessage.bind(this);
+        this.deletePinMessage = this.deletePinMessage.bind(this);
     }
 
     // [GET] /pin-messages/:conversationId
@@ -30,7 +33,7 @@ class PinMessageController {
             this.io.to(conversationId + '').emit('new-message', conversationId, message);
             this.io.to(conversationId + '').emit('action-pin-message', conversationId);
 
-            res.status(201).json({ conversationId, message });
+            res.status(201).json({ status: 201, conversationId, message });
         } catch (err) {
             next(err);
         }
@@ -47,7 +50,7 @@ class PinMessageController {
             this.io.to(conversationId + '').emit('new-message', conversationId, message);
             this.io.to(conversationId + '').emit('action-pin-message', conversationId);
 
-            res.status(200).json({ conversationId, message });
+            res.status(200).json({ status: 200, conversationId, message });
         } catch (err) {
             next(err);
         }

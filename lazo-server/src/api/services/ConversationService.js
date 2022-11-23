@@ -22,28 +22,36 @@ class ConversationService {
     getList = async (userId) => {
         const conversations = await Conversation.getListByUserId(userId);
 
-        const conversationIds = conversations.map((conversationEle) => conversationEle._id);
+        const conversationIds = conversations.map(
+            (conversationEle) => conversationEle._id,
+        );
 
         return await this.getListSummaryByIds(conversationIds, userId);
     };
 
     // type group
     getListGroup = async (name, userId) => {
-        const conversations = await Conversation.getListGroupByNameContainAndUserId(name, userId);
+        const conversations =
+            await Conversation.getListGroupByNameContainAndUserId(name, userId);
 
-        const conversationIds = conversations.map((conversationEle) => conversationEle._id);
+        const conversationIds = conversations.map(
+            (conversationEle) => conversationEle._id,
+        );
 
         return await this.getListSummaryByIds(conversationIds, userId);
     };
 
     // type individual
     getListIndividual = async (name, userId) => {
-        const conversations = await Conversation.getListIndividualByNameContainAndUserId(
-            name,
-            userId,
-        );
+        const conversations =
+            await Conversation.getListIndividualByNameContainAndUserId(
+                name,
+                userId,
+            );
 
-        const conversationIds = conversations.map((conversationEle) => conversationEle._id);
+        const conversationIds = conversations.map(
+            (conversationEle) => conversationEle._id,
+        );
 
         return await this.getListSummaryByIds(conversationIds, userId);
     };
@@ -73,7 +81,14 @@ class ConversationService {
         const { lastView, isNotify } = member;
 
         const conversation = await Conversation.findById(_id);
-        const { lastMessageId, type, members, leaderId, isJoinFromLink, managerIds } = conversation;
+        const {
+            lastMessageId,
+            type,
+            members,
+            leaderId,
+            isJoinFromLink,
+            managerIds,
+        } = conversation;
 
         const lastMessage = lastMessageId
             ? await messageService.getById(lastMessageId, type)
@@ -84,7 +99,10 @@ class ConversationService {
         if (type) {
             nameAndAvatarInfo = await this.getGroupConversation(conversation);
         } else {
-            nameAndAvatarInfo = await this.getIndividualConversation(_id, userId);
+            nameAndAvatarInfo = await this.getIndividualConversation(
+                _id,
+                userId,
+            );
 
             const { members } = conversation;
             const index = members.findIndex((ele) => ele + '' != userId);
@@ -140,7 +158,9 @@ class ConversationService {
                     as: 'user',
                 },
             },
-            { $unwind: '$user' },
+            {
+                $unwind: '$user',
+            },
             {
                 $project: {
                     _id: 0,
@@ -160,9 +180,8 @@ class ConversationService {
         let groupName = '';
         let groupAvatar = [];
         if (!name || !avatar) {
-            const nameAndAvataresOfGroup = await Conversation.getListNameAndAvatarOfMembersById(
-                _id,
-            );
+            const nameAndAvataresOfGroup =
+                await Conversation.getListNameAndAvatarOfMembersById(_id);
 
             for (const tempt of nameAndAvataresOfGroup) {
                 const nameTempt = tempt.name;
@@ -191,7 +210,10 @@ class ConversationService {
     // trả id conversation
     createIndividualConversation = async (userId1, userId2) => {
         const { userName1, userName2, conversationId } =
-            await conversationValidate.validateIndividualConversation(userId1, userId2);
+            await conversationValidate.validateIndividualConversation(
+                userId1,
+                userId2,
+            );
 
         if (conversationId) {
             return { _id: conversationId, isExists: true };
@@ -219,14 +241,16 @@ class ConversationService {
         });
 
         // save
-        member1.save().then();
-        member2.save().then();
+        Promise.all([member1.save(), member2.save()]).then();
 
         return { _id, isExists: false };
     };
 
     createIndividualConversationWhenWasFriend = async (userId1, userId2) => {
-        const { _id, isExists } = await this.createIndividualConversation(userId1, userId2);
+        const { _id, isExists } = await this.createIndividualConversation(
+            userId1,
+            userId2,
+        );
 
         // tạo message
         const newMessage = {
@@ -289,7 +313,10 @@ class ConversationService {
         });
 
         memberAddMessage.save().then((message) => {
-            Conversation.updateOne({ _id }, { lastMessageId: message._id }).then();
+            Conversation.updateOne(
+                { _id },
+                { lastMessageId: message._id },
+            ).then();
         });
 
         return _id;
@@ -309,13 +336,19 @@ class ConversationService {
                 conversationId: _id,
             });
             const saveMessage = await newMessage.save();
-            // cập nhật tin nhắn mới nhất
-            await Conversation.updateOne({ _id }, { name, lastMessageId: saveMessage._id });
-            // cập nhật lastView thằng đổi
-            await Member.updateOne(
-                { conversationId: _id, userId },
-                { lastView: saveMessage.createdAt },
-            );
+
+            Promise.all([
+                // cập nhật tin nhắn mới nhất
+                await Conversation.updateOne(
+                    { _id },
+                    { name, lastMessageId: saveMessage._id },
+                ),
+                // cập nhật lastView thằng đổi
+                await Member.updateOne(
+                    { conversationId: _id, userId },
+                    { lastView: saveMessage.createdAt },
+                ),
+            ]).then();
 
             return await messageService.getById(saveMessage._id, true);
         }
@@ -324,7 +357,10 @@ class ConversationService {
         const { members } = conversation;
         const otherUserId = members.filter((userIdEle) => userIdEle != userId);
 
-        await Member.updateOne({ conversationId: _id, userId: otherUserId[0] }, { name });
+        await Member.updateOne(
+            { conversationId: _id, userId: otherUserId[0] },
+            { name },
+        );
 
         return;
     };
@@ -359,16 +395,19 @@ class ConversationService {
             conversationId: _id,
         });
         const saveMessage = await newMessage.save();
-        // cập nhật conversation
-        await Conversation.updateOne(
-            { _id },
-            { avatar: avatarUrl, lastMessageId: saveMessage._id },
-        );
-        // cập nhật lastView thằng đổi
-        await Member.updateOne(
-            { conversationId: _id, userId },
-            { lastView: saveMessage.createdAt },
-        );
+
+        Promise.all([
+            // cập nhật conversation
+            await Conversation.updateOne(
+                { _id },
+                { avatar: avatarUrl, lastMessageId: saveMessage._id },
+            ),
+            // cập nhật lastView người đổi
+            await Member.updateOne(
+                { conversationId: _id, userId },
+                { lastView: saveMessage.createdAt },
+            ),
+        ]).then();
 
         return {
             avatar: avatarUrl,
@@ -389,10 +428,16 @@ class ConversationService {
         }
 
         const { avatar } = conversation;
-        if (avatar) await awsS3Service.deleteFile(avatar);
+        if (avatar) {
+            await awsS3Service.deleteFile(avatar);
+        }
 
         const { fileName, fileExtension, fileBase64 } = fileInfo;
-        const avatarUrl = await awsS3Service.uploadWithBase64(fileBase64, fileName, fileExtension);
+        const avatarUrl = await awsS3Service.uploadWithBase64(
+            fileBase64,
+            fileName,
+            fileExtension,
+        );
 
         // thêm tin nhắn đổi tên
         const newMessage = new Message({
@@ -402,16 +447,19 @@ class ConversationService {
             conversationId: _id,
         });
         const saveMessage = await newMessage.save();
-        // cập nhật conversation
-        await Conversation.updateOne(
-            { _id },
-            { avatar: avatarUrl, lastMessageId: saveMessage._id },
-        );
-        // cập nhật lastView thằng đổi
-        await Member.updateOne(
-            { conversationId: _id, userId },
-            { lastView: saveMessage.createdAt },
-        );
+        
+        Promise.all([
+            // cập nhật conversation
+            await Conversation.updateOne(
+                { _id },
+                { avatar: avatarUrl, lastMessageId: saveMessage._id },
+            ),
+            // cập nhật lastView người đổi
+            await Member.updateOne(
+                { conversationId: _id, userId },
+                { lastView: saveMessage.createdAt },
+            ),
+        ]).then();
 
         return {
             avatar: avatarUrl,
@@ -420,7 +468,10 @@ class ConversationService {
     };
 
     deleteById = async (conversationId, userId) => {
-        const conversation = await Conversation.getByIdAndUserId(conversationId, userId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         // chỉ leader mới được xóa
         const { type, leaderId } = conversation;
@@ -428,14 +479,24 @@ class ConversationService {
             throw new MyError('Not permission delete group');
         }
 
-        await Member.deleteMany({ conversationId });
-        await Message.deleteMany({ conversationId });
-        await Channel.deleteMany({ conversationId });
-        await Conversation.deleteOne({ _id: conversationId });
+        // await Member.deleteMany({ conversationId });
+        // await Message.deleteMany({ conversationId });
+        // await Channel.deleteMany({ conversationId });
+        // await Conversation.deleteOne({ _id: conversationId });
+
+        Promise.all([
+            Member.deleteMany({ conversationId }),
+            Message.deleteMany({ conversationId }),
+            Channel.deleteMany({ conversationId }),
+            Conversation.deleteOne({ _id: conversationId }),
+        ]).then();
     };
 
     updateConversationNotify = async (conversationId, isNotify, userId) => {
-        const member = await Member.getByConversationIdAndUserId(conversationId, userId);
+        const member = await Member.getByConversationIdAndUserId(
+            conversationId,
+            userId,
+        );
 
         member.isNotify = isNotify === 1 ? true : false;
         await member.save();
@@ -459,7 +520,9 @@ class ConversationService {
                     as: 'user',
                 },
             },
-            { $unwind: '$user' },
+            {
+                $unwind: '$user',
+            },
             {
                 $project: {
                     _id: 0,
@@ -477,11 +540,16 @@ class ConversationService {
     };
 
     updateJoinFromLink = async (conversationId, isStatus, myId) => {
-        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            myId,
+        );
 
         const { type, leaderId, managerIds } = conversation;
 
-        const isManager = managerIds.findIndex((userIdEle) => userIdEle + '' === myId);
+        const isManager = managerIds.findIndex(
+            (userIdEle) => userIdEle + '' === myId,
+        );
 
         if (!type || (leaderId + '' !== myId && isManager === -1)) {
             throw new MyError(

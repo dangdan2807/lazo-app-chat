@@ -1,11 +1,11 @@
-const MyError = require('../exception/MyError');
-
-const Member = require('../models/Member');
 const Conversation = require('../models/Conversation');
+const Member = require('../models/Member');
 const Message = require('../models/Message');
 
-const memberValidate = require('../validate/memberValidate');
+const MyError = require('../exception/MyError');
+
 const messageService = require('../services/MessageService');
+const memberValidate = require('../validate/memberValidate');
 
 const GROUP_LEAVE_MESSAGE = 'Đã rời khỏi nhóm';
 const MEMBER_ADD_MESSAGE = 'Đã thêm vào nhóm';
@@ -26,12 +26,13 @@ class MemberService {
     leaveGroup = async (conversationId, userId) => {
         await memberValidate.validateLeaveGroup(conversationId, userId);
 
-        await Conversation.updateOne(
-            { _id: conversationId },
-            { $pull: { members: userId, managerIds: userId } },
-        );
-        await Member.deleteOne({ conversationId, userId });
-
+        Promise.all([
+            Conversation.updateOne(
+                { _id: conversationId },
+                { $pull: { members: userId, managerIds: userId } },
+            ),
+            Member.deleteOne({ conversationId, userId }),
+        ]);
         // lưu message rời nhóm
         const newMessage = new Message({
             userId,
@@ -41,17 +42,27 @@ class MemberService {
         });
         const { _id } = await newMessage.save();
 
-        Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id }).then();
+        Conversation.updateOne(
+            { _id: conversationId },
+            { lastMessageId: _id },
+        ).then();
 
         return await messageService.getById(_id, true);
     };
 
     // thêm thành viên
     addMembers = async (conversationId, userId, newUserIds) => {
-        await memberValidate.validateAddMember(conversationId, userId, newUserIds);
+        await memberValidate.validateAddMember(
+            conversationId,
+            userId,
+            newUserIds,
+        );
 
         // add member trong conversation
-        await Conversation.updateOne({ _id: conversationId }, { $push: { members: newUserIds } });
+        await Conversation.updateOne(
+            { _id: conversationId },
+            { $push: { members: newUserIds } },
+        );
 
         newUserIds.forEach((userIdEle) => {
             const member = new Member({
@@ -72,24 +83,36 @@ class MemberService {
 
         const { _id, createdAt } = await newMessage.save();
 
-        Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id }).then();
-
-        Member.updateOne({ conversationId, userId }, { lastView: createdAt }).then();
+        Promise.all([
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId },
+                { lastView: createdAt },
+            ),
+        ]);
 
         return await messageService.getById(_id, true);
     };
 
     // xóa thành viên
     deleteMember = async (conversationId, userId, deleteUserId) => {
-        await memberValidate.validateDeleteMember(conversationId, userId, deleteUserId);
-
-        // xóa member trong conversation
-        await Conversation.updateOne(
-            { _id: conversationId },
-            { $pull: { members: deleteUserId, managerIds: deleteUserId } },
+        await memberValidate.validateDeleteMember(
+            conversationId,
+            userId,
+            deleteUserId,
         );
 
-        await Member.deleteOne({ conversationId, userId: deleteUserId });
+        Promise.all([
+            // xóa member trong conversation
+            Conversation.updateOne(
+                { _id: conversationId },
+                { $pull: { members: deleteUserId, managerIds: deleteUserId } },
+            ),
+            Member.deleteOne({ conversationId, userId: deleteUserId }),
+        ]);
 
         // tin nhắn thêm vào group
         const newMessage = new Message({
@@ -102,9 +125,16 @@ class MemberService {
 
         const { _id, createdAt } = await newMessage.save();
 
-        Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id }).then();
-
-        Member.updateOne({ conversationId, userId }, { lastView: createdAt }).then();
+        Promise.all([
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId },
+                { lastView: createdAt },
+            ),
+        ]);
 
         return await messageService.getById(_id, true);
     };
@@ -112,7 +142,9 @@ class MemberService {
     joinConversationFromLink = async (conversationId, myId) => {
         const conversation = await Conversation.getById(conversationId);
         if (!conversation.type || !conversation.isJoinFromLink) {
-            throw new MyError('Only group conversation or group not permission join');
+            throw new MyError(
+                'Only group conversation or group not permission join',
+            );
         }
 
         const isExistsInConversation = await Conversation.findOne({
@@ -124,14 +156,19 @@ class MemberService {
             throw new MyError('Exists in conversation');
         }
 
-        // add member trong conversation
-        await Conversation.updateOne({ _id: conversationId }, { $push: { members: myId } });
-
         const member = new Member({
             conversationId,
             userId: myId,
         });
-        await member.save();
+
+        Promise.all([
+            // add member trong conversation
+            Conversation.updateOne(
+                { _id: conversationId },
+                { $push: { members: myId } },
+            ),
+            member.save(),
+        ]).then();
 
         // tin nhắn thêm vào group
         const newMessage = new Message({
@@ -143,19 +180,35 @@ class MemberService {
 
         const { _id, createdAt } = await newMessage.save();
 
-        await Conversation.updateOne({ _id: conversationId }, { lastMessageId: _id });
-
-        await Member.updateOne({ conversationId, userId: myId }, { lastView: createdAt });
+        Promise.all([
+            Conversation.updateOne(
+                { _id: conversationId },
+                { lastMessageId: _id },
+            ),
+            Member.updateOne(
+                { conversationId, userId: myId },
+                { lastView: createdAt },
+            ),
+        ]).then();
 
         return await messageService.getById(_id, true);
     };
 
-    addManagersForConversation = async (conversationId, newManagerIds, myId) => {
-        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+    addManagersForConversation = async (
+        conversationId,
+        newManagerIds,
+        myId,
+    ) => {
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            myId,
+        );
         const { type, leaderId, managerIds } = conversation;
 
         if (!type || leaderId + '' !== myId) {
-            throw new MyError('Add managers failed, not is leader or only conversation group');
+            throw new MyError(
+                'Add managers failed, not is leader or only conversation group',
+            );
         }
         await Conversation.existsByUserIds(conversationId, newManagerIds);
         let managerIdsTempt = [];
@@ -168,7 +221,9 @@ class MemberService {
         });
 
         if (managerIdsTempt.length === 0) {
-            throw new MyError('Add managers failed, not is leader or only conversation group');
+            throw new MyError(
+                'Add managers failed, not is leader or only conversation group',
+            );
         }
 
         await Conversation.updateOne(
@@ -199,18 +254,29 @@ class MemberService {
         };
     };
 
-    deleteManagersForConversation = async (conversationId, deleteManagerIds, myId) => {
-        const conversation = await Conversation.getByIdAndUserId(conversationId, myId);
+    deleteManagersForConversation = async (
+        conversationId,
+        deleteManagerIds,
+        myId,
+    ) => {
+        const conversation = await Conversation.getByIdAndUserId(
+            conversationId,
+            myId,
+        );
 
         const { type, leaderId, managerIds } = conversation;
 
         if (!type || leaderId + '' !== myId) {
-            throw new MyError('Delete managers failed, not is leader or only conversation group');
+            throw new MyError(
+                'Delete managers failed, not is leader or only conversation group',
+            );
         }
         let managerIdsTempt = [...managerIds];
         const deleteManagerIdsTempt = [];
         deleteManagerIds.forEach((userIdEle) => {
-            const index = managerIdsTempt.findIndex((ele) => ele + '' == userIdEle);
+            const index = managerIdsTempt.findIndex(
+                (ele) => ele + '' == userIdEle,
+            );
 
             if (index !== -1 && userIdEle != myId) {
                 managerIdsTempt.splice(index, 1);
@@ -219,7 +285,9 @@ class MemberService {
         });
 
         if (deleteManagerIdsTempt.length === 0) {
-            throw new MyError('Delete managers failed, not is leader or only conversation group');
+            throw new MyError(
+                'Delete managers failed, not is leader or only conversation group',
+            );
         }
 
         await Conversation.updateOne(

@@ -88,12 +88,24 @@ userSchema.statics.findByCredentials = async (username, password) => {
         isDeleted: false,
     });
 
-    if (!user) throw new NotFoundError('User');
+    if (!user) {
+        throw new NotFoundError('User');
+    }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) throw new MyError('Password invalid');
+    if (!isPasswordMatch) {
+        throw new MyError('Password invalid');
+    }
 
     return user;
+};
+
+userSchema.statics.existsById = async (_id) => {
+    const user = await User.findOne({ _id, isActived: true });
+    if (user) {
+        return true;
+    }
+    return false;
 };
 
 userSchema.statics.checkByIds = async (ids, message = 'User') => {
@@ -141,6 +153,17 @@ userSchema.statics.getById = async (_id, message = 'User') => {
     };
 };
 
+userSchema.statics.existsByUsername = async (username) => {
+    const user = await User.findOne({
+        username,
+        isActived: true,
+    });
+    if (user) {
+        return true;
+    }
+    return false;
+};
+
 userSchema.statics.findByUsername = async (username, message = 'User') => {
     const user = await User.findOne({
         username,
@@ -151,7 +174,8 @@ userSchema.statics.findByUsername = async (username, message = 'User') => {
         throw new NotFoundError(message);
     }
 
-    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } = user;
+    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } =
+        user;
     return {
         _id,
         name,

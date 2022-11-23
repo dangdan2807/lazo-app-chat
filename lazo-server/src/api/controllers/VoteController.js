@@ -1,11 +1,15 @@
 const voteService = require('../services/VoteService');
 const messageService = require('../services/MessageService');
 
+// votes
 class VoteController {
     constructor(io) {
         this.io = io;
         this.addVoteMessage = this.addVoteMessage.bind(this);
         this.addOptions = this.addOptions.bind(this);
+        this.deleteOptions = this.deleteOptions.bind(this);
+        this.addVoteChoices = this.addVoteChoices.bind(this);
+        this.deleteVoteChoices = this.deleteVoteChoices.bind(this);
     }
 
     // [GET] /votes/:conversationId
@@ -33,9 +37,14 @@ class VoteController {
         const { _id } = req;
 
         try {
-            const voteMessage = await messageService.addVoteMessage(req.body, _id);
+            const voteMessage = await messageService.addVoteMessage(
+                req.body,
+                _id,
+            );
             const { conversationId } = voteMessage;
-            this.io.to(conversationId + '').emit('new-message', conversationId, voteMessage);
+            this.io
+                .to(conversationId + '')
+                .emit('new-message', conversationId, voteMessage);
 
             res.status(201).json(voteMessage);
         } catch (err) {
@@ -50,7 +59,11 @@ class VoteController {
         const { options } = req.body;
 
         try {
-            await voteService.addOptions(messageId, Array.from(new Set(options)), _id);
+            await voteService.addOptions(
+                messageId,
+                Array.from(new Set(options)),
+                _id,
+            );
 
             const voteMessage = await messageService.getById(messageId, true);
             const { conversationId } = voteMessage;
@@ -71,7 +84,11 @@ class VoteController {
         const { options } = req.body;
 
         try {
-            await voteService.deleteOptions(messageId, Array.from(new Set(options)), _id);
+            await voteService.deleteOptions(
+                messageId,
+                Array.from(new Set(options)),
+                _id,
+            );
 
             const voteMessage = await messageService.getById(messageId, true);
             const { conversationId } = voteMessage;
@@ -79,10 +96,7 @@ class VoteController {
                 .to(conversationId + '')
                 .emit('update-vote-message', conversationId, voteMessage);
 
-            res.status(204).json({
-                success: true,
-                message: 'Delete options successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
@@ -95,12 +109,18 @@ class VoteController {
         const { options } = req.body;
 
         try {
-            await voteService.addVoteChoices(messageId, Array.from(new Set(options)), _id);
+            await voteService.addVoteChoices(
+                messageId,
+                Array.from(new Set(options)),
+                _id,
+            );
+
             const voteMessage = await messageService.getById(messageId, true);
             const { conversationId } = voteMessage;
             this.io
                 .to(conversationId + '')
                 .emit('update-vote-message', conversationId, voteMessage);
+
             res.status(201).json(voteMessage);
         } catch (err) {
             next(err);
@@ -117,18 +137,20 @@ class VoteController {
             await voteService.deleteVoteChoices(
                 messageId,
                 Array.from(new Set(options)),
-                _id
+                _id,
             );
+
             const voteMessage = await messageService.getById(messageId, true);
             const { conversationId } = voteMessage;
             this.io
                 .to(conversationId + '')
                 .emit('update-vote-message', conversationId, voteMessage);
+
             res.status(204).json(voteMessage);
         } catch (err) {
             next(err);
         }
-    }
+    };
 }
 
 module.exports = VoteController;

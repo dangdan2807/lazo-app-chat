@@ -4,6 +4,7 @@ const MyError = require('../exception/MyError');
 class MessageController {
     constructor(io) {
         this.io = io;
+
         this.getList = this.getList.bind(this);
         this.getListByChannelId = this.getListByChannelId.bind(this);
         this.addText = this.addText.bind(this);
@@ -40,7 +41,7 @@ class MessageController {
         }
     };
 
-    // [GET] /channel/:channelId
+    // [GET] /messages/channel/:channelId
     getListByChannelId = async (req, res, next) => {
         const { _id } = req;
         const { channelId } = req.params;
@@ -61,7 +62,7 @@ class MessageController {
                 lastView: new Date(),
             });
 
-            res.json({
+            res.status(200).json({
                 data: result.data,
                 page: result.page,
                 size: result.size,
@@ -72,7 +73,7 @@ class MessageController {
         }
     };
 
-    //[POST] /channel/text  tin nhắn dạng text
+    //[POST] /messages/text  tin nhắn dạng text
     addText = async (req, res, next) => {
         const { _id } = req;
 
@@ -95,7 +96,7 @@ class MessageController {
         }
     };
 
-    //[POST] /channel/files  tin nhắn dạng file
+    //[POST] /messages/files  tin nhắn dạng file
     addFile = async (req, res, next) => {
         const { _id, file } = req;
         const { type, conversationId, channelId } = req.query;
@@ -120,13 +121,14 @@ class MessageController {
             } else {
                 this.io.to(conversationId + '').emit('new-message', conversationId, message);
             }
+
             res.status(201).json(message);
         } catch (err) {
             next(err);
         }
     };
 
-    // [POST] /channel/files/base64
+    // [POST] /messages/files/base64
     addFileWithBase64 = async (req, res, next) => {
         const { _id } = req;
         const { type, conversationId, channelId } = req.query;
@@ -155,7 +157,7 @@ class MessageController {
         }
     };
 
-    // [DELETE] /channel/:id thu hồi tin nhắn
+    // [DELETE] /messages/:id - thu hồi tin nhắn
     deleteById = async (req, res, next) => {
         const { _id } = req;
         const { id } = req.params;
@@ -172,7 +174,7 @@ class MessageController {
         }
     };
 
-    // [DELETE] /channel/:id/only xóa ở phía tôi
+    // [DELETE] /messages/:id/only xóa ở phía tôi
     deleteOnlyMeById = async (req, res, next) => {
         const { _id } = req;
         const { id } = req.params;
@@ -180,15 +182,13 @@ class MessageController {
         try {
             await messageService.deleteOnlyMeById(id, _id);
 
-            res.status(204).json({
-                success: true,
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
     };
 
-    // [POST] /:id/reacts/:type
+    // [POST] /messages/:id/reacts/:type
     addReaction = async (req, res, next) => {
         const { _id } = req;
         const { id, type } = req.params;
@@ -208,13 +208,16 @@ class MessageController {
                 type,
             });
 
-            res.status(201).json();
+            res.status(201).json({
+                status: 201,
+                message: 'Add reaction success',
+            });
         } catch (err) {
             next(err);
         }
     };
 
-    // [GET] /channel/:conversationId/files
+    // [GET] /messages/:conversationId/files
     getListFiles = async (req, res, next) => {
         const { _id } = req;
         const { conversationId } = req.params;
@@ -241,7 +244,7 @@ class MessageController {
         }
     };
 
-    // [POST] /:id/share/:conversationId
+    // [POST] /messages/:id/share/:conversationId
     shareMessage = async (req, res, next) => {
         const { _id } = req;
         const { id, conversationId } = req.params;

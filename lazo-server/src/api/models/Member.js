@@ -35,7 +35,10 @@ memberSchema.statics.getByConversationIdAndUserId = async (
     return member;
 };
 
-memberSchema.statics.existsByConversationIdAndUserId = async (conversationId, userId) => {
+memberSchema.statics.existsByConversationIdAndUserId = async (
+    conversationId,
+    userId,
+) => {
     const member = await Member.findOne({
         conversationId,
         userId,

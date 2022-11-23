@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const ChannelController = require('../controllers/ChannelController');
+
 const channelRouter = (io) => {
     const channelController = new ChannelController(io);
 
@@ -9,9 +10,8 @@ const channelRouter = (io) => {
     router.delete('/:channelId', channelController.deleteById);
     router.get(
         '/:channelId/last-view',
-        channelController.getLastViewOfMembersInChannel
+        channelController.getLastViewOfMembersInChannel,
     );
-
     return router;
 };
 

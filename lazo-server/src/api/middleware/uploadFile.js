@@ -46,7 +46,7 @@ let uploadManyFiles = multer({
 }).array('files', 10);
 
 let uploadFile = multer({ storage, limits: { fileSize: FILE_SIZE } }).single(
-    'file'
+    'file',
 );
 
 let multipleUploadMiddleware = util.promisify(uploadManyFiles);

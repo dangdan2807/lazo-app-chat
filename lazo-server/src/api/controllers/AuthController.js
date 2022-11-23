@@ -8,8 +8,13 @@ class AuthController {
         const source = req.headers['user-agent'];
 
         try {
-            const { token, refreshToken } = await authService.login(username, password, source);
-            res.status(201).json({ token, refreshToken });
+            const { token, refreshToken } = await authService.login(
+                username,
+                password,
+                source,
+            );
+
+            res.status(201).json({ status: 201, token, refreshToken });
         } catch (err) {
             next(err);
         }
@@ -23,11 +28,11 @@ class AuthController {
         try {
             const token = await authService.refreshToken(refreshToken, source);
 
-            res.status(200).json({ token });
+            res.status(200).json({ status: 200, token });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /auth/registry
     registry = async (req, res, next) => {
@@ -35,7 +40,7 @@ class AuthController {
             await authService.registry(req.body);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Registry successfully',
             });
         } catch (err) {
@@ -51,7 +56,7 @@ class AuthController {
             await authService.confirmAccount(username, otp + '');
 
             res.status(200).json({
-                success: true,
+                status: 200,
                 message: 'Confirm account successfully',
             });
         } catch (err) {
@@ -69,7 +74,7 @@ class AuthController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /auth/confirm-password
     confirmPassword = async (req, res, next) => {
@@ -79,13 +84,13 @@ class AuthController {
             await authService.resetPassword(username, otp + '', password);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Reset password successfully',
             });
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET]  /auth/users/:username
     getUserInfo = async (req, res, next) => {
@@ -98,7 +103,7 @@ class AuthController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 }
 
 module.exports = new AuthController();

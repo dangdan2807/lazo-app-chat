@@ -17,7 +17,7 @@ class MeController {
                 await redisDb.set(_id, await meService.getProfile(_id));
             }
 
-            res.json(await redisDb.get(_id));
+            res.status(200).json(await redisDb.get(_id));
         } catch (err) {
             next(err);
         }
@@ -29,11 +29,10 @@ class MeController {
 
         try {
             await meService.updateProfile(_id, req.body);
-            await redisDb.set(_id, await meService.getProfile(_id));
-            res.status(201).json({
-                success: true,
-                message: 'Profile updated successfully',
-            });
+            const user = await meService.getProfile(_id);
+
+            await redisDb.set(_id, user);
+            res.status(201).json(user);
         } catch (err) {
             next(err);
         }
@@ -125,7 +124,7 @@ class MeController {
             await meService.syncPhoneBooks(_id, phones);
 
             res.status(201).json({
-                success: true,
+                status: 201,
                 message: 'Phone books synced successfully',
             });
         } catch (err) {
@@ -142,7 +141,7 @@ class MeController {
             await meService.changePassword(_id, oldPassword, newPassword);
 
             res.status(200).json({
-                success: true,
+                status: 200,
                 message: 'Password changed successfully',
             });
         } catch (err) {

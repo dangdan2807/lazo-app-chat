@@ -10,7 +10,6 @@ class FriendController {
         this.deleteFriend = this.deleteFriend.bind(this);
         this.deleteFriendInvite = this.deleteFriendInvite.bind(this);
         this.deleteInviteWasSend = this.deleteInviteWasSend.bind(this);
-
     }
 
     // [GET] /friends?name
@@ -69,7 +68,7 @@ class FriendController {
             next(err);
         }
     };
-    
+
     // [DELETE] /friends/:userId
     deleteFriend = async (req, res, next) => {
         const { _id } = req;
@@ -79,14 +78,11 @@ class FriendController {
 
             this.io.to(userId + '').emit('deleted-friend', _id);
 
-            res.status(204).json({
-                success: true,
-                message: 'Delete friend successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /friends/invites
     getListFriendInvites = async (req, res, next) => {
@@ -98,7 +94,7 @@ class FriendController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     //[DELETE] /friends/invites/:userId
     deleteFriendInvite = async (req, res, next) => {
@@ -109,28 +105,23 @@ class FriendController {
             await friendService.deleteFriendInvite(_id, userId);
             this.io.to(userId + '').emit('deleted-friend-invite', _id);
 
-            res.status(204).json({
-                success: true,
-                message: 'Delete friend invite successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /friends/invites/me
     getListFriendInvitesWasSend = async (req, res, next) => {
         const { _id } = req;
         try {
-            const friendInvites = await friendService.getListInvitesWasSend(
-                _id
-            );
+            const friendInvites = await friendService.getListInvitesWasSend(_id);
 
-            res.json(friendInvites);
+            res.status(200).json(friendInvites);
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [POST] /friends/invites/me/:userId
     sendFriendInvite = async (req, res, next) => {
@@ -140,9 +131,7 @@ class FriendController {
             await friendService.sendFriendInvite(_id, userId);
 
             const { name, avatar } = await redisDb.get(_id);
-            this.io
-                .to(userId + '')
-                .emit('send-friend-invite', { _id, name, avatar });
+            this.io.to(userId + '').emit('send-friend-invite', { _id, name, avatar });
 
             res.status(201).json({
                 success: true,
@@ -151,7 +140,7 @@ class FriendController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     //[DELETE] /friends/invites/me/:userId
     deleteInviteWasSend = async (req, res, next) => {
@@ -161,15 +150,11 @@ class FriendController {
         try {
             await friendService.deleteInviteWasSend(_id, userId);
             this.io.to(userId + '').emit('deleted-invite-was-send', _id);
-
-            res.status(204).json({
-                success: true,
-                message: 'Delete invite was send successfully',
-            });
+            res.status(204).json();
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     // [GET] /friends/suggest
     getSuggestFriends = async (req, res, next) => {
@@ -180,7 +165,7 @@ class FriendController {
             const suggestFriends = await friendService.getSuggestFriends(
                 _id,
                 parseInt(page),
-                parseInt(size)
+                parseInt(size),
             );
 
             res.status(200).json(suggestFriends);
