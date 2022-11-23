@@ -29,6 +29,8 @@ const { Search } = Input;
 StickerGroupPage.propTypes = {};
 
 function StickerGroupPage(props) {
+    const items = localStorage.getItem('token');
+    console.log('items :>> ', items);
     const [temp, setTemp] = useState('');
     const [tempName, setName] = useState('');
     const [tempDescription, setDescription] = useState('');
@@ -65,6 +67,7 @@ function StickerGroupPage(props) {
         setDescription(description1);
     };
     const showDrawer3 = (id) => {
+        console.log('id :>> ', id);
         setVisible3(true);
         setTemp(id);
     };
@@ -385,9 +388,13 @@ function StickerGroupPage(props) {
                 }
             >
                 <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    action={`https://13.212.201.145/admin/stickers-manager/${temp}`}
                     listType="picture"
                     defaultFileList={[...file]}
+                    headers={{
+                        Authorization: 'Bearer ' + localStorage.getItem('token'),
+                      }}
+                    // withCredentials
                     onChange={handleFileChange}
                 >
                     <Button icon={<UploadOutlined />}>Upload</Button>
