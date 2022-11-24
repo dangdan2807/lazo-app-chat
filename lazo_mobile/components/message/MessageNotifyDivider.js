@@ -37,7 +37,7 @@ const MessageNotifyDivider = props => {
     ? {name: 'pin-outline', type: 'material-community', color: '#dc923c'}
     : contentLowercase.includes('đã bỏ ghim')
     ? {name: 'pin-off-outline', type: 'material-community', color: 'red'}
-    : {name: 'edit', type: 'material', color: '#4cacfc'};
+    : {name: 'edit', type: 'material', color: '#a64bf4'};
   // ? {name: 'pushpino', type: 'antdesign', color: '#dc923c'}
   // : contentLowercase.includes('đã bỏ ghim')
   // ? {name: 'pushpino', type: 'antdesign', color: 'red'}

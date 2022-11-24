@@ -137,6 +137,7 @@ const UpdateUserProfileModal = props => {
                       center
                       title="Nam"
                       checkedIcon="dot-circle-o"
+                      checkedColor='#a64bf4'
                       uncheckedIcon="circle-o"
                       checked={!genderValue}
                       onPress={() => setGenderValue(false)}
@@ -152,6 +153,7 @@ const UpdateUserProfileModal = props => {
                       center
                       title="Nữ"
                       checkedIcon="dot-circle-o"
+                      checkedColor='#a64bf4'
                       uncheckedIcon="circle-o"
                       checked={genderValue}
                       onPress={() => setGenderValue(true)}
@@ -186,6 +188,7 @@ const UpdateUserProfileModal = props => {
                   />
                   <Button
                     title="Cập nhật"
+                    titleStyle={{color:'#a64bf4'}}
                     onPress={handleSubmit}
                     type="clear"
                   />

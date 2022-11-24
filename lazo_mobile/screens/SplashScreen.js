@@ -7,7 +7,7 @@ const SplashScreen = props => {
   return (
     <ImageBackground
       style={styles.background}
-      source={require('../assets/splash1.png')}
+      source={require('../assets/lazo.png')}
       resizeMode="cover">
       <StatusBar backgroundColor={MAIN_COLOR} barStyle="light-content" />
     </ImageBackground>

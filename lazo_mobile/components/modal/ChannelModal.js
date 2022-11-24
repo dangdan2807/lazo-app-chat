@@ -80,7 +80,7 @@ const ChannelModal = props => {
               }}
               iconName="edit"
               iconType="antdesign"
-              iconColor="#5e9be5"
+              iconColor="#a64bf4"
               onPress={handleRename}
             />
 

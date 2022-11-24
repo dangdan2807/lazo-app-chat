@@ -128,7 +128,7 @@ const MessageModal = props => {
                   title="Chuyển tiếp"
                   iconName="action-redo"
                   iconType="simple-line-icon"
-                  iconColor="#5e9be5"
+                  iconColor="#a64bf4"
                   onPress={handleForward}
                 />
               </>
