@@ -1,4 +1,3 @@
-import Channel from 'features/Chat/components/Channel';
 import AnotherSetting from 'features/Chat/components/AnotherSetting';
 import ArchiveFile from 'features/Chat/components/ArchiveFile';
 import ArchiveMedia from 'features/Chat/components/ArchiveMedia';
@@ -100,10 +99,7 @@ function InfoContainer({ socket, onViewChannel, onOpenInfoBlock }) {
                                             </div>
 
                                             <div className='info_member-wrapper'>
-                                                <Channel
-                                                    onViewChannel={onViewChannel}
-                                                    data={channels}
-                                                />
+                                               
                                             </div>
                                         </>
 
