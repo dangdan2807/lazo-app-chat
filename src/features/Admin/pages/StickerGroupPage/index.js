@@ -227,7 +227,7 @@ function StickerGroupPage(props) {
             <Divider orientation="left">Quản lý sticker</Divider>
             <div style={{ textAlign: 'center' }}>
                 <Search
-                    placeholder="Gruop Sticker"
+                    placeholder="Group Sticker"
                     onSearch={onSearch}
                     enterButton
                     style={{ width: '40%' }}
@@ -278,7 +278,7 @@ function StickerGroupPage(props) {
                                     },
                                 ]}
                             >
-                                <Input placeholder="điền tên nhóm sticker" />
+                                <Input placeholder="Tên nhóm sticker" />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -290,7 +290,7 @@ function StickerGroupPage(props) {
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'mô tả vài thứ !',
+                                        message: 'Mô tả sticker !',
                                     },
                                 ]}
                             >

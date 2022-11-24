@@ -131,7 +131,7 @@ function StickerPage(props) {
     return (
         <>
             <div className="ant-col-xs-8">
-                <h1>DANH SÁCH STICKER</h1>
+                <h1>CHI TIẾT STICKER</h1>
             </div>
             <Divider></Divider>
             <div>

@@ -2,7 +2,7 @@ import { ExclamationCircleOutlined, UserDeleteOutlined } from '@ant-design/icons
 import { Button, Image, message, Modal, Avatar } from 'antd';
 import conversationApi from 'api/conversationApi';
 import friendApi from 'api/friendApi';
-import DEFAULT_AVATAR from 'assets/images/user/zelo_user_default.jpg';
+import DEFAULT_AVATAR from 'assets/images/user/lazo_user_default.jpg';
 import {
     fetchChannels,
     fetchListFriends,

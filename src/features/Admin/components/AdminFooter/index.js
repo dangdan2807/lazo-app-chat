@@ -9,7 +9,7 @@ AdminFooter.propTypes = {};
 function AdminFooter(props) {
     return (
         <Footer style={{ textAlign: 'center', background: '#fff' }}>
-            Ant Design ©2018 Created by Ant UED
+            Nhóm 7 Admin page
         </Footer>
     );
 }

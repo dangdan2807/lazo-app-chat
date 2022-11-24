@@ -226,7 +226,7 @@ function RegistryPage(props) {
                                                             }
                                                             type="text"
                                                             title="Tên "
-                                                            placeholder="Ví dụ: Trần Hoàng Phúc"
+                                                            placeholder="Nhập tên của bạn"
                                                             maxLength={50}
                                                             titleCol={24}
                                                             inputCol={24}

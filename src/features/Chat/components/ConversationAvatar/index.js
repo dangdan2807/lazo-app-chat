@@ -1,6 +1,6 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Tooltip } from 'antd';
-import DEFAULT_AVATAR from 'assets/images/user/zelo_user_default.jpg';
+import DEFAULT_AVATAR from 'assets/images/user/lazo_user_default.jpg';
 import AvatarCustom from 'components/AvatarCustom';
 import PropTypes from 'prop-types';
 import React from 'react';

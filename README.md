@@ -1,4 +1,4 @@
-# Zelo App Chat - ReactJs.
+# Lazo App Chat - ReactJs.
 
 ## Cách chạy
 

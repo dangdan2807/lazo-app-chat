@@ -895,7 +895,7 @@ function Chat({ socket, idNewMessage }) {
                                 <div className="title-welcome">
                                     <div className="title-welcome-heading">
                                         <span>
-                                            Chào mừng đến với <b>Zelo</b>
+                                            Chào mừng đến với <b>Lazo</b>
                                         </span>
                                     </div>
 
