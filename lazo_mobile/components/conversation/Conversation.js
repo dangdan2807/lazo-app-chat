@@ -77,18 +77,6 @@ const Conversation = props => {
             lastMessage,
             userProfile._id,
           );
-          // content =
-          //   lastMessageContent === messageType.PIN_MESSAGE
-          //     ? 'Đã ghim một tin nhắn'
-          //     : lastMessageContent === messageType.NOT_PIN_MESSAGE
-          //     ? 'Đã bỏ ghim một tin nhắn'
-          //     : lastMessageContent === messageType.CREATE_CHANNEL
-          //     ? 'Đã tạo một kênh nhắn tin'
-          //     : lastMessageContent === messageType.DELETE_CHANNEL
-          //     ? 'Đã xóa một kênh nhắn tin'
-          //     : lastMessageContent === messageType.UPDATE_CHANNEL
-          //     ? 'Đã đổi tên một kênh nhắn tin'
-          //     : lastMessageContent.replace('<b>', '').replace('</b>', '');
           break;
 
         default:
@@ -100,12 +88,6 @@ const Conversation = props => {
     }
     return content;
   };
-
-  // const senderName = type
-  //   ? userName === lastMessage?.user.name
-  //     ? 'Bạn: '
-  //     : `${lastMessage?.user.name}: `
-  //   : '';
 
   return (
     <View style={{backgroundColor: '#fff'}}>

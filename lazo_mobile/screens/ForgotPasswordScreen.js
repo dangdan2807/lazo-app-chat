@@ -88,7 +88,7 @@ const ForgotPasswordScreen = ({navigation}) => {
             return (
               <>
                 <InputField
-                  placeholder="Email/số điện thoại"
+                  placeholder="Email"
                   autoFocus
                   onChangeText={handleChange('username')}
                   value={values.username}

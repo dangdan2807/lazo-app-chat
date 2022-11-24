@@ -61,61 +61,6 @@ export default function ContactScreen({navigation}) {
 
   return (
     <SafeAreaView>
-      {/* <ContactAction
-          name="phone-square"
-          type="font-awesome"
-          title="Tìm kiếm bạn bè"
-          backgroundColor="#70c43b"
-          handlePress={() => navigation.navigate('Tìm kiếm bạn bè')}
-        /> */}
-
-      {/* <ListItem>
-          <Avatar
-            rounded
-            icon={{
-              type: 'ionicon',
-              name: 'search',
-              color: GREY_COLOR,
-            }}
-            size="medium"
-          />
-          <Input
-            ref={inputRef}
-            renderErrorMessage={false}
-            inputContainerStyle={{
-              borderBottomWidth: 0,
-              margin: 0,
-            }}
-            containerStyle={{
-              width: WINDOW_WIDTH - 96,
-              paddingHorizontal: 0,
-            }}
-            placeholder="Số điện thoại/email"
-            onChangeText={value => handleSearchFriendChange(value)}
-          />
-        </ListItem> */}
-
-      {/* {listFriends &&
-          listFriends.map(friend => {
-            const {_id, avatar, name} = friend;
-            return (
-              <TouchableOpacity
-                key={_id}
-                onPress={() => handleGoToPersonalScreen(_id)}>
-                <View style={{backgroundColor: '#fff'}}>
-                  <FriendItem
-                    name={name}
-                    avatar={avatar}
-                    type={friendType.FRIEND}
-                    userId={_id}
-                    navigation={navigation}
-                  />
-                  <View style={styles.bottomDivider}></View>
-                </View>
-              </TouchableOpacity>
-            );
-          })} */}
-
       {listFriends?.length > 0 ? (
         <FlatList
           data={listFriends}

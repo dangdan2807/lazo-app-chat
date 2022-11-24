@@ -132,7 +132,7 @@ export default function ConversationOptionsScreen({navigation, route}) {
 
   const handleCopyLink = async () => {
     Clipboard.setString(
-      `http://13.212.201.145/jf-link/${currentConversationId}`,
+      `https://13.212.201.145/jf-link/${currentConversationId}`,
     );
     commonFuc.notifyMessage('Đã sao chép');
   };
@@ -265,7 +265,7 @@ export default function ConversationOptionsScreen({navigation, route}) {
                 iconType="feather"
                 iconName="link"
                 title="Link tham gia nhóm"
-                subtitle={`http://13.212.201.145/jf-link/${currentConversationId}`}
+                subtitle={`https://13.212.201.145/jf-link/${currentConversationId}`}
               />
               <OptionButton
                 // onPress={handleGoToFileScreen}

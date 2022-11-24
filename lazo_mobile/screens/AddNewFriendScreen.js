@@ -39,31 +39,23 @@ export default function AddNewFriendScreen({navigation}) {
   };
 
   const handleSearchFriendSubmit = async () => {
-    // const userName = 'nhathao00852@gmail.com';
-    // const userName = '0398765421';
-    // const userName = '0987654321';
     const userName = inputRef.current;
 
     const valid = validateUsername(userName);
 
     if (!valid.isEmail && !valid.isPhoneNumber) {
       setIsError(true);
-      setErrorMessage('Số điện thoại/email không hợp lệ');
+      setErrorMessage('Email không hợp lệ');
     } else {
       try {
         const response = await userApi.fetchUsers(userName);
 
         dispatch(setSearchFriend(response));
         navigation.navigate('Chi tiết bạn bè');
-        // if (typeof response.status === 'string') {
-        // } else {
-        //   console.log('looix');
-        // }
         setIsError(false);
         setErrorMessage('');
       } catch (error) {
         commonFuc.notifyMessage('Không tìm thấy');
-        //Alert.alert('Khong tim thay');
         console.error('Không tìm thấy', error);
       }
     }
@@ -74,13 +66,13 @@ export default function AddNewFriendScreen({navigation}) {
       <ListItem containerStyle={{paddingHorizontal: 0}}>
         <Input
           ref={inputRef}
-          // defaultValue="0987654321"
+          // defaultValue="0388055011"
           renderErrorMessage={isError}
           errorMessage={errorMessage}
           inputStyle={{marginRight: 16}}
           inputContainerStyle={styles.inputSearchContainer}
           // containerStyle={{backgroundColor: 'red', paddingHorizontal: 0}}
-          placeholder="Nhập số điện thoại/email"
+          placeholder="Nhập email cần tìm"
           onChangeText={value => (inputRef.current = value)}
           rightIcon={
             <Button

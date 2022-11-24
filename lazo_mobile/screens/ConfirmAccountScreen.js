@@ -226,7 +226,7 @@ const ConfirmAccountScreen = ({navigation, route}) => {
               onPress={() => navigation.popToTop()}
             />
             <Button
-              title="Dùng số điện thoại/email khác"
+              title="Dùng email khác"
               type="outline"
               buttonStyle={{borderColor: MAIN_COLOR}}
               titleStyle={{color: MAIN_COLOR}}

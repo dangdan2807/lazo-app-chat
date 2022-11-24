@@ -79,7 +79,7 @@ const ListChannel = props => {
         onPress={() =>
           handleOnChannelPress(currentConversationId, currentConversationId)
         }>
-        <ListItem>
+        {/* <ListItem>
           <Icon type="material-icon" name="tag" />
           <ListItem.Content>
             <ListItem.Title>Kênh chung</ListItem.Title>
@@ -93,7 +93,7 @@ const ListChannel = props => {
               </Text>
             </View>
           )}
-        </ListItem>
+        </ListItem> */}
       </TouchableOpacity>
       <View style={styles.divider}></View>
 
@@ -173,23 +173,23 @@ const ListChannel = props => {
           buttonStyle={{marginHorizontal: 10}}
         />
       )}
-      <Button
+      {/* <Button
         title="Thêm channel"
         titleStyle={{color:'#a64bf4'}}
         onPress={onAddChannelPress}
         type="outline"
         containerStyle={{marginHorizontal: 10, marginVertical: 5}}
         buttonStyle={{marginHorizontal: 10}}
-      />
+      /> */}
 
-      {channelModalProps.isVisible && (
+      {/* {channelModalProps.isVisible && (
         <ChannelModal
           modalVisible={channelModalProps}
           setModalVisible={setChannelModalProps}
           onShowRenameModal={onShowRenameModal}
           channelIdRef={channelIdRef}
         />
-      )}
+      )} */}
     </View>
   );
 };

@@ -89,7 +89,7 @@ const LoginScreen = ({navigation}) => {
               <>
                 <InputField
                   containerStyle={styles.input}
-                  placeholder="Email/số điện thoại"
+                  placeholder="Email"
                   autoFocus
                   onChangeText={handleChange('username')}
                   value={values.username}

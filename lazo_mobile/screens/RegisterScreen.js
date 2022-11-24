@@ -86,7 +86,7 @@ const RegisterScreen = ({navigation}) => {
                   }
                 />
                 <InputField
-                  placeholder="Email/số điện thoại"
+                  placeholder="Email"
                   onChangeText={handleChange('username')}
                   value={values.username}
                   error={errors.username}
