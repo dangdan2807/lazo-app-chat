@@ -88,12 +88,38 @@ userSchema.statics.findByCredentials = async (username, password) => {
         isDeleted: false,
     });
 
-    if (!user) throw new NotFoundError('User');
+    if (!user) {
+        throw new NotFoundError('User');
+    }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) throw new MyError('Password invalid');
+    if (!isPasswordMatch) {
+        throw new MyError('Password invalid');
+    }
 
     return user;
+};
+
+userSchema.statics.existsById = async (_id) => {
+    const user = await User.findOne({ _id, isActived: true });
+    if (user) {
+        return true;
+    }
+    return false;
+};
+
+userSchema.statics.checkByIds = async (ids, message = 'User') => {
+    for (const idEle of ids) {
+        const user = await User.findOne({
+            _id: idEle,
+            isActived: true,
+            isDeleted: false,
+        });
+
+        if (!user) {
+            throw new NotFoundError(message);
+        }
+    }
 };
 
 userSchema.statics.getById = async (_id, message = 'User') => {
@@ -127,6 +153,17 @@ userSchema.statics.getById = async (_id, message = 'User') => {
     };
 };
 
+userSchema.statics.existsByUsername = async (username) => {
+    const user = await User.findOne({
+        username,
+        isActived: true,
+    });
+    if (user) {
+        return true;
+    }
+    return false;
+};
+
 userSchema.statics.findByUsername = async (username, message = 'User') => {
     const user = await User.findOne({
         username,
@@ -137,7 +174,8 @@ userSchema.statics.findByUsername = async (username, message = 'User') => {
         throw new NotFoundError(message);
     }
 
-    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } = user;
+    const { _id, name, dateOfBirth, gender, avatar, avatarColor, coverImage } =
+        user;
     return {
         _id,
         name,
@@ -158,6 +196,21 @@ userSchema.statics.checkById = async (_id, message = 'User') => {
     }
 
     return user;
+};
+
+userSchema.statics.getSummaryById = async (_id, message = 'User') => {
+    const user = await User.findOne({ _id, isActived: true });
+    if (!user) {
+        throw new NotFoundError(message);
+    }
+
+    const { name, avatar, avatarColor } = user;
+    return {
+        _id,
+        name,
+        avatar,
+        avatarColor,
+    };
 };
 
 const User = mongoose.model('User', userSchema);

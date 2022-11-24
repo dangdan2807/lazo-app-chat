@@ -1,6 +1,7 @@
 const messageUtils = {
     convertMessageOfGroup: (message) => {
-        const { _id, isDeleted, replyMessage, replyUser, reactUsers, reacts } = message;
+        const { _id, isDeleted, replyMessage, replyUser, reactUsers, reacts } =
+            message;
 
         if (isDeleted) {
             return {
@@ -24,14 +25,14 @@ const messageUtils = {
                 avatar: replyUserData.avatar,
             };
 
-            if (replyMessageData.isDeleted) {
+            if (replyMessageData.isDeleted)
                 replyMessageResult = {
                     _id: messagesId,
                     user,
                     isDeleted: true,
                     createdAt: message.createdAt,
                 };
-            } else {
+            else
                 replyMessageResult = {
                     _id: messagesId,
                     user,
@@ -39,7 +40,6 @@ const messageUtils = {
                     type: replyMessageData.type,
                     createdAt: message.createdAt,
                 };
-            }
         }
         // convert Reacts
         let reactsResult = [];
@@ -47,7 +47,9 @@ const messageUtils = {
         if (reacts && reacts.length > 0) {
             reactsResult = reacts.map((reactEle) => {
                 return {
-                    user: reactUsers.find((userEle) => userEle._id + '' == reactEle.userId + ''),
+                    user: reactUsers.find(
+                        (userEle) => userEle._id + '' == reactEle.userId + '',
+                    ),
                     type: reactEle.type,
                 };
             });
@@ -62,10 +64,23 @@ const messageUtils = {
             reacts: reactsResult,
         };
     },
-    convertMessageOfIndividual: function (message) {
-        const { _id, isDeleted, userId, replyMessage, reacts, members, userInfos } = message;
 
-        const user = this.getUserForIndividualConversation(userId, members, userInfos);
+    convertMessageOfIndividual: function (message) {
+        const {
+            _id,
+            isDeleted,
+            userId,
+            replyMessage,
+            reacts,
+            members,
+            userInfos,
+        } = message;
+
+        const user = this.getUserForIndividualConversation(
+            userId,
+            members,
+            userInfos,
+        );
 
         if (isDeleted) {
             return {
@@ -83,7 +98,11 @@ const messageUtils = {
             const messageId = replyMessageData._id;
             const { userId } = replyMessageData;
 
-            const user = this.getUserForIndividualConversation(userId, members, userInfos);
+            const user = this.getUserForIndividualConversation(
+                userId,
+                members,
+                userInfos,
+            );
 
             if (replyMessageData.isDeleted)
                 replyMessageResult = {
@@ -132,11 +151,11 @@ const messageUtils = {
 
     getUserForIndividualConversation: (userId, members, userInfos) => {
         const memberSearch = members.find(
-            (memberEle) => memberEle.userId + '' == userId + ''
+            (memberEle) => memberEle.userId + '' == userId + '',
         );
 
         const userInfoSearch = userInfos.find(
-            (userInfoEle) => userInfoEle._id + '' == userId + ''
+            (userInfoEle) => userInfoEle._id + '' == userId + '',
         );
 
         return {

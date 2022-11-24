@@ -73,7 +73,10 @@ class FriendService {
         const friend = new Friend({ userIds: [_id, senderId] });
         await friend.save();
 
-        return await conversationService.createIndividualConversationWhenWasFriend(_id, senderId);
+        return await conversationService.createIndividualConversationWhenWasFriend(
+            _id,
+            senderId,
+        );
     };
 
     deleteFriend = async (_id, userId) => {
@@ -111,8 +114,14 @@ class FriendService {
         for (const userEle of users) {
             const userTempt = {
                 ...userEle,
-                numberCommonGroup: await userService.getNumberCommonGroup(_id, userEle._id),
-                numberCommonFriend: await userService.getNumberCommonFriend(_id, userEle._id),
+                numberCommonGroup: await userService.getNumberCommonGroup(
+                    _id,
+                    userEle._id,
+                ),
+                numberCommonFriend: await userService.getNumberCommonFriend(
+                    _id,
+                    userEle._id,
+                ),
             };
 
             usersResult.push(userTempt);
@@ -158,8 +167,14 @@ class FriendService {
         for (const userEle of users) {
             const userTempt = {
                 ...userEle,
-                numberCommonGroup: await userService.getNumberCommonGroup(_id, userEle._id),
-                numberCommonFriend: await userService.getNumberCommonFriend(_id, userEle._id),
+                numberCommonGroup: await userService.getNumberCommonGroup(
+                    _id,
+                    userEle._id,
+                ),
+                numberCommonFriend: await userService.getNumberCommonFriend(
+                    _id,
+                    userEle._id,
+                ),
             };
 
             usersResult.push(userTempt);
@@ -233,13 +248,20 @@ class FriendService {
 
         for (const converEle of conversations) {
             try {
-                const userTempt = await userService.getStatusFriendOfUserById(_id, converEle._id);
+                const userTempt = await userService.getStatusFriendOfUserById(
+                    _id,
+                    converEle._id,
+                );
 
                 result.push({
                     ...userTempt,
-                    total: userTempt.numberCommonGroup + userTempt.numberCommonFriend,
+                    total:
+                        userTempt.numberCommonGroup +
+                        userTempt.numberCommonFriend,
                 });
-            } catch (err) {}
+            } catch (err) {
+                console.log(err);
+            }
         }
 
         const sortResult = result.sort((first, next) => {

@@ -1,0 +1,33 @@
+@import "../../../../../scss/variables";
+
+.link-preview-custom {
+    .LowerContainer {
+        .Title {
+            font-size: 1.4rem;
+        }
+        .Description {
+            font-size: 1.3rem;
+        }
+        .SiteDetails {
+            font-size: 1.3rem;
+        }
+    }
+}
+.text-message-item {
+    .tag-user {
+        color: $purple-lazo;
+        font-size: 1.3rem;
+    }
+    .text-message-content {
+        font-size: 1.3rem;
+    }
+    .tag-user:hover {
+        cursor: pointer;
+    }
+    .content-single-link {
+        margin-bottom: 1.3rem;
+    }
+    .content-mutiple-link a:hover {
+        text-decoration: underline;
+    }
+}

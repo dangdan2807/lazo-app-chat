@@ -1,20 +1,24 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const User = require('../models/User');
 const Friend = require('../models/Friend');
 const FriendRequest = require('../models/FriendRequest');
 const Conversation = require('../models/Conversation');
 
 const NotFoundError = require('../exception/NotFoundError');
-const ObjectId = require('mongoose').Types.ObjectId;
+
+const commonUtils = require('../../utils/commonUtils');
 
 const FRIEND_STATUS = ['FRIEND', 'FOLLOWER', 'YOU_FOLLOW', 'NOT_FRIEND'];
 
 class UserService {
     getUserSummaryInfo = async (username) => {
-        const user = await User.findOne({ username }, '-_id username name avatar isActived');
+        const user = await User.findOne(
+            { username },
+            '-_id username name avatar isActived',
+        );
 
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
 
         return user;
     };
@@ -25,8 +29,14 @@ class UserService {
         const searchUserId = searchUserResult._id;
 
         searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
-        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(_id, searchUserId);
-        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(_id, searchUserId);
+        searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
+            _id,
+            searchUserId,
+        );
+        searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
+            _id,
+            searchUserId,
+        );
 
         return searchUserResult;
     };
@@ -38,15 +48,15 @@ class UserService {
         searchUserResult.status = await this.getFriendStatus(_id, searchUserId);
         searchUserResult.numberCommonGroup = await this.getNumberCommonGroup(
             _id,
-            searchUserId
+            searchUserId,
         );
         searchUserResult.numberCommonFriend = await this.getNumberCommonFriend(
             _id,
-            searchUserId
+            searchUserId,
         );
 
         return searchUserResult;
-    }
+    };
 
     getNumberCommonGroup = async (myId, searchUserId) => {
         return await Conversation.countDocuments({
@@ -68,14 +78,18 @@ class UserService {
                 $match: { userIds: { $ne: ObjectId(searchUserId) } },
             },
         ]);
-        friendIdsOfSearchUser = friendIdsOfSearchUser.map((friendIdEle) => friendIdEle.userIds);
-        
+        friendIdsOfSearchUser = friendIdsOfSearchUser.map(
+            (friendIdEle) => friendIdEle.userIds,
+        );
         friendIdsOfSearchUser = friendIdsOfSearchUser.filter(
             (friendIdEle) => friendIdEle + '' != myId,
         );
 
         const commonFriends = await Friend.find({
-            $and: [{ userIds: { $in: [...friendIdsOfSearchUser] } }, { userIds: { $in: [myId] } }],
+            $and: [
+                { userIds: { $in: [...friendIdsOfSearchUser] } },
+                { userIds: { $in: [myId] } },
+            ],
         });
 
         return commonFriends.length;
@@ -84,18 +98,52 @@ class UserService {
     getFriendStatus = async (myId, searchUserId) => {
         let status = FRIEND_STATUS[3];
         // check xem có bạn bè không
-        if (await Friend.existsByIds(myId, searchUserId)) {
+        if (await Friend.existsByIds(myId, searchUserId))
             status = FRIEND_STATUS[0];
-        }
         // check đối phương  gởi lời mời
-        else if (await FriendRequest.existsByIds(searchUserId, myId)) {
+        else if (await FriendRequest.existsByIds(searchUserId, myId))
             status = FRIEND_STATUS[1];
-        }
         // check mình gởi lời mời
-        else if (await FriendRequest.existsByIds(myId, searchUserId)) {
+        else if (await FriendRequest.existsByIds(myId, searchUserId))
             status = FRIEND_STATUS[2];
-        }
         return status;
+    };
+
+    getList = async (username, page, size) => {
+        const { skip, limit, totalPages } = commonUtils.getPagination(
+            page,
+            size,
+            await User.countDocuments({
+                username: { $regex: '.*' + username + '.*' },
+            }),
+        );
+
+        const users = await User.find(
+            {
+                username: { $regex: '.*' + username + '.*' },
+            },
+            'name username gender isActived isDeleted isAdmin',
+        )
+            .skip(skip)
+            .limit(limit);
+
+        return {
+            data: users,
+            page,
+            size,
+            totalPages,
+        };
+    };
+
+    updateActived = async (userId, status) => {
+        const { nModified } = await User.updateOne(
+            { _id: userId },
+            { isDeleted: status },
+        );
+
+        if (nModified === 0) {
+            throw new NotFoundError('User');
+        }
     };
 }
 
