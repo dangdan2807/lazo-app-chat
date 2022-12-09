@@ -3,6 +3,7 @@
 ## Deloy Server
  * [http://13.212.201.145](http://13.212.201.145)
  * [https://13.212.201.145](https://13.212.201.145)
+ * [https://lazo-server-dangdan2807.vercel.app](https://lazo-server-dangdan2807.vercel.app)
 
 ## Api Document
 
@@ -13,7 +14,7 @@
 npm install  
 npm start
 ```
-Chạy trên cổng `3001`.
+Chạy trên cổng `8080`.
 
 ## Cách deloy EC2
 
