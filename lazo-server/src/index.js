@@ -46,7 +46,7 @@ if (isHttps) {
     socket(ioHttps);
     routes(app, ioHttps);
 
-    const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+    const HTTPS_PORT = process.env.PORT || 8080;
     serverHttps.listen(HTTPS_PORT, function () {
         console.log('App https listening at http://localhost:' + HTTPS_PORT);
     });
@@ -59,7 +59,7 @@ if (isHttps) {
 
     app.use(handleErr);
 
-    const HTTP_PORT = process.env.HTTP_PORT || 80;
+    const HTTP_PORT = process.env.PORT || 8080;
     server.listen(HTTP_PORT, function () {
         console.log('App listening at http://localhost:' + HTTP_PORT);
     });
