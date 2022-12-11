@@ -1,5 +1,8 @@
 # Lazo App Chat - ReactJs.
 
+## Demo
+[lazochat.vercel.app](https://lazochat.vercel.app)
+
 ## Cách chạy
 
 npm install
